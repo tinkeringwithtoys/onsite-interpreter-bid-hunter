@@ -1,6 +1,7 @@
 {
   "items": [],
   "stats": {
+    "deferred": 0,
     "failed_sources": [
       "eu_funding_tenders_portal"
     ],
@@ -35,9 +36,10 @@
         "total": 8
       }
     },
+    "pre_filtered": 0,
     "raw": 15,
-    "run_at": "2026-08-07T21:37:26.716283+00:00",
-    "run_time": "2026-08-07 21:37 UTC",
+    "run_at": "2026-08-07T22:33:29.806224+00:00",
+    "run_time": "2026-08-07 22:33 UTC",
     "sources_ok": 2,
     "sources_polled": 3,
     "sources_total": 3,
