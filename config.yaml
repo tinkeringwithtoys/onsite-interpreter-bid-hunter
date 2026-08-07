@@ -587,6 +587,12 @@ sources:
     auth: none                    # VERIFIED in docs: search requires no authentication
     covers: "all EU/EEA member states above threshold - includes Portugal, so no separate PT source needed"
     poll: true
+    # With no expert_query here, fetch_ted fell back to a bare CPV filter with
+    # no date bound. The first live run pulled 100 arbitrary matching notices,
+    # every one older than the freshness window, so raw=100 became fresh=0.
+    expert_query: "classification-cpv IN (79540000 79530000)"
+    lookback_days: 3
+    limit: 100
 
   - key: eu_funding_tenders_portal
     tier: P2_EU_VOLUME
@@ -724,6 +730,14 @@ sources:
     method: json_api
     endpoint: "https://api.ted.europa.eu/v3/notices/search"
     notice_kind: result           # award/result notices only
+    # notice_kind was never read by the fetcher, so this source issued exactly
+    # the same request as `ted` and doubled the raw count with duplicates. The
+    # filter has to live in the expert query. The fallback keeps this source
+    # producing something if TED rejects the notice-type syntax.
+    expert_query: "classification-cpv IN (79540000 79530000) AND notice-type IN (can-standard)"
+    fallback_expert_query: "classification-cpv IN (79540000 79530000)"
+    lookback_days: 7
+    limit: 100
     output: subcontracting_leads
     extract: [winner_legal_name, winner_country, lot_scope, contract_value, framework_end_date]
     why_you: |

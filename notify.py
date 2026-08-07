@@ -153,7 +153,9 @@ def render_digest(new_items, deadline_alerts, award_leads, stats):
                 L.append("    ** travel + accommodation covered **")
             dl = it.get("deadline")
             if dl:
-                L.append(f"    closes {dl} ({it.get('days_left', '?')} days)")
+                dleft = it.get("days_left")
+                L.append(f"    closes {dl}" +
+                         (f" ({dleft} days)" if dleft is not None else ""))
             if it.get("red_flags"):
                 L.append("    flags: " + "; ".join(it["red_flags"]))
             L.append(f"    {it.get('url', '')}")
@@ -174,9 +176,18 @@ def render_digest(new_items, deadline_alerts, award_leads, stats):
         L.append("WHO JUST WON (subcontracting targets)")
         L.append("-" * 62)
         for w in award_leads:
-            L.append(f"{w.get('winner', '?')} - won {w.get('contract', '?')}")
+            # Winner-name extraction from award notices is not built yet, so
+            # these keys are absent and every lead rendered as "? - won ?".
+            # Fall back to the notice itself, which is still actionable.
+            winner = w.get("winner")
+            if winner:
+                L.append(f"{winner} - won {w.get('contract', '?')}")
+            else:
+                L.append(str(w.get("title") or "(untitled award notice)"))
             if w.get("contact"):
                 L.append(f"    {w['contact']}")
+            if w.get("url"):
+                L.append(f"    {w['url']}")
         L.append("")
 
     if not new_items and not deadline_alerts and not award_leads:

@@ -44,6 +44,8 @@ SEEN_PATH = ROOT / "seen.json"
 WATCHLIST_PATH = ROOT / "watchlist.json"
 DATA_PATH = ROOT / "data.json"
 DEBUG_DIR = ROOT / "debug"
+# Written by run(), read by notify_failure(), which is a SEPARATE process.
+LAST_ERROR_PATH = DEBUG_DIR / "last_error.txt"
 
 TED_NOTICE_BASE = "https://" + "ted.europa.eu/en/notice/-/detail/"
 GH_BASE = "https://" + "github.com/"
@@ -218,8 +220,19 @@ def resolve_eligibility(cfg, source_key, tier):
             break
     if not action:
         return {"action": "unknown", "label": "UNKNOWN -- no eligibility rule matched"}
-    meta = (el.get("actions") or {}).get(action) or {}
-    label = meta.get("label") or meta.get("description") or action
+    # config writes actions as plain strings:
+    #     bid_directly: "Submit as lead bidder. No nationality barrier."
+    # but this assumed a dict and called .get() on a str, throwing
+    # AttributeError. It never fired in any test because it is only reached
+    # once an item survives the freshness filter, and until the TED query was
+    # date-bounded nothing ever did. Accept both shapes.
+    meta = (el.get("actions") or {}).get(action)
+    if isinstance(meta, dict):
+        label = meta.get("label") or meta.get("description") or action
+    elif isinstance(meta, str) and meta.strip():
+        label = meta.strip()
+    else:
+        label = action
     return {"action": action, "label": str(label)}
 
 
@@ -339,19 +352,61 @@ def extract_from_html(html, base_url, keywords):
 # 7. SOURCE HANDLERS
 # =============================================================================
 
+# TED expert-query date and sort syntax is not something we could verify
+# offline, and the first live run proved why it matters: without a date bound
+# TED returned 100 arbitrary matching notices, every one older than the
+# freshness window, so raw=200 became fresh=0. Rather than gamble on one
+# syntax, try the most useful form first and degrade step by step. Whichever
+# attempt succeeds is reported back in meta, so the run tells us what TED
+# actually accepts instead of us guessing again.
+TED_FIELDS = ["publication-number", "notice-title", "publication-date",
+              "deadline-receipt-tender-date-lot", "place-of-performance",
+              "buyer-name", "notice-type"]
+
+
 def fetch_ted(src, cfg, keywords):
     endpoint = src.get("endpoint")
-    q = src.get("expert_query") or 'classification-cpv IN (79540000 79530000)'
-    payload = {
-        "query": q,
-        "fields": ["publication-number", "notice-title", "publication-date",
-                   "deadline-receipt-tender-date-lot", "place-of-performance",
-                   "buyer-name", "notice-type"],
-        "limit": int(src.get("limit", 100)),
-        "page": 1,
-        "scope": "ALL",
-    }
-    status, body = http_post_json(endpoint, payload)
+    base_q = src.get("expert_query") or 'classification-cpv IN (79540000 79530000)'
+    days = int(src.get("lookback_days", 3))
+    limit = int(src.get("limit", 100))
+
+    def call(query, sort):
+        payload = {"query": query, "fields": TED_FIELDS,
+                   "limit": limit, "page": 1, "scope": "ALL"}
+        if sort:
+            payload["sort"] = [{"field": "publication-date", "order": "DESC"}]
+        return http_post_json(endpoint, payload)
+
+    # A source may declare a narrow query (e.g. award notices only) plus a
+    # broader fallback, so that an unsupported filter degrades to something
+    # useful instead of returning nothing at all.
+    queries = [base_q]
+    fallback = src.get("fallback_expert_query")
+    if fallback and fallback != base_q:
+        queries.append(fallback)
+
+    attempts = []
+    dated_set = set()
+    for qq in queries:
+        dq = f"{qq} AND publication-date>=today(-{days})"
+        dated_set.add(dq)
+        attempts += [(dq, True), (dq, False), (qq, True), (qq, False)]
+
+    status = body = None
+    used_q, used_sort, degraded = None, False, []
+    last_exc = None
+    for query, sort in attempts:
+        try:
+            status, body = call(query, sort)
+            used_q, used_sort = query, sort
+            break
+        except FetchError as exc:
+            degraded.append(f"{'dated' if query in dated_set else 'plain'}"
+                            f"{'+sort' if sort else ''}: {str(exc)[:120]}")
+            last_exc = exc
+    if body is None:
+        raise last_exc
+
     data = json.loads(body)
     notices = data.get("notices") or data.get("results") or []
     items = []
@@ -371,7 +426,13 @@ def fetch_ted(src, cfg, keywords):
             country=str(n.get("place-of-performance") or ""),
             raw={"publication-number": pubnum},
         ))
-    return items, {"total": data.get("totalNoticeCount") or data.get("total")}
+    return items, {
+        "total": data.get("totalNoticeCount") or data.get("total"),
+        "date_filtered": used_q is not None and "publication-date" in used_q,
+        "sorted_desc": used_sort,
+        "query_used": used_q,
+        "rejected_attempts": degraded or None,
+    }
 
 
 def fetch_sedia(src, cfg, keywords):
@@ -549,6 +610,15 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
             per_source[key] = {"error": str(exc)[:300]}
             log(f"  FAIL {key}: {exc}")
 
+    # Hand the detail to notify_failure(). It runs in the workflow's separate
+    # `if: failure()` step and cannot see these variables, which is why the
+    # first real alert email said only "it FAILED" and nothing else.
+    try:
+        DEBUG_DIR.mkdir(exist_ok=True)
+        LAST_ERROR_PATH.write_text("\n".join(failures), encoding="utf-8")
+    except Exception:
+        pass
+
     # -- filter -------------------------------------------------------------
     open_items = [i for i in all_items if is_open(i, now)]
     fresh = [i for i in open_items if is_recent(i, lookback_hours, now)]
@@ -602,10 +672,15 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     except Exception as exc:
         log(f"!! deadline watch failed: {exc}")
 
+    # The digest prints "closes <date> (? days)" because days_left was never
+    # computed anywhere. Urgency is the whole point of sorting these.
+    for item in scored:
+        _dl = parse_dt(item.get("deadline"))
+        item["days_left"] = (_dl.date() - now.date()).days if _dl else None
+
     award_leads = [i for i in scored if i.get("tier") == "P5_AWARD_MINING"]
 
     stats = {
-        "lane": tier,
         "run_at": now.isoformat(),
         "sources_polled": len(sources),
         "raw": len(all_items),
@@ -613,6 +688,16 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         "new": len(scored),
         "failures": failures,
         "per_source": per_source,
+        # render_digest() reads a different set of names than the ones above,
+        # so the digest header printed "sources ok 0/0 · fetched 0" on runs
+        # that had just fetched hundreds of notices - the one line in the
+        # email whose whole job is to tell you the pipeline is alive.
+        "run_time": now.strftime("%Y-%m-%d %H:%M UTC"),
+        "lane": tier,
+        "sources_total": len(sources),
+        "sources_ok": len(sources) - len(failures),
+        "fetched": len(all_items),
+        "failed_sources": [f.split(":", 1)[0] for f in failures],
     }
 
     if dry_run:
@@ -626,7 +711,14 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     # payload {"stats": ..., "items": []} is a non-empty dict and therefore
     # always truthy. The guard has to live here, where we can see that every
     # source failed. Without this, one network blip erases a good run.
+    # Two different questions, deliberately two different variables:
+    #   total_failure -> may we overwrite state? Conservative: refuse whenever
+    #                    something broke AND we ended up with nothing at all.
+    #   all_failed    -> should the build go red and wake somebody up? Only if
+    #                    every single source errored. A source that succeeds
+    #                    and simply finds nothing is a quiet day, not a fault.
     total_failure = bool(failures) and not all_items
+    all_failed = bool(failures) and len(failures) >= len(sources)
     if total_failure:
         log("!! every source failed - persisting nothing so prior data survives")
     else:
@@ -656,7 +748,11 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     else:
         log("nothing new; no email sent")
 
-    return 1 if failures else 0
+    # A partial failure is not a broken run. The digest already carries the
+    # per-source errors in both its subject and its body, so exiting non-zero
+    # here turned a usable run into a red build AND a second, redundant alarm
+    # email. Reserve a non-zero exit for the case where we got nothing at all.
+    return 1 if all_failed else 0
 
 
 def notify_failure(message=""):
@@ -665,11 +761,31 @@ def notify_failure(message=""):
     import notify
     repo = os.environ.get("GITHUB_REPOSITORY", "bid-hunter")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
-    lane = os.environ.get("LANE") or (message or "unknown")
+    # LANE is a lane name; `message` is free text from the workflow. Folding
+    # one into the other produced "The fast tier failed lane FAILED". The
+    # workflows pass "<lane> tier failed", so the first word is the lane.
+    words = (message or "").split()
+    lane = os.environ.get("LANE") or (words[0] if words else "unknown")
     link = os.environ.get("RUN_URL") or (
         (GH_BASE + repo + "/actions/runs/" + run_id) if run_id else "(no run id)")
-    body = (f"The {lane} lane FAILED.\n\nRepo: {repo}\nLogs: {link}\n\n"
-            "Silence from this system now means 'broken', not 'nothing found'.")
+
+    detail = ""
+    try:
+        if LAST_ERROR_PATH.exists():
+            detail = LAST_ERROR_PATH.read_text(encoding="utf-8").strip()
+    except Exception:
+        pass
+
+    parts = [f"The {lane} lane FAILED.", ""]
+    if detail:
+        parts += ["WHY - error returned by each source:",
+                  "-" * 58, detail, ""]
+    else:
+        parts += ["No per-source detail was recorded, so this broke outside "
+                  "the fetch loop. Check the log.", ""]
+    parts += [f"Repo: {repo}", f"Logs: {link}", "",
+              "Silence from this system now means 'broken', not 'nothing found'."]
+    body = "\n".join(parts)
     try:
         notify.send_email(f"[bid-hunter] {lane} lane FAILED", body)
         return 0
