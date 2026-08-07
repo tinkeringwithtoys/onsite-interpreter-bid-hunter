@@ -1,0 +1,30 @@
+name: Validate sources from a runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10          # NEVER omit this. Default is 360.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5      # NOT actions/actions-setup-python
+        with:
+          python-version: '3.12'           # NOT python-with-version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Probe every source from the runner
+        run: python3 validate_sources.py --json runner_report.json
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runner-report
+          path: runner_report.json

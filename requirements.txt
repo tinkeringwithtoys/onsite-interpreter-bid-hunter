@@ -1,0 +1,8 @@
+# Runtime dependencies for bid-hunter.
+
+PyYAML>=6.0.1        # config.yaml parsing -- scraper.py, validate_sources.py
+
+# Playwright is deliberately NOT listed here. It is a large install plus a
+# browser download, and only the heavy lane needs it. Putting it in this file
+# would add minutes to all 730 monthly fast-lane runs and blow the free tier.
+# heavy.yml installs it separately.
