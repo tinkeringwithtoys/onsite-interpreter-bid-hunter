@@ -1,0 +1,868 @@
+# ============================================================================
+# bid-hunter config  ·  v4
+# Profile: TUNISIAN entity · Arabic pivot · onsite + remote/RSI
+# Owner: Samhaj Khlifa (Tunis, TN passport, Tunisian company)
+# Updated: 2026-08-07
+# ============================================================================
+#
+# WHAT CHANGED IN v4 -- READ THIS, IT REORDERS THE WHOLE STRATEGY
+#
+#   The legal entity is TUNISIAN. The Portuguese registration is not done.
+#   v3 assumed the opposite, so v3 ranked the sources wrongly. The EU profile
+#   has NOT been deleted -- it is parked under profile.future_profiles and
+#   comes back with one line the day Portugal completes.
+#
+#   Why this reorders everything (verified against primary sources):
+#
+#   a) Tunisia is NOT a party to the WTO Government Procurement Agreement.
+#      The WTO's own notification portal records Tunisia as "Not applicable,
+#      not a Party to the plurilateral Agreement on Government Procurement".
+#      It is not on the observer list either.
+#
+#   b) Under the CJEU Kolin / Qingdao line of cases, operators from third
+#      countries that are neither GPA signatories nor covered by a procurement
+#      agreement with the EU cannot rely on the provisions of the Directive,
+#      including the right to be treated equally to EU operators and the right
+#      to challenge a contract award decision.
+#
+#   c) The Commission's 2025 Q&A goes further: a contracting authority may say
+#      nothing about third-country participation in the notice and still
+#      accept or reject a tender from a non-covered-country operator AT ANY
+#      MOMENT during the procurement process.
+#
+#      Read that twice. A Tunisian entity can write a complete bid, submit it,
+#      and be dropped at any stage with no notice, no reason and no appeal.
+#      The loss is not a tender -- it is weeks of unpaid bid-writing with no
+#      enforceable right to an outcome.
+#
+#   d) That exposure reaches CONSORTIUM MEMBERS and NAMED SUBCONTRACTORS too,
+#      not only the lead bidder. "Just subcontract to the winner" is therefore
+#      NOT a clean workaround at corporate level. See eligibility.subcontracting
+#      for the route that is.
+#
+#   The pipeline stops treating EU public tenders as the main lane. It does
+#   NOT stop watching them -- it re-labels them so an alert tells you which
+#   action is actually available.
+#
+#   1. (v3 text, now SUPERSEDED and kept only as a record) legal_entity =
+#      eu_company. Wrong -- see above.
+#
+#   2. Pairs narrowed to AR<>FR and AR<>EN. Arabic is your PIVOT language and
+#      it is the scarce side of the trade. Every query below is now built
+#      around Arabic, not around "interpretation" generically.
+#
+#   3. Remote/RSI accepted -> a SECOND economics lane with zero travel cost.
+#      This roughly doubles the addressable set, because telephone and video
+#      interpreting lots were previously filtered out by the travel-cost floor.
+#
+#   4. NEW TIER P1_ASYLUM. The EU asylum + migration + border interpretation
+#      market is the largest Arabic interpretation buyer in Europe, it is
+#      procured through public tenders (so it is TED-visible), it is lotted BY
+#      LANGUAGE FAMILY (so Arabic is its own lot), and it awards to MULTIPLE
+#      vendors in cascade (so you do not need to beat everyone). This should
+#      have been tier 1 from the start.
+#
+#   5. DEMOTED: EU ACI freelance accreditation. Correction to earlier advice --
+#      Arabic is NOT an EU official language and EU institutions describe their
+#      Arabic need as "limited". Keep watching it, but it is not a main channel
+#      for your combination. See non_scraping_tracks.eu_aci below.
+#
+#   6. NEW STREAM: award-notice mining. An award notice is not a missed
+#      deadline -- it is a list of companies that just won a 4-year Arabic
+#      interpreting framework and now need Arabic interpreters. Different
+#      pipeline, different output (a contact list, not a bid).
+#
+# ============================================================================
+
+meta:
+  version: 4
+  updated: "2026-08-07"
+  supersedes: 3
+  breaking_change: "legal_entity: eu_company -> tunisian_company"
+  timezone: Africa/Tunis          # UTC+1 all year, no DST
+
+# ----------------------------------------------------------------------------
+# PROFILE
+# ----------------------------------------------------------------------------
+profile:
+
+  # ONE LINE SWITCHES THE WHOLE STRATEGY. Change this and re-run.
+  # Do not hand-edit the tiers.
+  active_profile: tunisian
+
+  home_city: Tunis
+  home_airport: TUN
+  passport: TN                    # drives visa lead time, NOT tender eligibility
+
+  # ==========================================================================
+  # ACTIVE  ·  Tunisian entity
+  # ==========================================================================
+  legal_entity: tunisian_company  # CONFIRMED 2026-08-07
+  eu_registered: false            # Portugal registration NOT yet completed
+  country_of_establishment: TN
+
+  # Status in EU procurement law. Verified, not assumed -- getting this wrong
+  # costs weeks of unpaid bid-writing.
+  wto_gpa_party: false            # WTO portal: "not a Party"; not an observer
+  eu_procurement_status: non_covered_third_country
+  eu_association_agreement: true  # exists, but does NOT open procurement
+
+  # Where a Tunisian entity is STRONG. This is not a consolation prize: the UN
+  # lane is objectively BETTER for you than it was under the EU profile.
+  strengths:
+    - "UN system: no nationality restriction, and UNGM reports 85.9% of its
+       suppliers are from developing countries. Tunisian registration is
+       neutral-to-positive here, never a barrier."
+    - "African Union: Tunisia is an AU member state. AU bid documents ask for
+       company registration, a valid business licence and a tax certificate --
+       all of which a Tunisian entity holds natively."
+    - "AfDB: Tunisia is a member country and the Bank was headquartered in
+       Tunis for over a decade. Local presence is an advantage here."
+    - "TUNEPS and Tunisian public buyers: full domestic access, no barrier."
+    - "PRIVATE contracts with EU agencies, LSPs and RSI platforms are ordinary
+       commercial services exports. Public procurement law does not apply at
+       all. This channel is untouched by everything above and is now a PRIMARY
+       lane rather than an afterthought."
+
+  # Operational realities of invoicing from Tunisia. Worth knowing before the
+  # first contract, not after it.
+  finance:
+    invoices_eu_b2b_without_vat: true   # reverse charge - the EU client
+                                        # accounts for VAT in its own country
+    foreign_currency_account: "compte professionnel en devises"
+    # A Tunisian resident company with export earnings may open professional
+    # foreign-currency accounts and credit 100% of export earnings to them.
+    # The dinar is convertible for current-account transactions but is NOT
+    # fully convertible; some transfers need Central Bank authorisation.
+    forex_note: "Open the FX account BEFORE the first EUR invoice, not after."
+
+  accepts_onsite: true
+  accepts_remote: true            # CONFIRMED - unlocks the whole remote lane
+
+  # ==========================================================================
+  # DORMANT  ·  DO NOT ACTIVATE WITHOUT AN EXPLICIT REQUEST FROM THE OWNER
+  # ==========================================================================
+  # Kept verbatim so that switching back is one line, not a rewrite.
+  # Nothing below is read while active_profile is 'tunisian'.
+  future_profiles:
+    eu_portugal:
+      status: not_yet_registered
+      activate_with: "profile.active_profile: eu_portugal"
+      legal_entity: eu_company
+      eu_registered: true
+      eu_member_state: PT
+      eu_procurement_status: covered
+      wto_gpa_party: true         # via EU membership
+
+      # Still unanswered on the day this is switched on:
+      vat_number: null            # required on most EU tender submissions
+      eu_bank_account: null
+
+      unlocks:
+        - "Direct bidding on Frontex / EUAA / OFPRA lots as LEAD bidder"
+        - "Equal-treatment rights and the right to challenge an award"
+        - "Named subcontractor / consortium member with no third-country risk"
+        - "Portuguese below-threshold portal (BASE.gov.pt) becomes relevant"
+        - "A national route to sworn / court-certified interpreter status"
+      re_tier_on_activation:
+        P1_ASYLUM: bid_directly     # currently watch_and_partner
+        P2_EU_VOLUME: bid_directly  # currently watch_and_partner
+        P1_UN: keep                 # good under BOTH profiles - do not demote
+        P1_AFRICA: keep
+        P5_AWARD_MINING: keep
+      note: >
+        Law firms advising third-country bidders converge on one
+        recommendation: establish an EU entity or partner with EU firms if EU
+        tenders are part of the business model. The Portugal plan is the right
+        long-term move. It is simply not done yet, and the config must reflect
+        what is true today rather than what is planned.
+
+
+# ----------------------------------------------------------------------------
+# ELIGIBILITY  ·  what each tier is actually WORTH to a Tunisian entity
+# ----------------------------------------------------------------------------
+# Nothing is deleted. Sources are RE-LABELLED, so an alert tells you which
+# action is available instead of implying you can bid.
+# ----------------------------------------------------------------------------
+eligibility:
+  active_for: tunisian_company
+
+  actions:
+    bid_directly: "Submit as lead bidder. No nationality barrier."
+    watch_and_partner: >
+      Do NOT write a solo bid. The alert is intelligence, and a pointer to the
+      prime contractor worth approaching. Bidding solo risks rejection at any
+      stage with no remedy.
+    commercial_only: "Ordinary B2B services contract. Procurement law N/A."
+    domestic: "Home market. Full access."
+
+  by_tier:
+    # WARNING: every key here MUST exist as a sources[].tier value, and every
+    # sources[].tier MUST appear here. v4.0 shipped with P3_NATIONAL_TN in this
+    # map while the sources say P3_NATIONAL -- the lookup silently returned
+    # nothing for tuneps / base_gov_pt / home_state_national_portal, so those
+    # alerts would have carried NO action label at all. Fixed in v4.1.
+    # validate_sources.py --check-eligibility now fails the build on any drift.
+    P1_UN:            bid_directly       # PROMOTED to top lane in v4
+    P1_AFRICA:        bid_directly       # PROMOTED - AU member state
+    P3_NATIONAL:      domestic           # PROMOTED - but see override below
+    P5_AWARD_MINING:  commercial_only    # PROMOTED - now a primary lane
+    P1_ASYLUM:        watch_and_partner  # DEMOTED from lead-bid in v4
+    P2_EU_VOLUME:     watch_and_partner  # DEMOTED from lead-bid in v4
+    P4_GULF:          watch_and_partner  # unchanged - registration barriers
+
+  by_source_override:
+    # A per-tier map is too coarse for P3_NATIONAL. That tier holds BOTH the
+    # Tunisian home market AND Portugal, and those are opposites right now.
+    base_gov_pt: watch_and_partner
+    # ^ Portugal is 'domestic' ONLY after profile.active_profile: eu_portugal.
+    #   Until then it is a non-covered third-country market like any other EU
+    #   state. Flip this to 'domestic' when the registration completes.
+
+  resolution_order: [by_source_override, by_tier]
+
+  subcontracting:
+    corporate_subcontract_risk: true
+    # Being a NAMED subcontractor or consortium member in an EU bid can carry
+    # the same third-country exposure as leading it. Poland, for instance, now
+    # requires express admission and applies the rule to consortium members,
+    # resource providers and subcontractors alike.
+    individual_freelance_route: preferred
+    # A prime engaging Samhaj as an INDIVIDUAL freelance interpreter is buying
+    # a service, not naming a corporate subcontractor in its bid. This is the
+    # cleaner route into EU-funded work under the Tunisian profile.
+    note: >
+      When approaching a framework winner, ask to join their INTERPRETER
+      ROSTER -- do not ask to be a named subcontractor. Same work, materially
+      less legal friction, and a much faster yes.
+
+  un_vendor_registration:
+    portal: https://www.ungm.org/
+    cost: free
+    levels:
+      basic:   "contracts up to USD 150,000 - start here"
+      level_1: "upgrade later"
+      level_2: >
+        over USD 500,000 - requires a certificate of incorporation, a MINIMUM
+        OF THREE YEARS in business, three reference letters and audited
+        financials for three years. Check the company's age before promising
+        capacity on a large lot.
+    action: "Register at Basic level this week. Free, and it gates everything."
+
+# ----------------------------------------------------------------------------
+# LANGUAGES  ·  Arabic is the pivot and the scarce side
+# ----------------------------------------------------------------------------
+languages:
+  pivot: ar
+  pairs:
+    - { source: ar, target: fr, retour: true }
+    - { source: ar, target: en, retour: true }
+
+  # Do NOT bid these - you did not claim them
+  not_offered:
+    - { source: en, target: fr }
+
+  # Arabic's institutional status, by buyer. This is what actually determines
+  # whether a source is worth polling for YOUR combination.
+  arabic_status:
+    un_system:        { status: "official (1 of 6)", fit: strong,   note: "AR booth works BOTH directions (retour) - matches your bidirectional claim" }
+    african_union:    { status: "working language",  fit: strong,   note: "AR/EN/FR/PT are AU working languages; Tunisia is a member state" }
+    eu_asylum_border: { status: "top-2 requested",   fit: strongest, note: "Arabic is the highest-volume language in EU asylum interpreting" }
+    eu_institutions:  { status: "NOT official",      fit: weak,     note: "EU describes Arabic need as 'limited'. ACI test is built around EU official languages." }
+    gulf:             { status: "local language",    fit: weak,     note: "Arabic is not scarce there - you are competing against locals, not with them" }
+
+# ----------------------------------------------------------------------------
+# ECONOMICS  ·  two lanes, two different floors
+# ----------------------------------------------------------------------------
+economics:
+
+  # ---- LANE A: remote / RSI / telephone ----------------------------------
+  # No flight, no hotel, no visa, no travel days. The floor collapses, so work
+  # that lane B would reject is profitable here. This is your volume lane.
+  remote:
+    enabled: true
+    net_floor_eur_per_day: 120
+    travel_cost_eur: 0
+    hotel_cost_eur: 0
+    visa_required: false
+    unit_of_account_warning: |
+      Asylum telephone/video interpreting is usually billed per MINUTE or per
+      CONNECTED CALL, not per day. Do not compare its "rate" to a conference
+      day rate. The scorer must extract the unit before it estimates value.
+    watch_for:
+      - "per-minute billing with a low minimum connection time"
+      - "unpaid waiting/standby time"
+      - "mandatory platform exclusivity"
+
+  # ---- LANE B: onsite ----------------------------------------------------
+  onsite:
+    enabled: true
+    net_floor_eur_per_day: 350
+    covered_travel_is_trump_card: true   # if travel+DSA is covered, ignore the floor
+    travel_estimate_eur:
+      tunisia: 0
+      europe_south: 220
+      europe_west: 300
+      europe_north: 420
+      africa: 400
+      gulf: 550
+    hotel_estimate_eur_per_night:
+      tunisia: 0
+      europe_south: 95
+      europe_west: 130
+      europe_north: 160
+      africa: 110
+      gulf: 170
+
+lead_time:
+  # NOTE: both visa figures are UNVERIFIED placeholders. Confirm before trusting.
+  schengen_visa_days: 35          # VERIFY: current appointment backlog in Tunis
+  gulf_visa_days: 10              # VERIFY
+  min_days_to_prepare_bid: 5
+  # An EU-registered entity may be able to send an EU-passport-holding
+  # colleague instead, sidestepping the visa path entirely. Flag, don't decide.
+  visa_bypass_possible_via_eu_staff: true
+
+# ----------------------------------------------------------------------------
+# DATE LOGIC  ·  three different questions, three different fields
+# ----------------------------------------------------------------------------
+dates:
+  # ELIGIBILITY - is it open at all?      deadline >= today
+  require_deadline_in_future: true
+  # ALERTING - is it new since I looked?  publication_date >= now - 24h
+  publication_window_hours: 24
+  # URGENCY - how hard do I sprint?       sort by this, NEVER filter by it
+  urgency_bands:
+    sprint_max_days: 5
+    sweet_spot_max_days: 30
+    park_max_days: 999
+
+# ----------------------------------------------------------------------------
+# SCHEDULING · three lanes, three cadences
+# ----------------------------------------------------------------------------
+# Earlier I throttled EVERYTHING to 3x/weekday to protect the minute budget.
+# That was over-cautious: the cost problem is Playwright, not polling. Splitting
+# by cost lets the cheap lane run hourly 24/7 and still finish the month at ~49%
+# of the free allowance.
+#
+#   lane      | cadence              | runs/mo | billed min/mo
+#   ----------|----------------------|---------|--------------
+#   fast      | hourly, 24/7         |    730  |   730
+#   standard  | 3x daily, every day  |     91  |   182
+#   heavy     | 1x daily, weekdays   |     22  |    66
+#   ----------|----------------------|---------|--------------
+#   TOTAL     |                      |    843  |   978  of 2,000 free
+#
+# GitHub rounds every job UP to the nearest minute, so a 20-second run bills 1
+# minute. That rounding is why the fast lane must stay browser-free.
+# ----------------------------------------------------------------------------
+scheduling:
+  timezone_note: "Tunis is UTC+1 all year, no DST - local times never drift"
+
+  lanes:
+    fast:
+      cron_utc: "0 * * * *"           # hourly, 24/7
+      polls: [ted, eu_funding_tenders_portal, ted_award_notices]
+      method: json_api                # no browser - this is why it can be hourly
+      timeout_minutes: 5
+      concurrency_group: bid-hunter-fast
+      est_billed_minutes_per_run: 1
+      cheaper_variant: "0 */2 * * *"   # halves the spend, loses nothing real
+
+    standard:
+      cron_utc: "0 5,11,16 * * *"     # 06:00 / 12:00 / 17:00 Tunis, every day
+      polls:
+        - frontex_procurement
+        - euaa_procurement
+        - ofpra_ofii_france
+        - germany_asylum
+        - ungm
+        - undp_procurement
+        - african_union_bids
+        - afdb_procurement
+        - publications_office_procurement
+        - home_state_national_portal    # v4.1 - Tunisian home market, plain HTTP
+      method: http
+      timeout_minutes: 10
+      concurrency_group: bid-hunter-standard
+      est_billed_minutes_per_run: 2
+      also_runs: [deadline_watch]      # see below - this is the important part
+      notify_on_failure: true          # silence must not look like "no results"
+
+    heavy:
+      cron_utc: "0 6 * * 1-5"          # once daily, weekdays
+      polls: [tuneps]
+      method: playwright               # downloads Chromium - 2-3 billed min/run
+      timeout_minutes: 15
+      concurrency_group: bid-hunter-heavy
+      est_billed_minutes_per_run: 3
+      carries_keepalive: true
+      upload_debug_artifacts_on_failure: true
+
+  budget:
+    free_tier_private_repo_minutes: 2000
+    free_tier_public_repo_minutes: unlimited
+    estimated_monthly_minutes: 978
+    utilisation_pct: 49
+    recommend_private: true            # a public repo would expose your target list
+
+  keepalive:
+    required: true
+    reason: |
+      GitHub disables scheduled workflows after 60 days of repository inactivity.
+      Do NOT assume bot-authored commits reset that timer - treat it as unproven.
+      The heavy lane writes .keepalive/last_run so the repo is never idle.
+    fallback: "if schedules ever stop firing, run any workflow manually via workflow_dispatch"
+
+  cron_drift_note: "GitHub free-tier cron can lag 5-20 min. Irrelevant here - no deadline in this domain is minute-sensitive."
+
+# ----------------------------------------------------------------------------
+# DEADLINE WATCH · the gap that polling frequency does NOT close
+# ----------------------------------------------------------------------------
+# The scraper answers "what is NEW?". Nothing answered "what is about to CLOSE?"
+#
+# A 45-day framework contract is correctly parked the day you first see it. But a
+# new-notice pipeline never mentions it again, so six weeks later the deadline
+# passes silently. Running hourly instead of daily would not have helped at all -
+# the item was already seen, so it is already deduped out.
+#
+# deadline_watch.py re-checks parked items and fires ONCE per band.
+# ----------------------------------------------------------------------------
+deadline_watch:
+  enabled: true
+  state_file: watchlist.json
+  milestones_days: [14, 7, 3, 1]
+  fire_once_per_band: true            # 4 emails over 6 weeks, not 40
+  late_discovery_rule: |
+      If an item is first seen with 5 days left, report the TIGHTEST sensible
+      band (7) rather than the loosest (14), and burn the looser bands so they
+      never fire afterwards. Reporting "14 days left" when 5 remain is worse
+      than not reporting.
+  onsite_travel_infeasible_days: 35   # ties to lead_time.schengen_visa_days
+  flags_emitted:
+    - "onsite abroad with short runway - check visa lead time"
+    - "travel + accommodation covered"
+    - "remote - no travel constraint"
+  on_expiry:
+    remove_from_watchlist: true
+    report_whether_bid_was_submitted: true   # so you can see what you let slip
+
+# ============================================================================
+# SOURCES
+# ============================================================================
+# method: json_api | http | playwright
+# Adding a source = adding a block here. Never edit scraper code for a new board.
+# ============================================================================
+sources:
+
+  # --------------------------------------------------------------------------
+  # P1_ASYLUM · EU asylum / migration / border interpreting
+  # The biggest Arabic interpreting market in Europe. Tender-procured, lotted by
+  # language family, awarded to multiple vendors in cascade. EU entity required
+  # -- which you now are.
+  # --------------------------------------------------------------------------
+  - key: frontex_procurement
+    tier: P1_ASYLUM
+    method: http
+    url: "https://www.frontex.europa.eu/about-us/open-tenders/"
+    also_visible_in: [ted, eu_funding_tenders_portal]
+    evidence: |
+      FRONTEX/2025/OP/0036 - "Framework contract for provision of Interpretation
+      and Cultural Mediation Services for Operational Activities", ~EUR 90M over
+      48 months, split into 7 GEOGRAPHIC lots. A previous Frontex interpreting
+      framework (~EUR 25M) was awarded to SIX vendors in cascade.
+    why_you: "Border operations = Arabic-heavy. Cascade award = multiple winners."
+    poll: true
+
+  - key: euaa_procurement
+    tier: P1_ASYLUM
+    method: http
+    url: "https://www.euaa.europa.eu/procurements"
+    evidence: |
+      EUAA/2022/052 "Provision of Interpretation and/or Cultural Mediation
+      Services for EUAA" - multiple framework contracts across lots 1-5.
+      Predecessor EASO/2020/820 explicitly covered "Interpretation Services for
+      Conferences and Events, INCLUDING REMOTE INTERPRETATION, organised in and
+      outside of Malta".
+    why_you: "EU asylum agency, Malta-based, buys both onsite and remote."
+    poll: true
+
+  - key: ofpra_ofii_france
+    tier: P1_ASYLUM
+    method: http
+    urls:
+      - "https://www.marches-publics.gouv.fr/"      # PLACE - state purchasing platform
+      - "https://www.boamp.fr/"                     # BOAMP - official bulletin
+    evidence: |
+      OFPRA ran an interpreting framework worth up to ~EUR 42M. A later OFPRA
+      procedure (ref 202405001) covered "interprétariat TELEPHONIQUE pour les
+      pôles territoriaux France Asile", CPV 79540000, and was lotted by language
+      family -- LOT-0001 = "Afrique, Maghreb, Proche et Moyen Orient".
+      OFII runs parallel contracts for civic-integration interpreting.
+    why_you: |
+      This is the single best-matched opportunity found so far: Arabic sits in
+      its own lot, and the telephone modality means ZERO travel cost (Lane A).
+    poll: true
+
+  - key: germany_asylum
+    tier: P1_ASYLUM
+    method: http
+    urls:
+      - "https://www.service.bund.de/"
+      - "https://www.evergabe-online.de/"
+    evidence: "BAMF is the largest single asylum-interpreting buyer in the EU by volume."
+    why_you: "Arabic is among BAMF's most-requested languages."
+    poll: true
+
+  - key: eu_member_state_asylum_sweep
+    tier: P1_ASYLUM
+    method: json_api
+    via: ted
+    evidence: |
+      Member states routinely re-tender asylum interpreting: Bulgaria's State
+      Agency for Refugees, Austria's BBU, Slovakia, Luxembourg. These surface in
+      TED under CPV 79540000 with buyer type = national agency.
+    why_you: "Catch-all so you are not dependent on knowing each agency by name."
+    poll: true
+
+  # --------------------------------------------------------------------------
+  # P1_UN · Arabic is an OFFICIAL UN language. Travel + DSA covered by agreement.
+  # --------------------------------------------------------------------------
+  - key: ungm
+    tier: P1_UN
+    method: http
+    url: "https://www.ungm.org/Public/Notice"
+    notice_types: [RFQ, RFP, ITB, EOI, RFI, pre-qualification]
+    why_you: "AR is 1 of 6 official UN languages; AR booth does retour, as you do."
+    poll: true
+
+  - key: undp_procurement
+    tier: P1_UN
+    method: http
+    url: "https://procurement-notices.undp.org/"
+    why_you: "High Arabic demand across the Arab States regional bureau."
+    poll: true
+
+  - key: un_celp_exams
+    tier: P1_UN
+    method: http
+    url: "https://www.un.org/dgacm/en/content/exams-interpreters"
+    cadence: rare                 # announced in cycles, not continuously
+    hard_requirements:
+      - "perfect command of Arabic as MAIN language"
+      - "fluency in English OR French as an ACTIVE interpretation language"
+      - "first-level university degree"
+      - "AR interpreters must work both FROM and INTO Arabic"
+    note: |
+      This is the roster route for P-2/P-3 language posts at UNHQ New York and
+      UN Offices Geneva / Nairobi / Vienna. Examination is run REMOTELY (online
+      interpretation exam + competency interview) - no travel to sit it.
+    poll: true
+
+  # --------------------------------------------------------------------------
+  # P1_AFRICA · AR is an AU working language; Tunisia is a member state
+  # --------------------------------------------------------------------------
+  - key: african_union_bids
+    tier: P1_AFRICA
+    method: http
+    url: "https://au.int/en/bids"
+    why_you: "AU runs explicit freelance-roster expansion calls for AR/EN/FR/PT interpreters."
+    poll: true
+
+  - key: afdb_procurement
+    tier: P1_AFRICA
+    method: http
+    url: "https://www.afdb.org/en/projects-and-operations/procurement"
+    note: "Individual-consultant EOIs for translation/interpretation; ADEA submissions to adea-applications@afdb.org"
+    poll: true
+
+  # --------------------------------------------------------------------------
+  # P2_EU_VOLUME · now genuinely winnable because you are EU-registered
+  # --------------------------------------------------------------------------
+  - key: ted
+    tier: P2_EU_VOLUME
+    method: json_api
+    endpoint: "https://api.ted.europa.eu/v3/notices/search"
+    http_method: POST
+    auth: none                    # VERIFIED in docs: search requires no authentication
+    covers: "all EU/EEA member states above threshold - includes Portugal, so no separate PT source needed"
+    poll: true
+
+  - key: eu_funding_tenders_portal
+    tier: P2_EU_VOLUME
+    method: json_api
+    # ------------------------------------------------------------------------
+    # v4.1: ENDPOINT FILLED IN. This was blank in v1, v2, v3 and v4.0 while
+    # poll was true -- meaning the fast lane has been "polling" this source
+    # every single hour and fetching nothing. It was a silent no-op, and a
+    # silent no-op is worse than a disabled source because the run still went
+    # green. validate_sources.py now fails on poll:true + no endpoint.
+    # ------------------------------------------------------------------------
+    endpoint: "https://api.tech.ec.europa.eu/search-api/prod/rest/search"
+    http_method: POST
+    auth: none
+    auth_note: >
+      apiKey=SEDIA is NOT a credential. It is a public constant that the
+      Commission publishes in its own API documentation. Do not put it in
+      GitHub Secrets, do not put it in .env, and do not treat it as a leak.
+    verified: >
+      The base URL and the apiKey=SEDIA parameter are documented verbatim by
+      the Commission, e.g.
+      api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text="HORIZON-CL3-2022-BM-01-01"
+    UNVERIFIED: >
+      The multipart form payload below is the commonly used shape for the
+      Grants & Tenders service, but this sandbox has NO OUTBOUND NETWORK so it
+      was never executed. Treat it as a hypothesis until validate_sources.py
+      confirms it ON A RUNNER. Do not trust a green local run.
+    query_params:
+      apiKey: SEDIA               # public constant, not a secret
+      text: "***"                 # match-all; real narrowing happens in payload
+      pageSize: 50
+      pageNumber: 1
+      sortBy: startDate
+    form_fields:
+      # sent as multipart/form-data field named "query"
+      query: |
+        {"bool":{"must":[
+          {"terms":{"type":["1","2"]}},
+          {"terms":{"status":["31094501","31094502"]}}
+        ]}}
+    field_notes:
+      type_1: "grants / calls for proposals - mostly noise for you"
+      type_2: "TENDERS (procurement) - this is the one that matters"
+      status_31094501: "Forthcoming"
+      status_31094502: "Open for submission"
+    note: "HTML is JS-rendered and unscrapeable by plain GET - the SEARCH API is mandatory, not optional."
+    fallback:
+      method: playwright
+      why: "If the payload shape is wrong there is no other way in - the HTML needs JS."
+      cost: "moves this source from the 1-minute fast lane to the 3-minute heavy lane"
+    poll: true
+
+  - key: publications_office_procurement
+    tier: P2_EU_VOLUME
+    method: http
+    url: "https://op.europa.eu/en/web/public-procurement/"
+    evidence: "Observed listing: 'Provision of Interpretation Services for In-person, Hybrid, and ...'"
+    poll: true
+
+  # --------------------------------------------------------------------------
+  # P3_NATIONAL · below-threshold work that never reaches TED
+  # --------------------------------------------------------------------------
+  - key: tuneps
+    tier: P3_NATIONAL
+    method: playwright            # the ONLY justified Playwright target in this file
+    url: "https://www.tuneps.tn/"
+    blockers: ["account registration", "local certificate", "FR/AR only"]
+    poll: false                   # enable after you confirm you can log in
+
+  - key: base_gov_pt
+    tier: P3_NATIONAL
+    method: json_api
+    url: "https://www.base.gov.pt/Base4/en/"
+    note: "Publishes OCDS; gained a consultation API in 2025. Adds ONLY below-threshold PT contracts - above-threshold is already in TED."
+    poll: false
+
+  - key: home_state_national_portal
+    tier: P3_NATIONAL
+    method: http
+    # ------------------------------------------------------------------------
+    # v4.1: UNBLOCKED. This was waiting on "which EU member state?" - a question
+    # that no longer exists. The home state is Tunisia, so the home-state portal
+    # is HAICOP's national publication site.
+    #
+    # This is a genuinely useful find, not just a filled-in blank:
+    # TUNEPS requires an account + a local certificate, which is why it was the
+    # ONLY justified Playwright target in the whole system. But HAICOP publishes
+    # the notices themselves PUBLICLY, no login. So DISCOVERY moves to the cheap
+    # HTTP lane and Playwright is only needed to actually SUBMIT a bid --
+    # something you do by hand, a few times a year, not on a cron.
+    # ------------------------------------------------------------------------
+    url: "https://www.marchespublics.gov.tn/"
+    covers: "HAICOP national publication portal - Tunisian public tenders, FR/AR"
+    why_you: "Home market. Full access, no third-country question, no partner needed."
+    relationship_to_tuneps: "discover here (free, no login) -> submit on TUNEPS (login + certificate)"
+    note: "Below-threshold lots are less contested and never reach TED."
+    poll: true
+
+  # --------------------------------------------------------------------------
+  # P4_GULF · monitor cheaply, expect little
+  # Reality check: these portals tender to CLASSIFIED/REGISTERED suppliers, often
+  # requiring a local partner for execution. And Arabic is not scarce there --
+  # you would be competing against locals rather than being the scarce resource.
+  # --------------------------------------------------------------------------
+  - key: etimad_sa
+    tier: P4_GULF
+    method: http
+    url: "https://tenders.etimad.sa/Tender/AllTendersForVisitor?PageNumber=1"
+    poll: true
+  - key: monaqasat_qa
+    tier: P4_GULF
+    method: http
+    url: "https://monaqasat.mof.gov.qa/"
+    poll: false
+  - key: capt_kw
+    tier: P4_GULF
+    method: http
+    url: "https://capt.gov.kw/en/"
+    note: "Registration reportedly takes months; foreign firms need a local partner."
+    poll: false
+  - key: dubai_esupply
+    tier: P4_GULF
+    method: http
+    url: "https://esupply.dubai.gov.ae/"
+    poll: false
+
+  # --------------------------------------------------------------------------
+  # P5_AWARD_MINING · a different question entirely
+  # An award notice is NOT a missed deadline. It is a named company that just won
+  # a multi-year Arabic interpreting framework and now has to staff it. Output of
+  # this stream is a CONTACT LIST, not a bid.
+  # --------------------------------------------------------------------------
+  - key: ted_award_notices
+    tier: P5_AWARD_MINING
+    method: json_api
+    endpoint: "https://api.ted.europa.eu/v3/notices/search"
+    notice_kind: result           # award/result notices only
+    output: subcontracting_leads
+    extract: [winner_legal_name, winner_country, lot_scope, contract_value, framework_end_date]
+    why_you: |
+      Cascade frameworks name several winners. Every one of them needs AR<>FR and
+      AR<>EN capacity and none of them wants to recruit from scratch. This is the
+      fastest realistic path to paid work in the asylum market.
+    poll: true
+
+# ============================================================================
+# NON-SCRAPING TRACKS · calendar reminders, not scrape targets
+# ============================================================================
+non_scraping_tracks:
+
+  eu_aci:
+    status: DEMOTED               # correction from earlier advice
+    url: "https://europa.eu/interpretation/freelance_en.html"
+    calendar: "https://europa.eu/interpretation/doc/aci_test_calendar.pdf"
+    honest_assessment: |
+      Earlier I ranked this as a top channel. With AR<>FR / AR<>EN that was wrong.
+      The interinstitutional accreditation test is organised around EU OFFICIAL
+      languages, and Arabic is not one. EU guidance does state there is no
+      nationality requirement and that "all languages may be considered", with a
+      LIMITED need for Arabic, Chinese and Japanese -- so the door is not shut,
+      it is just narrow and infrequent.
+    action: "Check the test calendar PDF quarterly for an Arabic cycle. Do not build a scraper for it."
+
+  gulf_pco_direct:
+    status: active
+    note: |
+      Where Gulf money actually reaches individuals: conference organisers and
+      PCOs booking interpreters directly, bypassing procurement portals entirely.
+      Booking lead time for AR<>EN is around 4 weeks, longer for multi-language
+      summits. This is outbound BD, not scraping.
+
+  uk_public_sector:
+    status: watch
+    url: "https://www.gca.gov.uk/agreements/RM6302"
+    note: "UK public-sector Language Services framework (RM6302). Post-Brexit, so verify eligibility rules for an EU entity before investing effort."
+
+  rsi_platform_subcontracting:
+    status: active
+    note: |
+      RSI platform vendors and large LSPs hold the framework and subcontract the
+      booth. Being on their AR rosters is Lane A revenue with no procurement
+      paperwork. Target the winners surfaced by P5_AWARD_MINING.
+
+# ============================================================================
+# QUERIES
+# ============================================================================
+queries:
+
+  cpv:
+    primary:  ["79540000"]        # Interpretation services
+    secondary: ["79530000"]       # Translation services - routinely co-tagged
+    wideners: ["79620000"]        # Supply of personnel
+    siblings: ["79510000", "79520000", "79552000", "79553000"]
+
+  # CRITICAL: the asylum market uses different vocabulary from the conference
+  # market. Missing these terms means missing the highest-value lots.
+  keywords:
+    en:
+      conference: ["interpretation", "interpreting", "simultaneous interpretation", "conference interpreting"]
+      asylum:     ["cultural mediation", "cultural mediator", "community interpreting", "telephone interpreting", "remote interpretation"]
+      arabic:     ["Arabic", "Modern Standard Arabic", "Arabic dialect", "Maghreb", "Levantine"]
+    fr:
+      conference: ["interprétation", "interprétation simultanée"]
+      asylum:     ["interprétariat", "interprétariat téléphonique", "médiation culturelle"]
+      arabic:     ["arabe", "arabe littéraire", "Maghreb", "Proche et Moyen Orient"]
+    ar:
+      general:    ["ترجمة فورية", "ترجمة شفوية", "مترجم فوري"]
+    note: |
+      "interprétariat" (asylum/social) and "interprétation" (conference) are
+      DIFFERENT words used by DIFFERENT buyers in French. Query both or you will
+      systematically miss the French asylum market, which is the largest
+      Arabic-interpreting buyer in France.
+
+  exclusions:
+    - "sign language only"        # not your pairs
+    - "written translation only"  # unless you also want translation work
+    - "requires sworn interpreter in <state>"   # unless eu_member_state matches
+
+# ============================================================================
+# SCORING · what the LLM pass must return per notice
+# ============================================================================
+scoring:
+  output_schema:
+    relevance: int                          # 0-100
+    language_pairs_required: list
+    matches_my_pairs: bool
+    arabic_required: bool                   # if false, relevance should collapse
+    modality: enum                          # onsite | remote | telephone | hybrid
+    lane: enum                              # A_remote | B_onsite
+    location: string
+    unit_of_account: enum                   # per_day | per_hour | per_minute | per_call | lump_sum
+    travel_and_accommodation_covered: bool
+    estimated_value_eur: number
+    net_after_travel_eur: number
+    eu_entity_eligible: bool
+    requires_local_partner: bool
+    requires_sworn_status: bool
+    lot_is_arabic_specific: bool            # strong positive signal
+    cascade_or_multiple_award: bool         # strong positive signal
+    days_until_deadline: int
+    urgency_band: enum                      # sprint | sweet_spot | park
+    red_flags: list
+
+  hard_kill:
+    - "arabic_required == false"
+    - "deadline in the past"
+    - "requires_local_partner == true and no partner available"
+
+  boost:
+    - "lot_is_arabic_specific == true"
+    - "cascade_or_multiple_award == true"
+    - "travel_and_accommodation_covered == true"
+    - "modality == remote or telephone"     # zero travel cost
+
+# ============================================================================
+# ALERTING
+# ============================================================================
+alerting:
+  channel: email
+  digest: true                    # one email per run, not one per hit
+  required_secrets:
+    - SMTP_HOST
+    - SMTP_PORT
+    - SMTP_USER
+    - SMTP_PASSWORD
+    - SMTP_FROM
+    - ALERT_EMAIL
+    - AGNES_API_KEY
+  separate_sections:
+    - "NEW - Arabic-specific lots"
+    - "NEW - remote / telephone (Lane A)"
+    - "NEW - onsite with travel covered"
+    - "LEADS - framework winners to contact"
+    - "CALENDAR - roster/exam windows"
+
+dedupe:
+  state_file: seen.json
+  key: [source, notice_id]
+  ttl_days: 120
