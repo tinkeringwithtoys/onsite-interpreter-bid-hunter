@@ -26,6 +26,7 @@ DESIGN RULES THAT MUST NOT BE BROKEN:
 
 import argparse
 import datetime as dt
+import time
 import hashlib
 import json
 import os
@@ -657,8 +658,26 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     log(f"raw={len(all_items)} open={len(open_items)} fresh={len(fresh)} new={len(new_items)}")
 
     # -- enrich -------------------------------------------------------------
+    # Each item costs one LLM call (agnes_score: timeout=45s, up to 3 retries
+    # on 429). With no per-item logging and no wall-clock awareness, a lane
+    # that fetches a large batch (e.g. standard's 196-item first run) went
+    # completely silent for the full scoring pass and could get killed by
+    # the job's own `timeout_minutes` before ever sending a digest or an
+    # error email. Cap scoring to a time budget derived from the lane's own
+    # timeout, log progress per item, and defer anything left over to the
+    # next run instead of losing it silently.
+    lane_timeout_min = ((cfg.get("scheduling") or {}).get("lanes") or {}).get(tier, {}).get("timeout_minutes", 10)
+    safety_margin_sec = 90  # leave room for digest render + send + state commit
+    scoring_deadline = time.monotonic() + max(60, lane_timeout_min * 60 - safety_margin_sec)
+
     scored = []
-    for item in new_items:
+    deferred = 0
+    for idx, item in enumerate(new_items, start=1):
+        if not dry_run and time.monotonic() > scoring_deadline:
+            deferred = len(new_items) - idx + 1
+            log(f"  scoring budget reached ({idx - 1}/{len(new_items)} scored) -- "
+                f"deferring {deferred} item(s) to the next run")
+            break
         elig = resolve_eligibility(cfg, item["source"], item["tier"])
         item["eligibility"] = elig["action"]
         item["eligibility_label"] = elig["label"]
@@ -676,6 +695,8 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
             item.setdefault("score", {}).setdefault("red_flags", []).append(
                 "page contained instruction-shaped text; it was neutralised")
         scored.append(item)
+        log(f"  scored {idx}/{len(new_items)}: {item['source']} -- "
+            f"{(item.get('score') or {}).get('relevance')}")
 
     scored.sort(key=lambda i: (parse_dt(i.get("deadline")) or
                                dt.datetime.max.replace(tzinfo=dt.timezone.utc)))
