@@ -1,0 +1,125 @@
+# =============================================================================
+# TIER 3 of 3  ·  HEAVY LANE  ·  Playwright / real browser
+# =============================================================================
+# Runs ONCE daily on weekdays. Deliberately rare.
+#
+# Why not hourly like the fast lane: this lane downloads Chromium and drives a
+# real browser. That is ~2-3 billed minutes per run against a 2,000 min/month
+# allowance. Hourly here would cost 1,460-2,190 min all by itself and blow the
+# entire free tier -- which is exactly the mistake in the original blueprint.
+#
+# Only ONE target currently justifies a browser: TUNEPS (Tunisia), which needs
+# a real session and renders its search client-side. Everything else in this
+# project is reachable by plain HTTP or a JSON API.
+#
+# Budget: ~22 runs/month x 3 billed min = ~66 min.
+#
+# It also carries the KEEPALIVE. GitHub disables scheduled workflows after 60
+# days of repository inactivity, and it is not safe to assume bot commits reset
+# that timer. The keepalive touches a file from this workflow so the repo is
+# never idle, and it is cheap because this lane already runs.
+# =============================================================================
+
+name: heavy (browser, daily)
+
+on:
+  schedule:
+    - cron: '0 6 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bid-hunter-heavy
+  cancel-in-progress: false
+
+jobs:
+  browse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15      # browser installs are slow; still far below the 360 default
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Playwright + Chromium
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install playwright
+          python -m playwright install chromium --with-deps
+
+      - name: Scrape browser-only sources
+        env:
+          TUNEPS_USER: ${{ secrets.TUNEPS_USER }}
+          TUNEPS_PASSWORD: ${{ secrets.TUNEPS_PASSWORD }}
+          AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+        run: python scraper.py --tier heavy
+
+      # Screenshots on failure. When a selector breaks six weeks from now you
+      # will have no idea why without seeing what the page actually looked like.
+      - name: Upload debug artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: heavy-debug-${{ github.run_id }}
+          path: |
+            debug/*.png
+            debug/*.html
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Keepalive + commit state
+        if: always()
+        run: |
+          set -euo pipefail
+          git config user.name  "bid-hunter[bot]"
+          git config user.email "bid-hunter@users.noreply.github.com"
+
+          mkdir -p .keepalive
+          date -u +%FT%TZ > .keepalive/last_run
+
+          for f in seen.json watchlist.json data.json .keepalive/last_run; do
+            [ -f "$f" ] && git add "$f"
+          done
+
+          if git diff --cached --quiet; then
+            echo "Nothing staged."
+            exit 0
+          fi
+          git commit -m "state: heavy poll + keepalive $(date -u +%FT%TZ)"
+
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}"; then
+              break
+            fi
+            echo "rebase attempt ${attempt} failed, retrying"
+            sleep 5
+          done
+
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      # SILENCE IS AMBIGUOUS. Without this, a crashed lane and a quiet week
+      # look identical in the inbox.
+      - name: Report failure
+        if: failure()
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scraper.py --notify-failure "heavy tier failed"
