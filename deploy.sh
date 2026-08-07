@@ -107,11 +107,14 @@ fi
 # trying to push a divergent history, which GitHub would reject.
 git fetch origin "$DEFAULT_BRANCH" >/dev/null 2>&1 || true
 if git rev-parse --verify "origin/$DEFAULT_BRANCH" >/dev/null 2>&1; then
-  if ! git pull --rebase --autostash origin "$DEFAULT_BRANCH"; then
-    bad "rebase onto origin/$DEFAULT_BRANCH failed - resolve by hand, then re-run"
-    exit 1
-  fi
-  ok "rebased onto existing remote history"
+  # Re-parent onto the remote WITHOUT a merge. --soft moves HEAD but leaves the
+  # working tree untouched, so the next commit's tree is exactly your local
+  # files with the remote as its parent. Your local copy is canonical here, so
+  # a three-way merge would only invent conflicts. This cannot conflict.
+  git reset --soft "origin/$DEFAULT_BRANCH"
+  git add -A
+  git commit -q -m "deploy: bid-hunter v4.1" || true
+  ok "re-parented onto existing remote history (no merge, no conflicts)"
 fi
 
 git push -u origin "$DEFAULT_BRANCH"

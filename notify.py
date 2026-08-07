@@ -119,11 +119,37 @@ def render_digest(new_items, deadline_alerts, award_leads, stats):
         L.append("NEW OPPORTUNITIES")
         L.append("-" * 62)
         for it in new_items:
-            L.append(f"[{it.get('score', '?')}/10] {it.get('title', '(untitled)')}")
-            L.append(f"    {it.get('buyer', '?')} · {it.get('country', '?')} · "
-                     f"{it.get('modality', '?')}")
-            L.append(f"    pairs: {', '.join(it.get('language_pairs', [])) or 'unclear'}")
-            if it.get("travel_covered"):
+            # scraper.py nests the Agnes verdict under it["score"] as a dict,
+            # while the older flat fixtures put these fields at the top level.
+            # Reading only the top level printed the entire dict where the
+            # relevance number belonged. Accept both shapes.
+            sc = it.get("score")
+            sc = sc if isinstance(sc, dict) else {}
+
+            def pick(*keys, default="?"):
+                for src in (it, sc):
+                    for k in keys:
+                        v = src.get(k)
+                        if v not in (None, "", [], {}):
+                            return v
+                return default
+
+            raw = it.get("score")
+            rel = raw if isinstance(raw, (int, float)) else sc.get("relevance")
+            rel = "?" if rel is None else rel
+
+            pairs = pick("language_pairs", default=[])
+            if isinstance(pairs, str):
+                pairs = [pairs]
+            if not isinstance(pairs, list):
+                pairs = []
+
+            L.append(f"[{rel}/10] {it.get('title', '(untitled)')}")
+            L.append(f"    {pick('buyer')} · {pick('country')} · "
+                     f"{pick('modality', 'work_mode')}")
+            L.append(f"    pairs: {', '.join(str(p) for p in pairs) or 'unclear'}")
+            if pick("travel_covered", "travel_and_accommodation_covered",
+                    default=False):
                 L.append("    ** travel + accommodation covered **")
             dl = it.get("deadline")
             if dl:

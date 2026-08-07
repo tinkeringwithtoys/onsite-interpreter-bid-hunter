@@ -620,17 +620,35 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         return 0 if not failures else 1
 
     # -- persist BEFORE emailing, so a mail failure cannot cause re-alerts ---
-    for item in scored:
-        seen[item["id"]] = today_iso
-    save_json(SEEN_PATH, seen, allow_empty=True)
-    save_json(WATCHLIST_PATH, watchlist, allow_empty=True)
-    save_json(DATA_PATH, {"stats": stats, "items": scored}, allow_empty=True)
+    #
+    # HARD RULE: a run that fetched nothing must never touch state.
+    # save_json(allow_empty=) cannot protect DATA_PATH on its own, because the
+    # payload {"stats": ..., "items": []} is a non-empty dict and therefore
+    # always truthy. The guard has to live here, where we can see that every
+    # source failed. Without this, one network blip erases a good run.
+    total_failure = bool(failures) and not all_items
+    if total_failure:
+        log("!! every source failed - persisting nothing so prior data survives")
+    else:
+        for item in scored:
+            seen[item["id"]] = today_iso
+        save_json(SEEN_PATH, seen, allow_empty=True)
+        save_json(WATCHLIST_PATH, watchlist, allow_empty=True)
+        save_json(DATA_PATH, {"stats": stats, "items": scored}, allow_empty=True)
 
     if scored or deadline_alerts or failures:
         try:
-            subject, text_body, html_body = notify.render_digest(
+            # render_digest returns ONE string, not a tuple. Unpacking it into
+            # three names made Python iterate the string character by character.
+            text_body = notify.render_digest(
                 scored, deadline_alerts, award_leads, stats)
-            notify.send_email(subject, text_body, html_body)
+            subject = (
+                f"[bid-hunter] {len(scored)} new / "
+                f"{len(deadline_alerts)} deadline / lane={tier}"
+            )
+            if failures:
+                subject += f" / {len(failures)} source error(s)"
+            notify.send_email(subject, text_body)
             log("digest sent")
         except Exception as exc:
             log(f"!! digest send failed: {exc}")
