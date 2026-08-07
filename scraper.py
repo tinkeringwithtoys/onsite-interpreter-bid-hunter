@@ -819,8 +819,12 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
             # three names made Python iterate the string character by character.
             text_body = notify.render_digest(
                 digest_items, deadline_alerts, award_leads, stats)
+            # Count what the BODY shows (digest_items), not everything scored.
+            # The subject used len(scored) while the body printed the filtered
+            # count, so one email claimed "30 new" in the subject and "new 0"
+            # in the body of the same message.
             subject = (
-                f"[bid-hunter] {len(scored)} new / "
+                f"[bid-hunter] {len(digest_items)} new / "
                 f"{len(deadline_alerts)} deadline / lane={tier}"
             )
             if failures:
