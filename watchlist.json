@@ -1,0 +1,30 @@
+[
+  {
+    "country": "['PL21A', 'POL', 'EGY']",
+    "deadline": [
+      "2026-09-11+02:00"
+    ],
+    "modality": "unclear",
+    "source": "ted",
+    "title": "Poland – Event services – „Usługa organizacji i przeprowadzenia zagranicznego wyjazdu studyjnego do Egiptu (Kair) dla przedsiębiorców z województwa małopolskiego, działających w obszarze Regionalnej Inteligentnej Specjalizacji „Chemia”",
+    "travel_covered": null,
+    "url": "https://ted.europa.eu/en/notice/-/detail/548176-2026",
+    "warnings": [
+      "unparseable_deadline"
+    ]
+  },
+  {
+    "country": "['PL21A', 'POL', 'EGY']",
+    "deadline": [
+      "2026-09-11+02:00"
+    ],
+    "modality": "unclear",
+    "source": "ted",
+    "title": "Poland – Event services – „Usługa organizacji i przeprowadzenia zagranicznego wyjazdu studyjnego do Egiptu (Kair) dla przedsiębiorców z województwa małopolskiego, działających w obszarze Regionalnej Inteligentnej Specjalizacji „Chemia”",
+    "travel_covered": null,
+    "url": "https://ted.europa.eu/en/notice/-/detail/549180-2026",
+    "warnings": [
+      "unparseable_deadline"
+    ]
+  }
+]

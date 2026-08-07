@@ -1,0 +1,179 @@
+{
+  "items": [
+    {
+      "content_flags": [],
+      "country": "['PL21A', 'POL', 'EGY']",
+      "days_left": null,
+      "deadline": [
+        "2026-09-11+02:00"
+      ],
+      "eligibility": "watch_and_partner",
+      "eligibility_label": "Do NOT write a solo bid. The alert is intelligence, and a pointer to the prime contractor worth approaching. Bidding solo risks rejection at any stage with no remedy.",
+      "id": "26b8ace1af2a280e05c5",
+      "published": "2026-08-07+02:00",
+      "raw": {
+        "publication-number": "548176-2026"
+      },
+      "score": {
+        "billing_unit": "unclear",
+        "estimated_day_rate_eur": 0,
+        "language_pairs": [],
+        "location": "",
+        "net_after_travel_eur": 0,
+        "red_flags": [
+          "No interpreting services mentioned"
+        ],
+        "relevance": 0,
+        "travel_and_accommodation_covered": null,
+        "work_mode": "unclear"
+      },
+      "source": "ted",
+      "summary": "{'pol': ['Agencja Rozwoju Małopolski Zachodniej S.A.']}",
+      "tier": "P2_EU_VOLUME",
+      "title": "Poland – Event services – „Usługa organizacji i przeprowadzenia zagranicznego wyjazdu studyjnego do Egiptu (Kair) dla przedsiębiorców z województwa małopolskiego, działających w obszarze Regionalnej Inteligentnej Specjalizacji „Chemia”",
+      "url": "https://ted.europa.eu/en/notice/-/detail/548176-2026"
+    },
+    {
+      "content_flags": [],
+      "country": "['PL21A', 'POL', 'EGY']",
+      "days_left": null,
+      "deadline": [
+        "2026-09-11+02:00"
+      ],
+      "eligibility": "watch_and_partner",
+      "eligibility_label": "Do NOT write a solo bid. The alert is intelligence, and a pointer to the prime contractor worth approaching. Bidding solo risks rejection at any stage with no remedy.",
+      "id": "41b6b2309368479e9a6b",
+      "published": "2026-08-07+02:00",
+      "raw": {
+        "publication-number": "549180-2026"
+      },
+      "score": {
+        "billing_unit": "unclear",
+        "estimated_day_rate_eur": 0,
+        "language_pairs": [],
+        "location": "Egypt (Cairo)",
+        "net_after_travel_eur": 0,
+        "red_flags": [
+          "No interpreting services mentioned",
+          "Tender is for organizing a study trip, not for interpretation"
+        ],
+        "relevance": 0,
+        "travel_and_accommodation_covered": null,
+        "work_mode": "unclear"
+      },
+      "source": "ted",
+      "summary": "{'pol': ['Centrum Biznesu Małopolski Zachodniej sp. z o.o.']}",
+      "tier": "P2_EU_VOLUME",
+      "title": "Poland – Event services – „Usługa organizacji i przeprowadzenia zagranicznego wyjazdu studyjnego do Egiptu (Kair) dla przedsiębiorców z województwa małopolskiego, działających w obszarze Regionalnej Inteligentnej Specjalizacji „Chemia”",
+      "url": "https://ted.europa.eu/en/notice/-/detail/549180-2026"
+    },
+    {
+      "content_flags": [],
+      "country": "['anyw', 'anyw', 'anyw']",
+      "days_left": null,
+      "deadline": null,
+      "eligibility": "watch_and_partner",
+      "eligibility_label": "Do NOT write a solo bid. The alert is intelligence, and a pointer to the prime contractor worth approaching. Bidding solo risks rejection at any stage with no remedy.",
+      "id": "1229ee93ca131ab74fb0",
+      "published": "2026-08-07+02:00",
+      "raw": {
+        "publication-number": "549814-2026"
+      },
+      "score": {
+        "billing_unit": "unclear",
+        "estimated_day_rate_eur": 0,
+        "language_pairs": [],
+        "location": "Slovenia",
+        "net_after_travel_eur": 0,
+        "red_flags": [
+          "Service is translation/proofreading, not interpreting",
+          "No language pairs specified",
+          "No location or work mode details provided"
+        ],
+        "relevance": 0,
+        "travel_and_accommodation_covered": null,
+        "work_mode": "unclear"
+      },
+      "source": "ted",
+      "summary": "{'slv': ['UNIVERZA V MARIBORU Filozofska fakulteta']}",
+      "tier": "P2_EU_VOLUME",
+      "title": "Slovenia – Translation services – Storitve lektoriranja tujega jezika",
+      "url": "https://ted.europa.eu/en/notice/-/detail/549814-2026"
+    },
+    {
+      "content_flags": [],
+      "country": "['anyw', 'anyw', 'anyw']",
+      "days_left": null,
+      "deadline": null,
+      "eligibility": "commercial_only",
+      "eligibility_label": "Ordinary B2B services contract. Procurement law N/A.",
+      "id": "bfd5b59a8d984245aa77",
+      "published": "2026-08-07+02:00",
+      "raw": {
+        "publication-number": "549814-2026"
+      },
+      "score": {
+        "billing_unit": "unclear",
+        "estimated_day_rate_eur": 0,
+        "language_pairs": [],
+        "location": "Slovenia",
+        "net_after_travel_eur": 0,
+        "red_flags": [
+          "Service is translation/proofreading, not interpreting",
+          "Language pair Slovenian not in provider profile"
+        ],
+        "relevance": 0,
+        "travel_and_accommodation_covered": null,
+        "work_mode": "unclear"
+      },
+      "source": "ted_award_notices",
+      "summary": "{'slv': ['UNIVERZA V MARIBORU Filozofska fakulteta']}",
+      "tier": "P5_AWARD_MINING",
+      "title": "Slovenia – Translation services – Storitve lektoriranja tujega jezika",
+      "url": "https://ted.europa.eu/en/notice/-/detail/549814-2026"
+    }
+  ],
+  "stats": {
+    "failed_sources": [
+      "eu_funding_tenders_portal"
+    ],
+    "failures": [
+      "eu_funding_tenders_portal: HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}"
+    ],
+    "fetched": 21,
+    "lane": "fast",
+    "new": 4,
+    "per_source": {
+      "eu_funding_tenders_portal": {
+        "error": "HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}"
+      },
+      "ted": {
+        "date_filtered": true,
+        "fetched": 13,
+        "query_used": "classification-cpv IN (79540000 79530000) AND publication-date>=today(-3)",
+        "rejected_attempts": [
+          "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
+        ],
+        "sorted_desc": false,
+        "total": 13
+      },
+      "ted_award_notices": {
+        "date_filtered": true,
+        "fetched": 8,
+        "query_used": "classification-cpv IN (79540000 79530000) AND notice-type IN (can-standard) AND publication-date>=today(-7)",
+        "rejected_attempts": [
+          "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
+        ],
+        "sorted_desc": false,
+        "total": 8
+      }
+    },
+    "raw": 21,
+    "run_at": "2026-08-07T20:14:43.227004+00:00",
+    "run_time": "2026-08-07 20:14 UTC",
+    "sources_ok": 2,
+    "sources_polled": 3,
+    "sources_total": 3,
+    "still_open": 21
+  }
+}
