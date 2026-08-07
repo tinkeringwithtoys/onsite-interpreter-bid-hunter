@@ -418,12 +418,25 @@ def fetch_ted(src, cfg, keywords):
         if isinstance(title, list):
             title = title[0] if title else ""
         url = (TED_NOTICE_BASE + pubnum) if pubnum else None
+        # TED returns per-lot arrays for these two fields even on single-lot
+        # notices, e.g. deadline=['2026-09-11+02:00'] and
+        # place-of-performance=['PL21A','POL','EGY']. Rendering the raw list
+        # produced "closes ['2026-09-11+02:00']" and "? · ['PL21A', ...]" in
+        # every digest. Take the earliest deadline and join distinct places.
+        dl_raw = n.get("deadline-receipt-tender-date-lot")
+        if isinstance(dl_raw, list):
+            dl_raw = min((d for d in dl_raw if d), default=None)
+        pop_raw = n.get("place-of-performance")
+        if isinstance(pop_raw, list):
+            pop_raw = ", ".join(dict.fromkeys(str(p) for p in pop_raw if p)) or None
+        elif pop_raw:
+            pop_raw = str(pop_raw)
         items.append(normalise(
             src["key"], src.get("tier"), title, url,
             published=n.get("publication-date"),
-            deadline=n.get("deadline-receipt-tender-date-lot"),
+            deadline=dl_raw,
             summary=str(n.get("buyer-name") or ""),
-            country=str(n.get("place-of-performance") or ""),
+            country=pop_raw,
             raw={"publication-number": pubnum},
         ))
     return items, {
@@ -620,6 +633,24 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         pass
 
     # -- filter -------------------------------------------------------------
+    # TED's own award-notice endpoint (and, on a bad day, a single query)
+    # can hand back the same publication twice in one response. Nothing
+    # downstream deduped within a single run, so identical notices were
+    # scored and emailed twice side by side. `seen` only catches repeats
+    # *across* runs, so this has to collapse duplicates before that check.
+    # Dedupe on URL/publication-number, not on item["id"]: id embeds the
+    # source key, so the same physical notice returned by two different
+    # configured sources (e.g. `ted` and `ted_award_notices` both matching
+    # the same publication) produced two different ids and survived as two
+    # emailed copies of the same tender.
+    deduped, seen_keys = [], set()
+    for i in all_items:
+        dedupe_key = i.get("url") or i["id"]
+        if dedupe_key in seen_keys:
+            continue
+        seen_keys.add(dedupe_key)
+        deduped.append(i)
+    all_items = deduped
     open_items = [i for i in all_items if is_open(i, now)]
     fresh = [i for i in open_items if is_recent(i, lookback_hours, now)]
     new_items = [i for i in fresh if i["id"] not in seen]
@@ -678,7 +709,24 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         _dl = parse_dt(item.get("deadline"))
         item["days_left"] = (_dl.date() - now.date()).days if _dl else None
 
-    award_leads = [i for i in scored if i.get("tier") == "P5_AWARD_MINING"]
+    # A broad CPV-only query (no Arabic/interpretation keyword filter exists
+    # on TED's side) returns plenty of real but irrelevant notices - Polish
+    # event-management trips, Slovenian proofreading. Agnes correctly scores
+    # these 0/10, but nothing stopped a 0/10 item from being emailed as a
+    # "NEW OPPORTUNITY" or a subcontracting lead. Suppress low scores from
+    # the digest while still marking them seen, so they don't repeat either.
+    min_relevance = int(((cfg.get("meta") or {}).get("min_relevance", 3)))
+
+    def _relevant(i):
+        rel = (i.get("score") or {}).get("relevance")
+        return rel is None or rel >= min_relevance
+
+    digest_items = [i for i in scored if _relevant(i)]
+    suppressed = len(scored) - len(digest_items)
+    if suppressed:
+        log(f"suppressed {suppressed} low-relevance item(s) below min_relevance={min_relevance}")
+
+    award_leads = [i for i in digest_items if i.get("tier") == "P5_AWARD_MINING"]
 
     stats = {
         "run_at": now.isoformat(),
@@ -733,7 +781,7 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
             # render_digest returns ONE string, not a tuple. Unpacking it into
             # three names made Python iterate the string character by character.
             text_body = notify.render_digest(
-                scored, deadline_alerts, award_leads, stats)
+                digest_items, deadline_alerts, award_leads, stats)
             subject = (
                 f"[bid-hunter] {len(scored)} new / "
                 f"{len(deadline_alerts)} deadline / lane={tier}"
