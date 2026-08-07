@@ -121,6 +121,13 @@ def render_digest(new_items, deadline_alerts, award_leads, stats):
             f"budget  ·  deferred {stats.get('deferred', 0)} to next run"
             f"  ·  pre-filtered {stats.get('pre_filtered', 0)} site chrome (no LLM cost)"
         )
+    # Scoring failures are NOT clean. They retry next run, but the reader
+    # must know some items were never judged at all.
+    if stats.get("score_failed"):
+        L.append(
+            f"scoring  ·  {stats['score_failed']} item(s) failed to score"
+            f" (not marked seen - they retry next run)"
+        )
     L.append("")
 
     if new_items:
@@ -199,7 +206,12 @@ def render_digest(new_items, deadline_alerts, award_leads, stats):
         L.append("")
 
     if not new_items and not deadline_alerts and not award_leads:
-        L.append("Nothing new. Pipeline ran clean - see the counters above.")
+        # "Pipeline ran clean" is only honest when nothing failed anywhere.
+        # A partial run (source errors or unscored items) must say so.
+        if stats.get("failed_sources") or stats.get("score_failed"):
+            L.append("No new qualifying leads. Run completed with the caveats above.")
+        else:
+            L.append("Nothing new. Pipeline ran clean - see the counters above.")
 
     return "\n".join(L)
 
@@ -306,8 +318,10 @@ def extract_json(content):
 # ---------------------------------------------------------------------------
 def self_test():
     fails = []
+    n_checks = [0]
 
     def check(name, got, want):
+        n_checks[0] += 1
         if got != want:
             fails.append(f"{name}: got {got!r} want {want!r}")
 
@@ -319,9 +333,15 @@ def self_test():
     d = render_digest([], [], [], {"sources_ok": 9, "sources_total": 15,
                                    "failed_sources": ["ungm", "au"]})
     check("failures surfaced", "FAILED: ungm, au" in d, True)
+    # A run with failed sources must NOT call itself clean.
+    check("partial run not called clean", "caveats above" in d, True)
 
     d = render_digest([], [], [], {"deferred": 7, "pre_filtered": 41})
     check("budget line surfaced", "deferred 7 to next run" in d, True)
+
+    d = render_digest([], [], [], {"score_failed": 8})
+    check("score failures surfaced", "8 item(s) failed to score" in d, True)
+    check("score failures break clean claim", "caveats above" in d, True)
 
     d = render_digest(
         [{"title": "AR interpreting", "score": 9, "travel_covered": True,
@@ -341,7 +361,7 @@ def self_test():
         for f in fails:
             print("  x " + f)
         return 1
-    print("SELF-TEST PASSED  (10/10 checks)")
+    print(f"SELF-TEST PASSED  ({n_checks[0]}/{n_checks[0]} checks)")
     return 0
 
 
