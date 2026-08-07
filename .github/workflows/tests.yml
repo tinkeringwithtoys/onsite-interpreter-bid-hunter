@@ -80,3 +80,18 @@ jobs:
       # Workflow <-> config drift: timeouts, crons, concurrency, alarms.
       - name: workflow / config parity
         run: python check_workflows.py
+
+      # A red CI must not stay silent either. Push events on main email you;
+      # PR runs skip this (they have a visible check status instead).
+      - name: Report failure
+        if: failure() && github.event_name == 'push'
+        env:
+          LANE: tests
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scraper.py --notify-failure "tests tier failed"

@@ -378,10 +378,12 @@ scheduling:
         - germany_asylum
         - ungm
         - undp_procurement
+        - un_celp_exams               # was poll:true but named by NO lane - never ran
         - african_union_bids
         - afdb_procurement
         - publications_office_procurement
         - home_state_national_portal    # v4.1 - Tunisian home market, plain HTTP
+        - etimad_sa                   # was poll:true but named by NO lane - never ran
       method: http
       timeout_minutes: 10
       concurrency_group: bid-hunter-standard
@@ -523,7 +525,12 @@ sources:
       Agency for Refugees, Austria's BBU, Slovakia, Luxembourg. These surface in
       TED under CPV 79540000 with buyer type = national agency.
     why_you: "Catch-all so you are not dependent on knowing each agency by name."
-    poll: true
+    # 2026-08-07: DISABLED as configured. This source declares NO expert_query
+    # of its own, so via:ted re-issues ted's byte-identical request -- 730
+    # duplicate API calls a month for zero additional notices. Re-enable only
+    # with a DISTINCT, VERIFIED TED query (e.g. a buyer-type filter) so it
+    # actually sweeps something `ted` does not already fetch.
+    poll: false
 
   # --------------------------------------------------------------------------
   # P1_UN · Arabic is an OFFICIAL UN language. Travel + DSA covered by agreement.
