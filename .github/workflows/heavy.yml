@@ -12,6 +12,10 @@
 # a real session and renders its search client-side. Everything else in this
 # project is reachable by plain HTTP or a JSON API.
 #
+# TUNEPS is currently poll:false in config.yaml ("enable after you confirm you
+# can log in"), so this lane is expected to select ZERO sources and finish in
+# seconds. That is correct, not broken.
+#
 # Budget: ~22 runs/month x 3 billed min = ~66 min.
 #
 # It also carries the KEEPALIVE. GitHub disables scheduled workflows after 60
@@ -40,11 +44,13 @@ jobs:
     timeout-minutes: 15      # browser installs are slow; still far below the 360 default
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install Playwright + Chromium
         run: |
@@ -56,6 +62,7 @@ jobs:
 
       - name: Scrape browser-only sources
         env:
+          LANE: heavy
           TUNEPS_USER: ${{ secrets.TUNEPS_USER }}
           TUNEPS_PASSWORD: ${{ secrets.TUNEPS_PASSWORD }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
@@ -71,7 +78,7 @@ jobs:
       # will have no idea why without seeing what the page actually looked like.
       - name: Upload debug artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: heavy-debug-${{ github.run_id }}
           path: |
@@ -115,6 +122,7 @@ jobs:
       - name: Report failure
         if: failure()
         env:
+          LANE: heavy
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USER: ${{ secrets.SMTP_USER }}

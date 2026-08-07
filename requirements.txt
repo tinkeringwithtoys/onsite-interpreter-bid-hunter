@@ -1,6 +1,9 @@
 # Runtime dependencies for bid-hunter.
 
-PyYAML>=6.0.1        # config.yaml parsing -- scraper.py, validate_sources.py
+# Upper bound is deliberate. A major release of the YAML parser landing
+# unannounced on 843 unattended runs a month is a silent killer, not an
+# upgrade. Raise it on purpose, after the tests workflow goes green.
+PyYAML>=6.0.1,<7        # config.yaml -- scraper.py, validate_sources.py, check_workflows.py
 
 # Playwright is deliberately NOT listed here. It is a large install plus a
 # browser download, and only the heavy lane needs it. Putting it in this file
