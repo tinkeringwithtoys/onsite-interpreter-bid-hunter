@@ -39,6 +39,12 @@ import urllib.request
 import uuid
 from pathlib import Path
 
+# Link hygiene: canonical URLs for dedupe/ids, and cheap rejection of site
+# chrome before it costs an LLM call. A HARD import on purpose: if urlnorm.py
+# ever disappears, CI fails and the lanes crash loudly instead of silently
+# going back to re-scoring tracking-parameter duplicates.
+from urlnorm import canonical_url, looks_like_navigation
+
 ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = ROOT / "config.yaml"
 SEEN_PATH = ROOT / "seen.json"
@@ -298,7 +304,10 @@ def http_post_multipart(url, fields, timeout=30):
 # =============================================================================
 
 def make_id(source, url, title):
-    basis = f"{source}|{url or ''}|{(title or '')[:120]}".lower()
+    # Canonicalise first: ?utm_source=rss and ?utm_source=newsletter are ONE
+    # notice, not two. Before this, tracking parameters made two ids out of
+    # one page, which meant two LLM calls and potentially two emails.
+    basis = f"{source}|{canonical_url(url)}|{(title or '')[:120]}".lower()
     return hashlib.sha256(basis.encode("utf-8")).hexdigest()[:20]
 
 
@@ -342,9 +351,10 @@ def extract_from_html(html, base_url, keywords):
         found.append((urllib.parse.urljoin(base_url, href_m.group(1)), text))
     seen_urls, out = set(), []
     for u, t in found:
-        if u in seen_urls:
+        cu = canonical_url(u)
+        if cu in seen_urls:
             continue
-        seen_urls.add(u)
+        seen_urls.add(cu)
         out.append((u, t))
     return out[:60]
 
@@ -568,10 +578,25 @@ def select_sources(cfg, tier):
     lane = ((cfg.get("scheduling") or {}).get("lanes") or {}).get(tier) or {}
     polls = lane.get("polls")
     if polls:
-        chosen = [sources[k] for k in polls if k in sources]
+        chosen, skipped = [], []
+        for k in polls:
+            src = sources.get(k)
+            if src is None:
+                continue
+            # A lane naming a poll:false source must NOT resurrect it. The
+            # heavy lane lists tuneps, which is parked until its login is
+            # confirmed; honouring the list literally drove Chromium at
+            # tuneps.tn every weekday. This check existed once and was
+            # silently lost to a full-file re-upload -- CI now guards it.
+            if not src.get("poll"):
+                skipped.append(k)
+                continue
+            chosen.append(src)
         missing = [k for k in polls if k not in sources]
         if missing:
             log(f"!! lane {tier} lists unknown sources: {missing}")
+        if skipped:
+            log(f"lane {tier}: skipping poll:false source(s): {skipped}")
         return chosen
     method = lane.get("method")
     return [s for s in sources.values()
@@ -639,14 +664,15 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     # downstream deduped within a single run, so identical notices were
     # scored and emailed twice side by side. `seen` only catches repeats
     # *across* runs, so this has to collapse duplicates before that check.
-    # Dedupe on URL/publication-number, not on item["id"]: id embeds the
-    # source key, so the same physical notice returned by two different
-    # configured sources (e.g. `ted` and `ted_award_notices` both matching
-    # the same publication) produced two different ids and survived as two
-    # emailed copies of the same tender.
+    # Dedupe on the CANONICAL URL/publication-number, not on item["id"]:
+    # id embeds the source key, so the same physical notice returned by two
+    # different configured sources (e.g. `ted` and `ted_award_notices` both
+    # matching the same publication) produced two different ids and survived
+    # as two emailed copies of the same tender. Canonicalising also means
+    # ?utm_source=rss and ?utm_source=newsletter are one page, not two.
     deduped, seen_keys = [], set()
     for i in all_items:
-        dedupe_key = i.get("url") or i["id"]
+        dedupe_key = canonical_url(i.get("url")) or i["id"]
         if dedupe_key in seen_keys:
             continue
         seen_keys.add(dedupe_key)
@@ -656,6 +682,25 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     fresh = [i for i in open_items if is_recent(i, lookback_hours, now)]
     new_items = [i for i in fresh if i["id"] not in seen]
     log(f"raw={len(all_items)} open={len(open_items)} fresh={len(fresh)} new={len(new_items)}")
+
+    # -- pre-filter: never pay an LLM call for site chrome -------------------
+    # The HTML harvester is deliberately dumb, so homepages, cookie notices
+    # and Facebook links arrive in new_items -- and each one used to cost an
+    # LLM call just to be rejected (one standard run spent ~176 scoring calls
+    # almost entirely on these). looks_like_navigation() is conservative: it
+    # only rejects what cannot possibly be a tender notice.
+    # Pre-filtered items are NOT marked seen: there was no LLM cost, so if
+    # the URL ever serves a real notice it will be scored then.
+    pre_filtered = 0
+    kept_items = []
+    for i in new_items:
+        nav_reason = looks_like_navigation(i.get("url") or "", i.get("title") or "")
+        if nav_reason:
+            pre_filtered += 1
+            log(f"  pre-filtered ({nav_reason}): {(i.get('title') or '')[:90]}")
+        else:
+            kept_items.append(i)
+    new_items = kept_items
 
     # -- enrich -------------------------------------------------------------
     # Each item costs one LLM call (agnes_score: timeout=45s, up to 3 retries
@@ -778,6 +823,11 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         "sources_ok": len(sources) - len(failures),
         "fetched": len(all_items),
         "failed_sources": [f.split(":", 1)[0] for f in failures],
+        # Budget visibility. `deferred` used to exist only in the run log --
+        # the one number the digest exists to surface was invisible in it.
+        # Both now travel in stats -> data.json AND the email header.
+        "pre_filtered": pre_filtered,
+        "deferred": deferred,
     }
 
     if dry_run:
@@ -799,8 +849,12 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     #                    and simply finds nothing is a quiet day, not a fault.
     total_failure = bool(failures) and not all_items
     all_failed = bool(failures) and len(failures) >= len(sources)
-    if total_failure:
-        log("!! every source failed - persisting nothing so prior data survives")
+    # A lane that selected ZERO sources (heavy, while tuneps is poll:false)
+    # has not failed -- but it must still not overwrite the last real run's
+    # data.json with an empty snapshot.
+    empty_lane = not sources
+    if total_failure or empty_lane:
+        log("!! nothing fetched - persisting nothing so prior data survives")
     else:
         # Only mark an item seen once it actually got a real score. An item
         # whose scoring failed (relevance is None) must stay unseen so the
@@ -827,6 +881,8 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
                 f"[bid-hunter] {len(digest_items)} new / "
                 f"{len(deadline_alerts)} deadline / lane={tier}"
             )
+            if deferred:
+                subject += f" / {deferred} deferred to next run"
             if failures:
                 subject += f" / {len(failures)} source error(s)"
             notify.send_email(subject, text_body)
@@ -935,6 +991,9 @@ def self_test():
     a = make_id("ted", "http://x/1", "Title")
     ck("id stable", a == make_id("ted", "http://x/1", "Title"))
     ck("id distinct", a != make_id("ted", "http://x/2", "Title"))
+    # Tracking parameters must not change the identity of a notice.
+    ck("id ignores tracking params",
+       a == make_id("ted", "http://x/1?utm_source=rss", "Title"))
 
     old = prune_seen({"a": "2000-01-01", "b": dt.date.today().isoformat()},
                      dt.date.today())
@@ -951,11 +1010,24 @@ def self_test():
     ck("filters non-matching",
        extract_from_html('<a href="/n/2">Office furniture procurement notice</a>',
                          "https://x.eu", ["interpret"]) == [])
+    # The same link twice, once with tracking params, is ONE candidate.
+    dup = extract_from_html(
+        '<a href="/n/1">Services of interpretation Arabic French asylum</a>'
+        '<a href="/n/1?utm_source=rss">Services of interpretation Arabic French asylum</a>',
+        "https://x.eu/list", ["interpret"])
+    ck("harvester dedupes tracking variants", len(dup) == 1)
 
     lane_cfg = {"sources": [{"key": "ted", "method": "json_api", "poll": True, "tier": "P2"},
                             {"key": "x", "method": "http", "poll": True, "tier": "P1"}],
                 "scheduling": {"lanes": {"fast": {"polls": ["ted"]}}}}
     ck("lane picks listed", [s["key"] for s in select_sources(lane_cfg, "fast")] == ["ted"])
+    # A lane must never resurrect a source that is parked with poll:false.
+    # This is the regression guard for the heavy lane driving Chromium at
+    # tuneps.tn while tuneps was explicitly disabled.
+    parked_cfg = {"sources": [{"key": "tuneps", "method": "playwright",
+                               "poll": False, "tier": "P3"}],
+                  "scheduling": {"lanes": {"heavy": {"polls": ["tuneps"]}}}}
+    ck("lane honours poll:false", select_sources(parked_cfg, "heavy") == [])
 
     via_cfg = {"sources": [{"key": "ted", "method": "json_api", "endpoint": "E"}]}
     merged = resolve_via({"key": "sweep", "via": "ted", "tier": "P1"}, via_cfg)

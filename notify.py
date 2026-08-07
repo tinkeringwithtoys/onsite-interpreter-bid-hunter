@@ -113,6 +113,14 @@ def render_digest(new_items, deadline_alerts, award_leads, stats):
     )
     if stats.get("failed_sources"):
         L.append("FAILED: " + ", ".join(stats["failed_sources"]))
+    # Budget visibility: how much scoring work was skipped or deferred. This
+    # used to exist only in the run log, so the one signal that the 10-minute
+    # window is too small never reached the inbox.
+    if stats.get("deferred") or stats.get("pre_filtered"):
+        L.append(
+            f"budget  ·  deferred {stats.get('deferred', 0)} to next run"
+            f"  ·  pre-filtered {stats.get('pre_filtered', 0)} site chrome (no LLM cost)"
+        )
     L.append("")
 
     if new_items:
@@ -312,6 +320,9 @@ def self_test():
                                    "failed_sources": ["ungm", "au"]})
     check("failures surfaced", "FAILED: ungm, au" in d, True)
 
+    d = render_digest([], [], [], {"deferred": 7, "pre_filtered": 41})
+    check("budget line surfaced", "deferred 7 to next run" in d, True)
+
     d = render_digest(
         [{"title": "AR interpreting", "score": 9, "travel_covered": True,
           "language_pairs": ["ar-fr"], "deadline": "2026-09-01", "days_left": 25}],
@@ -330,7 +341,7 @@ def self_test():
         for f in fails:
             print("  x " + f)
         return 1
-    print("SELF-TEST PASSED  (9/9 checks)")
+    print("SELF-TEST PASSED  (10/10 checks)")
     return 0
 
 
