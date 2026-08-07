@@ -738,14 +738,25 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     # the digest while still marking them seen, so they don't repeat either.
     min_relevance = int(((cfg.get("meta") or {}).get("min_relevance", 3)))
 
+    # `relevance is None` means agnes_score() *failed* (exception, e.g. a
+    # 429 burst partway through a long sequential run) -- it is not a signal
+    # that the item is relevant. Treating None as "pass the floor" put raw
+    # scoring failures into the digest as unlabelled "NEW OPPORTUNITIES"
+    # ("[?/10] ... pairs: unclear"), indistinguishable from real leads.
     def _relevant(i):
         rel = (i.get("score") or {}).get("relevance")
-        return rel is None or rel >= min_relevance
+        return rel is not None and rel >= min_relevance
+
+    def _scoring_failed(i):
+        return (i.get("score") or {}).get("relevance") is None
 
     digest_items = [i for i in scored if _relevant(i)]
-    suppressed = len(scored) - len(digest_items)
+    failed_to_score = [i for i in scored if _scoring_failed(i)]
+    suppressed = len(scored) - len(digest_items) - len(failed_to_score)
     if suppressed:
         log(f"suppressed {suppressed} low-relevance item(s) below min_relevance={min_relevance}")
+    if failed_to_score:
+        log(f"{len(failed_to_score)} item(s) failed to score (not shown, not marked seen -- will retry next run)")
 
     award_leads = [i for i in digest_items if i.get("tier") == "P5_AWARD_MINING"]
 
@@ -791,8 +802,13 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     if total_failure:
         log("!! every source failed - persisting nothing so prior data survives")
     else:
+        # Only mark an item seen once it actually got a real score. An item
+        # whose scoring failed (relevance is None) must stay unseen so the
+        # next run tries to score it again instead of losing it forever to
+        # a transient API error.
         for item in scored:
-            seen[item["id"]] = today_iso
+            if not _scoring_failed(item):
+                seen[item["id"]] = today_iso
         save_json(SEEN_PATH, seen, allow_empty=True)
         save_json(WATCHLIST_PATH, watchlist, allow_empty=True)
         save_json(DATA_PATH, {"stats": stats, "items": scored}, allow_empty=True)
