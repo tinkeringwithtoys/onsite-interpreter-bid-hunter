@@ -1,18 +1,50 @@
+# =============================================================================
+# VALIDATOR  ·  is each source reachable FROM A RUNNER?
+# =============================================================================
+# The question this answers cannot be answered from a laptop in Tunis: some
+# portals serve you fine at home and 403 a GitHub datacenter IP. Anything that
+# passes locally and fails here is IP-filtered, and no amount of code fixes it.
+#
+# Two changes from the on-demand-only version:
+#
+#   1. It runs WEEKLY. A source that starts blocking Azure ranges in October
+#      should not wait until somebody remembers this button exists.
+#   2. It COMMITS reports/runner_report.json. An artifact expires and cannot be
+#      diffed; a committed file turns "did UNGM start blocking us?" into a git
+#      diff. Run validate_sources.py on your laptop and compare the verdict
+#      column against this file.
+#
+# Reachability failures do NOT fail this build - that is data, not a fault.
+# CONFIG failures DO fail it, because those mean the pipeline is lying about
+# what it covers.
+# =============================================================================
+
 name: Validate sources from a runner
 
 on:
+  schedule:
+    - cron: '0 3 * * 1'          # Mondays 04:00 Tunis. ~4 runs/month, ~2 min each.
   workflow_dispatch:
+
+permissions:
+  contents: write                # to commit the report
+
+concurrency:
+  group: bid-hunter-validate
+  cancel-in-progress: false
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 10          # NEVER omit this. Default is 360.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5      # NOT actions/actions-setup-python
+      - uses: actions/setup-python@v7      # NOT actions/actions-setup-python
         with:
           python-version: '3.12'           # NOT python-with-version
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
@@ -20,11 +52,52 @@ jobs:
           pip install -r requirements.txt
 
       - name: Probe every source from the runner
-        run: python3 validate_sources.py --json runner_report.json
+        run: |
+          mkdir -p reports
+          python3 validate_sources.py --json reports/runner_report.json
 
       - name: Upload report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: runner-report
-          path: runner_report.json
+          path: reports/runner_report.json
+          if-no-files-found: warn
+
+      # Committed on purpose: an artifact you cannot diff is not evidence.
+      - name: Commit report
+        if: always()
+        run: |
+          set -euo pipefail
+          [ -f reports/runner_report.json ] || exit 0
+          git config user.name  "bid-hunter[bot]"
+          git config user.email "bid-hunter@users.noreply.github.com"
+          git add reports/runner_report.json
+          if git diff --cached --quiet; then
+            echo "Report unchanged - nothing to commit."
+            exit 0
+          fi
+          git commit -m "reachability: runner report $(date -u +%FT%TZ)"
+          for attempt in 1 2 3; do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}"; then
+              break
+            fi
+            echo "rebase attempt ${attempt} failed, retrying"
+            sleep 5
+          done
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      # Only fires on a CONFIG failure or an infrastructure failure, never on a
+      # portal being unreachable - that is the report's job to record.
+      - name: Report failure
+        if: failure()
+        env:
+          LANE: validator
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scraper.py --notify-failure "validator tier failed"

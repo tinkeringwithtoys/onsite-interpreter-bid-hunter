@@ -11,6 +11,11 @@
 #
 # Want to halve it? Change the cron to '0 */2 * * *'. Nothing in public
 # procurement is minute-sensitive, so that costs you nothing real.
+#
+# NOTE: timeout-minutes below is not just a safety net. scraper.py derives its
+# LLM scoring budget from scheduling.lanes.fast.timeout_minutes in config.yaml.
+# If these two numbers ever disagree, the budget is a lie and the job gets
+# killed mid-scoring. check_workflows.py fails the build if they drift.
 # =============================================================================
 
 name: fast (JSON APIs, hourly)
@@ -33,11 +38,13 @@ jobs:
     timeout-minutes: 5      # default is 360. One hang would burn 18% of the month.
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7        # v7 = Node 24. v4 ran on Node 20 and warned.
 
-      - uses: actions/setup-python@v5     # NOT actions/actions-setup-python - that does not exist
+      - uses: actions/setup-python@v7    # NOT actions/actions-setup-python - that does not exist
         with:
-          python-version: '3.12'          # NOT python-with-version - not a valid input
+          python-version: '3.12'         # NOT python-with-version - not a valid input
+          cache: pip                     # ~730 installs/month; caching is free minutes
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
@@ -46,6 +53,7 @@ jobs:
 
       - name: Poll JSON APIs
         env:
+          LANE: fast
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -88,10 +96,12 @@ jobs:
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
       # SILENCE IS AMBIGUOUS. Without this, a crashed lane and a quiet week
-      # look identical in the inbox.
+      # look identical in the inbox. check_workflows.py fails the build if this
+      # step is ever removed from any lane.
       - name: Report failure
         if: failure()
         env:
+          LANE: fast
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USER: ${{ secrets.SMTP_USER }}

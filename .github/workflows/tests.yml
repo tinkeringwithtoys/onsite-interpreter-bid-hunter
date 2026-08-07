@@ -1,0 +1,82 @@
+# =============================================================================
+# CI  ·  offline self-tests
+# =============================================================================
+# This repo already had four self-test suites (scraper, notify, envfile,
+# deadline_watch) and a config integrity checker. Nothing ever ran them
+# automatically. That is how a scraper.py re-upload silently reverted the
+# `poll: false` fix without anyone noticing: green Actions tab, reverted code.
+#
+# Everything here is offline. No secrets, no network, no LLM calls.
+#
+# BUDGET NOTE: the `paths` filter matters. The bot commits seen.json /
+# data.json / watchlist.json up to 843 times a month; if this workflow fired
+# on those it would cost more minutes than all three hunting lanes combined.
+# It only runs when code, config or a workflow actually changes.
+# =============================================================================
+
+name: tests (offline self-tests)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.py'
+      - 'requirements.txt'
+      - 'config.yaml'
+      - '.github/workflows/**'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bid-hunter-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Catches a truncated or mis-transcribed upload before anything else.
+      - name: Syntax check every module
+        run: python -m compileall -q .
+
+      - name: scraper self-test
+        run: python scraper.py --self-test
+
+      - name: notify self-test
+        run: python notify.py --self-test
+
+      - name: envfile self-test
+        run: python envfile.py --self-test
+
+      - name: deadline_watch self-test
+        run: python deadline_watch.py --self-test
+
+      - name: urlnorm self-test
+        run: python urlnorm.py --self-test
+
+      # Static config integrity: no polled source without an endpoint, no tier
+      # without an eligibility rule, EU profile still parked.
+      - name: config integrity
+        run: python validate_sources.py --check-config
+
+      # Workflow <-> config drift: timeouts, crons, concurrency, alarms.
+      - name: workflow / config parity
+        run: python check_workflows.py
