@@ -2,89 +2,48 @@
   "items": [],
   "stats": {
     "deferred": 0,
-    "failed_sources": [],
-    "failures": [],
-    "fetched": 0,
-    "lane": "standard",
+    "failed_sources": [
+      "eu_funding_tenders_portal"
+    ],
+    "failures": [
+      "eu_funding_tenders_portal: HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}"
+    ],
+    "fetched": 13,
+    "lane": "fast",
     "new": 0,
     "per_source": {
-      "afdb_procurement": {
-        "errors": [
-          "https://www.afdb.org/en/projects-and-operations/procurement -> HTTP 403: <!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scal"
+      "eu_funding_tenders_portal": {
+        "error": "HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}"
+      },
+      "ted": {
+        "date_filtered": true,
+        "fetched": 13,
+        "query_used": "classification-cpv IN (79540000 79530000) AND publication-date>=today(-3)",
+        "rejected_attempts": [
+          "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
         ],
-        "fetched": 0,
-        "urls_tried": 1
+        "sorted_desc": false,
+        "total": 13
       },
-      "african_union_bids": {
-        "errors": [],
-        "fetched": 0,
-        "urls_tried": 1
-      },
-      "etimad_sa": {
-        "errors": [],
-        "fetched": 0,
-        "urls_tried": 1
-      },
-      "euaa_procurement": {
-        "errors": [],
-        "fetched": 0,
-        "urls_tried": 1
-      },
-      "frontex_procurement": {
-        "errors": [
-          "https://www.frontex.europa.eu/about-us/open-tenders/ -> HTTP 403: <html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n</body>\r\n</html>\r\n<!-- a padding to disable MSIE and Chrome friendly error page -->\r\n<!-- a padding to disable MSIE and Chrome friendly error page -->\r\n<!-- a padding to disable MSIE and Chrome friend"
+      "ted_award_notices": {
+        "date_filtered": true,
+        "fetched": 6,
+        "query_used": "classification-cpv IN (79540000 79530000) AND notice-type IN (can-standard) AND publication-date>=today(-7)",
+        "rejected_attempts": [
+          "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
         ],
-        "fetched": 0,
-        "urls_tried": 1
-      },
-      "germany_asylum": {
-        "errors": [
-          "https://www.evergabe-online.de/ -> HTTP 400: <!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"de\" xml:lang=\"de\">\n<head>\n    <title>e-Vergabe: Cookies benötigt</title>\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n    <meta name=\"description\" content=\"e-Vergabe: Wartungsarbeiten\">\n    <meta name=\"viewpo"
-        ],
-        "fetched": 0,
-        "urls_tried": 2
-      },
-      "home_state_national_portal": {
-        "errors": [],
-        "fetched": 0,
-        "urls_tried": 1
-      },
-      "ofpra_ofii_france": {
-        "errors": [],
-        "fetched": 0,
-        "urls_tried": 2
-      },
-      "publications_office_procurement": {
-        "errors": [
-          "https://op.europa.eu/en/web/public-procurement/ -> HTTP 403: <!doctype html><html><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><meta name=\"description\" content=\"Azure WAF JS Challenge\"/><title>Azure WAF</title><style>html *{font-family:\"Segoe UI\",SegoeUI,\"Helvetica Neue\",Helvetica,Arial,sans-serif}body{displ"
-        ],
-        "fetched": 0,
-        "urls_tried": 1
-      },
-      "un_celp_exams": {
-        "errors": [],
-        "fetched": 0,
-        "urls_tried": 1
-      },
-      "undp_procurement": {
-        "errors": [],
-        "fetched": 0,
-        "urls_tried": 1
-      },
-      "ungm": {
-        "errors": [],
-        "fetched": 0,
-        "urls_tried": 1
+        "sorted_desc": false,
+        "total": 6
       }
     },
     "pre_filtered": 0,
-    "raw": 0,
-    "run_at": "2026-08-07T23:06:01.648168+00:00",
-    "run_time": "2026-08-07 23:06 UTC",
+    "raw": 13,
+    "run_at": "2026-08-07T23:34:20.998038+00:00",
+    "run_time": "2026-08-07 23:34 UTC",
     "score_failed": 0,
-    "sources_ok": 12,
-    "sources_polled": 12,
-    "sources_total": 12,
-    "still_open": 0
+    "sources_ok": 2,
+    "sources_polled": 3,
+    "sources_total": 3,
+    "still_open": 13
   }
 }
