@@ -327,6 +327,35 @@ def normalise(source_key, tier, title, url, published=None, deadline=None,
     }
 
 
+def flatten_keywords(node):
+    """Recursively flatten config.queries.keywords into a list of terms.
+
+    The config stores keywords NESTED (language -> bucket -> [terms]). The
+    run() below used to pass that dict straight through, so the harvester
+    filtered links on the dict KEYS: 'en', 'fr', 'ar'. Those strings occur in
+    practically every link on every portal -- 'en' alone matches 'en cours',
+    'Open tenders', 'Mentions', thousands of words. That single bug is why
+    one standard run harvested 215 links and paid for 139 Agnes scoring
+    calls on navigation chrome.
+
+    Skips 'note' keys (documentation, not a term) and strings under 4 chars
+    (too generic to filter on). Returns a de-duplicated list.
+    """
+    out = []
+    if isinstance(node, str):
+        if len(node) >= 4:
+            out.append(node)
+    elif isinstance(node, dict):
+        for k, v in node.items():
+            if str(k).lower() in ("note", "notes"):
+                continue
+            out.extend(flatten_keywords(v))
+    elif isinstance(node, (list, tuple, set)):
+        for v in node:
+            out.extend(flatten_keywords(v))
+    return list(dict.fromkeys(out))
+
+
 LINK_RX = re.compile(r'href=["\']([^"\']+)["\']', re.I)
 TITLEISH_RX = re.compile(r">([^<>]{25,220})<", re.S)
 
@@ -357,6 +386,28 @@ def extract_from_html(html, base_url, keywords):
         seen_urls.add(cu)
         out.append((u, t))
     return out[:60]
+
+
+SCRIPT_STYLE_RX = re.compile(r"(?is)<(script|style).*?</\1>")
+TAG_RX = re.compile(r"<[^>]+>")
+
+
+def fetch_notice_text(url, timeout=15):
+    """Fetch a candidate's detail page and reduce it to plain text.
+
+    The harvester only sees ANCHOR TEXT. Agnes was scoring navigation labels
+    instead of notices -- no requirements, no deadline, no modality -- which
+    is why everything came back 0. Returns '' on any failure; callers fall
+    back to the harvested text.
+    """
+    try:
+        _, html = http_get(url, timeout=timeout)
+    except Exception:
+        return ""
+    text = SCRIPT_STYLE_RX.sub(" ", html)
+    text = TAG_RX.sub(" ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text if len(text) > 200 else ""
 
 
 # =============================================================================
@@ -624,8 +675,11 @@ def resolve_via(src, cfg):
 def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     import notify
 
-    keywords = ((cfg.get("queries") or {}).get("keywords")
-                or ["interpret", "interpr", "traduction", "arabic", "arabe", "language"])
+    # config.queries.keywords is NESTED (language -> bucket -> [terms]).
+    # Passing the dict through unflattened made the harvester match on the
+    # language codes 'en'/'fr'/'ar' -- see flatten_keywords().
+    keywords = flatten_keywords((cfg.get("queries") or {}).get("keywords")) or [
+        "interpret", "interpr", "traduction", "arabic", "arabe", "language"]
     sources = select_sources(cfg, tier)
     log(f"lane={tier} sources={[s['key'] for s in sources]}")
 
@@ -726,6 +780,16 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         elig = resolve_eligibility(cfg, item["source"], item["tier"])
         item["eligibility"] = elig["action"]
         item["eligibility_label"] = elig["label"]
+        # Anchor text alone cannot be judged. For harvested http items, fetch
+        # the detail page so Agnes sees requirements, deadline and modality
+        # instead of a navigation label. API sources (HANDLERS keys) already
+        # carry real metadata. Failure falls back to the harvested text.
+        if (not dry_run and item.get("url")
+                and str(item["url"]).startswith("http")
+                and item.get("source") not in HANDLERS):
+            page_text = fetch_notice_text(item["url"])
+            if page_text:
+                item["summary"] = page_text[:5500]
         text, flags = wrap_for_llm(item["title"], item["summary"], item["source"])
         item["content_flags"] = flags
         if dry_run:
@@ -828,6 +892,8 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         # Both now travel in stats -> data.json AND the email header.
         "pre_filtered": pre_filtered,
         "deferred": deferred,
+        # Scoring failures are NOT a clean run. The digest must say so.
+        "score_failed": len(failed_to_score),
     }
 
     if dry_run:
@@ -999,6 +1065,15 @@ def self_test():
                      dt.date.today())
     ck("prunes old", "a" not in old and "b" in old)
 
+    # The config nests keywords (language -> bucket -> [terms]). The
+    # regression this guards: filtering on the dict keys 'en'/'fr'/'ar'.
+    flat = flatten_keywords({"en": {"conf": ["interpretation"]},
+                             "fr": ["interpr\u00e9tariat"],
+                             "note": "documentation, not a term"})
+    ck("flattens nested keywords",
+       sorted(flat) == ["interpretation", "interpr\u00e9tariat"])
+    ck("no keywords -> empty, caller falls back", flatten_keywords(None) == [])
+
     html = '<a href="/n/1">Services of interpretation Arabic French for asylum</a>'
     got = extract_from_html(html, "https://x.eu/list", ["interpret"])
     # A leading slash replaces the whole path -- this is urljoin semantics,
@@ -1016,6 +1091,11 @@ def self_test():
         '<a href="/n/1?utm_source=rss">Services of interpretation Arabic French asylum</a>',
         "https://x.eu/list", ["interpret"])
     ck("harvester dedupes tracking variants", len(dup) == 1)
+    # And a language CODE must never be a harvesting term again.
+    nav = extract_from_html(
+        '<a href="/fr/menu">Menu en fran\u00e7ais - ouvrir le panneau</a>',
+        "https://x.eu/", ["interpretation"])
+    ck("navigation not harvested without a real term", nav == [])
 
     lane_cfg = {"sources": [{"key": "ted", "method": "json_api", "poll": True, "tier": "P2"},
                             {"key": "x", "method": "http", "poll": True, "tier": "P1"}],
