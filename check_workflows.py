@@ -151,11 +151,14 @@ def main():
                 f"{key}: poll:true but no lane lists it, so it never runs under any schedule"
             )
 
-    # 7. The budget claim has to stay true.
+    # 7. The budget claim has to stay true -- but only while the repo is
+    # private. A public repo has unlimited Actions minutes, so the gate is
+    # skipped when budget.repo_public is set (flipped 2026-08-08).
     budget = scheduling.get("budget") or {}
     est = budget.get("estimated_monthly_minutes")
     cap = budget.get("free_tier_private_repo_minutes")
-    if isinstance(est, int) and isinstance(cap, int) and est > cap:
+    repo_public = bool(budget.get("repo_public"))
+    if not repo_public and isinstance(est, int) and isinstance(cap, int) and est > cap:
         problems.append(
             f"budget: estimated {est} min/month exceeds the {cap} min free allowance"
         )
@@ -174,6 +177,8 @@ def main():
     print("       timeouts match config, so the scoring budget is real")
     print("       crons and concurrency groups match config")
     print("       every lane still has its if: failure() alarm")
+    if repo_public:
+        print("       budget gate skipped (repo is public - unlimited minutes)")
     if warnings:
         print(f"       {len(warnings)} warning(s) above are not build failures")
     print()
