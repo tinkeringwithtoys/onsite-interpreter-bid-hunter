@@ -3,168 +3,168 @@
   "sources": {
     "afdb_procurement": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "african_union_bids": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "etimad_sa": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "eu_funding_tenders_portal": {
-      "consecutive_failures": 4,
+      "consecutive_failures": 5,
       "consecutive_successes": 0,
       "first_failure_at": "2026-08-08T07:34:23.397621+00:00",
       "incident_opened_at": "2026-08-08T07:34:23.397621+00:00",
       "last_error": "HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}",
-      "last_failure_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_failure_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "degraded",
-      "suppressed_failures": 2,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "suppressed_failures": 3,
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "euaa_procurement": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "frontex_procurement": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "germany_asylum": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "home_state_national_portal": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "ofpra_ofii_france": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "ted": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "ted_award_notices": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "un_celp_exams": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "undp_procurement": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "ungm": {
-      "consecutive_failures": 4,
+      "consecutive_failures": 5,
       "consecutive_successes": 0,
       "first_failure_at": "2026-08-08T07:34:23.397621+00:00",
       "incident_opened_at": "2026-08-08T07:34:23.397621+00:00",
       "last_error": "UNGM browser-session API HTTP 500: {\"status\":500,\"code\":\"SYSTEM_FAILURE\",\"message\":\"A critical error occurred while processing your request.\"}",
-      "last_failure_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_failure_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "degraded",
-      "suppressed_failures": 2,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "suppressed_failures": 3,
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     },
     "web_discovery": {
       "consecutive_failures": 0,
-      "consecutive_successes": 4,
+      "consecutive_successes": 5,
       "first_failure_at": null,
       "incident_opened_at": null,
       "last_error": null,
-      "last_success_at": "2026-08-08T10:21:34.527646+00:00",
+      "last_success_at": "2026-08-08T12:25:17.414911+00:00",
       "status": "healthy",
       "suppressed_failures": 0,
-      "updated_at": "2026-08-08T10:21:34.527646+00:00"
+      "updated_at": "2026-08-08T12:25:17.414911+00:00"
     }
   }
 }
