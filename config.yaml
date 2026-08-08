@@ -2,7 +2,7 @@
 # bid-hunter config  ·  v4
 # Profile: TUNISIAN entity · Arabic pivot · onsite + remote/RSI
 # Owner: Samhaj Khlifa (Tunis, TN passport, Tunisian company)
-# Updated: 2026-08-07
+# Updated: 2026-08-08
 # ============================================================================
 #
 # WHAT CHANGED IN v4 -- READ THIS, IT REORDERS THE WHOLE STRATEGY
@@ -76,7 +76,7 @@
 
 meta:
   version: 4
-  updated: "2026-08-07"
+  updated: "2026-08-08"
   supersedes: 3
   breaking_change: "legal_entity: eu_company -> tunisian_company"
   timezone: Africa/Tunis          # UTC+1 all year, no DST
@@ -342,16 +342,16 @@ dates:
 # ----------------------------------------------------------------------------
 # Earlier I throttled EVERYTHING to 3x/weekday to protect the minute budget.
 # That was over-cautious: the cost problem is Playwright, not polling. Splitting
-# by cost lets the cheap lane run hourly 24/7 and still finish the month at ~49%
+# by cost lets the cheap lane run hourly 24/7 and still finish the month at ~53%
 # of the free allowance.
 #
 #   lane      | cadence              | runs/mo | billed min/mo
 #   ----------|----------------------|---------|--------------
 #   fast      | hourly, 24/7         |    730  |   730
 #   standard  | 3x daily, every day  |     91  |   182
-#   heavy     | 1x daily, weekdays   |     22  |    66
+#   heavy     | 1x daily, weekdays   |     22  |   154  (4 browser targets)
 #   ----------|----------------------|---------|--------------
-#   TOTAL     |                      |    843  |   978  of 2,000 free
+#   TOTAL     |                      |    843  |  1066  of 2,000 free
 #
 # GitHub rounds every job UP to the nearest minute, so a 20-second run bills 1
 # minute. That rounding is why the fast lane must stay browser-free.
@@ -372,16 +372,12 @@ scheduling:
     standard:
       cron_utc: "0 5,11,16 * * *"     # 06:00 / 12:00 / 17:00 Tunis, every day
       polls:
-        - frontex_procurement
         - euaa_procurement
         - ofpra_ofii_france
         - germany_asylum
-        - ungm
         - undp_procurement
         - un_celp_exams               # was poll:true but named by NO lane - never ran
         - african_union_bids
-        - afdb_procurement
-        - publications_office_procurement
         - home_state_national_portal    # v4.1 - Tunisian home market, plain HTTP
         - etimad_sa                   # was poll:true but named by NO lane - never ran
       method: http
@@ -393,19 +389,23 @@ scheduling:
 
     heavy:
       cron_utc: "0 6 * * 1-5"          # once daily, weekdays
-      polls: [tuneps]
-      method: playwright               # downloads Chromium - 2-3 billed min/run
+      # 2026-08-08: this lane is no longer a parked TUNEPS placeholder. The
+      # 05:24 UTC standard run proved four sources are bot-walled or
+      # session-gated for plain HTTP from a runner (evidence on each source
+      # block). They move here, where a real browser exists.
+      polls: [tuneps, ungm, afdb_procurement, frontex_procurement]
+      method: playwright               # downloads Chromium - ~7 billed min/run
       timeout_minutes: 15
       concurrency_group: bid-hunter-heavy
-      est_billed_minutes_per_run: 3
+      est_billed_minutes_per_run: 7
       carries_keepalive: true
       upload_debug_artifacts_on_failure: true
 
   budget:
     free_tier_private_repo_minutes: 2000
     free_tier_public_repo_minutes: unlimited
-    estimated_monthly_minutes: 978
-    utilisation_pct: 49
+    estimated_monthly_minutes: 1066
+    utilisation_pct: 53
     recommend_private: true            # a public repo would expose your target list
 
   keepalive:
@@ -456,8 +456,10 @@ deadline_watch:
 # Adding a source = adding a block here. Never edit scraper code for a new board.
 #
 # 2026-08-08 REACHABILITY AUDIT: every URL below was fetched without JavaScript
-# to see what the plain-HTTP harvester can actually read. Verdicts are recorded
-# inline. "server-rendered" = real notice links exist in the raw HTML.
+# to see what the plain-HTTP harvester can actually read, then cross-checked
+# against a real runner execution (05:24 UTC standard run, see data.json).
+# Verdicts are recorded inline. "server-rendered" = real notice links exist in
+# the raw HTML. "bot-walled" = the runner got a Cloudflare/WAF/403 challenge.
 # ============================================================================
 sources:
 
@@ -469,7 +471,7 @@ sources:
   # --------------------------------------------------------------------------
   - key: frontex_procurement
     tier: P1_ASYLUM
-    method: http
+    method: playwright              # 2026-08-08: plain HTTP gets a hard 403 from the runner
     url: "https://www.frontex.europa.eu/about-us/open-tenders/"
     also_visible_in: [ted, eu_funding_tenders_portal]
     evidence: |
@@ -478,9 +480,9 @@ sources:
       48 months, split into 7 GEOGRAPHIC lots. A previous Frontex interpreting
       framework (~EUR 25M) was awarded to SIX vendors in cascade.
     why_you: "Border operations = Arabic-heavy. Cascade award = multiple winners."
-    audit_2026_08_08: "UNPROVEN - page would not load for the auditor at all;
-      runner reaches it but harvests nothing. May be JS-rendered or filtered.
-      Frontex above-threshold tenders ALSO appear in TED, which works. Watch."
+    audit_2026_08_08: "BOT-WALLED - runner got 'HTTP 403 Forbidden' (evidence in
+      data.json, 05:24 UTC run). Moved to the heavy lane (browser). Above-threshold
+      Frontex tenders also appear in TED, so coverage was never fully lost."
     poll: true
 
   - key: euaa_procurement
@@ -494,8 +496,8 @@ sources:
       Conferences and Events, INCLUDING REMOTE INTERPRETATION, organised in and
       outside of Malta".
     why_you: "EU asylum agency, Malta-based, buys both onsite and remote."
-    audit_2026_08_08: "UNPROVEN - page would not load for the auditor; runner
-      harvests nav links only. EUAA above-threshold tenders ALSO appear in TED."
+    audit_2026_08_08: "Reachable from the runner (no error), but the page yields
+      nav links only. EUAA above-threshold tenders ALSO appear in TED. Watch."
     poll: true
 
   - key: ofpra_ofii_france
@@ -505,6 +507,8 @@ sources:
       # 2026-08-08: the PLACE homepage carries NO tender links. The AllCons
       # view is the server-rendered listing - verified live: 2,052 open
       # consultations with titles, deadlines and detail URLs in plain HTML.
+      # NOTE: PLACE puts the tender title OUTSIDE the anchor; the harvester's
+      # row-context mode handles that (see extract_from_html).
       - "https://www.marches-publics.gouv.fr/?page=Entreprise.EntrepriseAdvancedSearch&AllCons"
       # BOAMP homepage is nav only; its listing needs the search UI. Kept as a
       # low-cost sentinel (harvests nothing, costs nothing) until a proven
@@ -527,6 +531,8 @@ sources:
     urls:
       # service.bund.de homepage is a search FORM, no listings. evergabe-online
       # is server-rendered with real tender titles - verified live 2026-08-08.
+      # NOTE: evergabe answered the runner with 'HTTP 400: Cookies benötigt' -
+      # if that persists from Actions IPs it moves to the heavy lane.
       - "https://www.service.bund.de/"
       - "https://www.evergabe-online.de/"
     evidence: "BAMF is the largest single asylum-interpreting buyer in the EU by volume."
@@ -554,12 +560,14 @@ sources:
   # --------------------------------------------------------------------------
   - key: ungm
     tier: P1_UN
-    method: http
+    method: http                    # fetch_ungm tries cheap HTTP first, browser last
     url: "https://www.ungm.org/Public/Notice"
     notice_types: [RFQ, RFP, ITB, EOI, RFI, pre-qualification]
     why_you: "AR is 1 of 6 official UN languages; AR booth does retour, as you do."
-    audit_2026_08_08: "JS-rendered list page - plain GET sees only the filter
-      UI. FIXED in code: fetch_ungm() uses the internal search API."
+    audit_2026_08_08: "JS-rendered list page. fetch_ungm() uses the internal
+      search API - but both internal endpoints HTTP 500 on cookie-less POSTs
+      from a runner (evidence: 05:24 UTC run). Runs in the HEAVY lane where
+      strategy 3 (Playwright) handles the session."
     poll: true
 
   - key: undp_procurement
@@ -589,6 +597,7 @@ sources:
       This is the roster route for P-2/P-3 language posts at UNHQ New York and
       UN Offices Geneva / Nairobi / Vienna. Examination is run REMOTELY (online
       interpretation exam + competency interview) - no travel to sit it.
+      Old announcements will surface ONCE (scored 0, marked seen) - expected.
     poll: true
 
   # --------------------------------------------------------------------------
@@ -606,11 +615,13 @@ sources:
 
   - key: afdb_procurement
     tier: P1_AFRICA
-    method: http
+    method: playwright              # 2026-08-08: Cloudflare 403 'Just a moment' from the runner
     url: "https://www.afdb.org/en/projects-and-operations/procurement"
     note: "Individual-consultant EOIs for translation/interpretation; ADEA submissions to adea-applications@afdb.org"
-    audit_2026_08_08: "Server-rendered list confirmed ('Displaying 1-18 of
-      12153' with Title/Country columns in plain HTML). No change needed."
+    audit_2026_08_08: "BOT-WALLED from the runner - Cloudflare challenge
+      ('Just a moment...', evidence in data.json 05:24 UTC). The list itself IS
+      server-rendered ('Displaying 1-18 of 12153' confirmed from a residential
+      client). Moved to the heavy lane where a browser passes the challenge."
     poll: true
 
   # --------------------------------------------------------------------------
@@ -687,10 +698,11 @@ sources:
     method: http
     url: "https://op.europa.eu/en/web/public-procurement/"
     evidence: "Observed listing: 'Provision of Interpretation Services for In-person, Hybrid, and ...'"
-    audit_2026_08_08: "Landing page only; the real listing lives behind a
-      Liferay portlet URL with instance IDs (fragile). NOT worth a scraper:
-      every OP above-threshold tender is already in TED, which works."
-    poll: true
+    audit_2026_08_08: "BOT-WALLED from the runner - 'Azure WAF JS Challenge'
+      (evidence in data.json 05:24 UTC). Not worth a browser slot: every OP
+      above-threshold tender is already in TED. Disabled until TED coverage
+      proves insufficient."
+    poll: false
 
   # --------------------------------------------------------------------------
   # P3_NATIONAL · below-threshold work that never reaches TED
