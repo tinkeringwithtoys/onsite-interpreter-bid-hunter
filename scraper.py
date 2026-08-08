@@ -58,6 +58,7 @@ TED_NOTICE_BASE = "https://" + "ted.europa.eu/en/notice/-/detail/"
 UNGM_NOTICE_BASE = "https://" + "www.ungm.org/Public/Notice/"
 UNGM_SEARCH_API = "https://" + "www.ungm.org/api/UNNotice/search"
 UNGM_SEARCH_HTML = "https://" + "www.ungm.org/Public/Notice/Search"
+DDG_HTML = "https://" + "html.duckduckgo.com/html/"
 GH_BASE = "https://" + "github.com/"
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 SEEN_RETENTION_DAYS = 180
@@ -699,6 +700,59 @@ def fetch_ungm(src, cfg, keywords):
     raise FetchError("ungm: json API, HTML endpoint and browser all failed")
 
 
+# --- OPEN-WEB DISCOVERY --------------------------------------------------------
+# Replicates what a human does in a search box -- "recent interpretation
+# tenders" -- on a schedule, and feeds the results through the SAME dedupe,
+# scoring and digest pipeline as every portal source. DuckDuckGo's HTML
+# endpoint needs no API key and supports recency filters (df=d|w|m). Result
+# links are redirect-wrapped (/l/?uddg=...); unwrap before use. If DDG ever
+# rate-limits a runner the source fails LOUDLY, like any other.
+
+DDG_RESULT_RX = re.compile(r'class="result__a" href="([^"]+)"[^>]*>(.*?)</a>', re.S)
+
+
+def unwrap_ddg(href):
+    """DuckDuckGo wraps result links as /l/?uddg=<urlencoded real url>."""
+    if not href:
+        return None
+    if "uddg=" in href:
+        qs = urllib.parse.parse_qs(urllib.parse.urlsplit(href).query)
+        real = (qs.get("uddg") or [None])[0]
+        if real:
+            return real
+    return href if href.startswith("http") else None
+
+
+def parse_ddg_results(html):
+    out = []
+    for m in DDG_RESULT_RX.finditer(html or ""):
+        url = unwrap_ddg(m.group(1))
+        title = re.sub(r"<[^>]+>", "", m.group(2)).strip()
+        if url and title:
+            out.append((url, title))
+    return out
+
+
+def fetch_search(src, cfg, keywords):
+    """Open-web discovery. The configured queries carry the intent, so no
+    keyword gate here -- Agnes and the relevance floor are the filter."""
+    queries = src.get("queries") or []
+    recency = src.get("recency", "w")
+    items, errors = [], []
+    for q in queries:
+        url = DDG_HTML + "?" + urllib.parse.urlencode({"q": q, "df": recency})
+        try:
+            status, html = http_get(url)
+            for link, title in parse_ddg_results(html)[:25]:
+                items.append(normalise(src["key"], src.get("tier"), title, link,
+                                       summary=title))
+        except FetchError as exc:
+            errors.append(f"{q!r} -> {exc}")
+    if queries and len(errors) == len(queries):
+        raise FetchError("; ".join(errors)[:280])
+    return items, {"queries_run": len(queries), "errors": errors}
+
+
 BOT_WALL_HINTS = ("403", "just a moment", "azure waf", "captcha",
                   "validation request", "cookies ben", "access denied")
 
@@ -764,6 +818,7 @@ HANDLERS = {
     "ted_award_notices": fetch_ted,
     "eu_funding_tenders_portal": fetch_sedia,
     "ungm": fetch_ungm,
+    "web_discovery": fetch_search,
 }
 
 
@@ -1290,6 +1345,17 @@ def self_test():
     ck("ungm date normalised", ungm_items[0]["deadline"].startswith("2026-09-03"))
     ck("ungm iso date kept", ungm_items[1]["deadline"].startswith("2026-09-01"))
     ck("ungm junk tolerated", parse_ungm_json({"unexpected": True}) == [])
+
+    # Open-web discovery: DDG redirect unwrapping and result parsing.
+    ck("ddg unwrap redirect",
+       unwrap_ddg("/l/?uddg=https%3A%2F%2Fx.eu%2Fn%2F1&rut=abc") == "https://x.eu/n/1")
+    ck("ddg passthrough http", unwrap_ddg("https://x.eu/n/1") == "https://x.eu/n/1")
+    ck("ddg rejects relative", unwrap_ddg("/menu") is None)
+    ddg_html = ('<a rel="nofollow" class="result__a" '
+                'href="/l/?uddg=https%3A%2F%2Ftenders.example%2Fnotice%2F1">'
+                'Arabic interpretation services framework tender</a>')
+    pr = parse_ddg_results(ddg_html)
+    ck("ddg result parsed", bool(pr) and pr[0][0] == "https://tenders.example/notice/1")
 
     lane_cfg = {"sources": [{"key": "ted", "method": "json_api", "poll": True, "tier": "P2"},
                             {"key": "x", "method": "http", "poll": True, "tier": "P1"}],
