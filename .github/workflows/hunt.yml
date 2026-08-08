@@ -1,44 +1,41 @@
 # =============================================================================
-# TIER 3 of 3  ·  HEAVY LANE  ·  Playwright / real browser
+# GLOBAL INTERPRETER BID HUNTER · unified two-hour pass
 # =============================================================================
-# Runs HOURLY, 24/7. The repo went PUBLIC on 2026-08-08, so Actions minutes
-# are unlimited and the browser lane no longer needs to ration itself.
+# One workflow. Every source that is explicitly poll:true. Every two hours.
 #
-# Why a browser lane exists at all: some portals cannot be read by plain HTTP
-# from a datacenter runner. Proven 2026-08-08 (see audit notes in config.yaml):
-#   ungm    - internal search endpoints 500 on cookie-less POSTs (ASP.NET)
-#   afdb    - Cloudflare 403 'Just a moment...'
-#   frontex - hard 403 Forbidden
-#   tuneps  - parked until its login/certificate path is confirmed
+# Why keep one job instead of Fast / Standard / Heavy:
+# - The repository is public, so GitHub-hosted Actions minutes are unlimited.
+# - A source should not wait for a different lane just because it needs a
+#   browser. Chromium is installed once, then APIs, static portals, browser
+#   pages, and open-web discovery all flow through one dedupe/scoring/digest.
+# - One state writer prevents the three-lane race where simultaneous jobs can
+#   rebase over seen.json, watchlist.json or data.json.
 #
-# Why not EVERYTHING in a browser, even with unlimited minutes: browsers are
-# the most fragile layer (selectors break, challenges, hangs). Sources proven
-# server-rendered stay on plain HTTP -- cheaper AND more reliable, and cost is
-# no longer the reason either way. Cheapest tool that can read the source.
-#
-# This lane also carries the KEEPALIVE: GitHub disables scheduled workflows
-# after 60 days of repo inactivity, and it is not safe to assume bot commits
-# reset that timer.
+# Scope: every source with poll:true in config.yaml. poll:false sources stay
+# deliberately parked: a schedule cannot replace TUNEPS credentials/certificates
+# or make a duplicate source produce new notices.
 # =============================================================================
 
-name: heavy (browser, hourly)
+name: Hunt — all enabled sources (every 2 hours)
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 */2 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: bid-hunter-heavy
+  group: bid-hunter-all
   cancel-in-progress: false
 
 jobs:
-  browse:
+  hunt:
     runs-on: ubuntu-latest
-    timeout-minutes: 15      # browser installs are slow; still far below the 360 default
+    # The scorer receives up to 53.5 minutes (55 minus the safety margin).
+    # This protects the state commit and failure email from being killed mid-run.
+    timeout-minutes: 55
 
     steps:
       - uses: actions/checkout@v7
@@ -49,7 +46,7 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
-      - name: Install Playwright + Chromium
+      - name: Install Python and browser dependencies
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
@@ -57,9 +54,9 @@ jobs:
           pip install playwright
           python -m playwright install chromium --with-deps
 
-      - name: Scrape browser-only sources
+      - name: Hunt every enabled source
         env:
-          LANE: heavy
+          LANE: all
           TUNEPS_USER: ${{ secrets.TUNEPS_USER }}
           TUNEPS_PASSWORD: ${{ secrets.TUNEPS_PASSWORD }}
           AGNES_API_KEY: ${{ secrets.AGNES_API_KEY }}
@@ -69,41 +66,40 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
-        run: python scraper.py --tier heavy
+        run: python run_hunt.py
 
-      # Screenshots on failure. When a selector breaks six weeks from now you
-      # will have no idea why without seeing what the page actually looked like.
-      - name: Upload debug artifacts
+      - name: Deadline watch
+        run: python deadline_watch.py --watchlist watchlist.json
+
+      - name: Upload browser/debug artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: heavy-debug-${{ github.run_id }}
+          name: hunt-debug-${{ github.run_id }}
           path: |
             debug/*.png
             debug/*.html
+            debug/last_error.txt
           retention-days: 7
           if-no-files-found: ignore
 
-      - name: Keepalive + commit state
+      - name: Commit state
         if: always()
         run: |
           set -euo pipefail
           git config user.name  "bid-hunter[bot]"
           git config user.email "bid-hunter@users.noreply.github.com"
 
-          mkdir -p .keepalive
-          date -u +%FT%TZ > .keepalive/last_run
-
-          for f in seen.json watchlist.json data.json .keepalive/last_run; do
+          for f in seen.json watchlist.json data.json; do
             [ -f "$f" ] && git add "$f"
           done
 
           if git diff --cached --quiet; then
-            echo "Nothing staged."
+            echo "No state change - nothing to commit."
             exit 0
           fi
-          git commit -m "state: heavy poll + keepalive $(date -u +%FT%TZ)"
 
+          git commit -m "state: unified hunt $(date -u +%FT%TZ)"
           for attempt in 1 2 3; do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}"; then
               break
@@ -111,15 +107,12 @@ jobs:
             echo "rebase attempt ${attempt} failed, retrying"
             sleep 5
           done
-
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
-      # SILENCE IS AMBIGUOUS. Without this, a crashed lane and a quiet week
-      # look identical in the inbox.
       - name: Report failure
         if: failure()
         env:
-          LANE: heavy
+          LANE: all
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
@@ -127,4 +120,4 @@ jobs:
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: python scraper.py --notify-failure "heavy tier failed"
+        run: python scraper.py --notify-failure "unified hunt failed"
