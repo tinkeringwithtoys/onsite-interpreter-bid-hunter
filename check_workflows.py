@@ -1,187 +1,111 @@
 #!/usr/bin/env python3
-"""
-check_workflows.py -- static gate against workflow / config drift.
+"""Static guard for the unified two-hour Hunt workflow.
 
-WHY THIS EXISTS
+The repository is public and runs one scheduled workflow instead of separate
+Fast / Standard / Heavy state writers. This script protects the things that
+must never drift:
 
-scraper.py derives its LLM scoring budget from
-    scheduling.lanes.<lane>.timeout_minutes   (config.yaml)
-but the job that actually gets killed is governed by
-    jobs.<job>.timeout-minutes                (.github/workflows/<lane>.yml)
+- actual cron is every two hours
+- job timeout agrees with run_hunt.py's scoring budget
+- one concurrency group owns state writes
+- an if: failure() email alarm remains
+- the workflow runs the all-source wrapper and installs Chromium
 
-Two numbers, two files, nothing tying them together. If the workflow number
-is the smaller one, the "budget" is a lie and the run dies mid-scoring with no
-digest and no error mail -- which is exactly what happened at 10m16s on the
-standard lane.
-
-It also enforces the failure alarms. A lane that loses its `if: failure()`
-step does not go quiet loudly; it goes quiet silently, and in an inbox that is
-indistinguishable from "no new opportunities".
-
-All checks are static. No network, no secrets, runs in under a second.
-
-    python3 check_workflows.py
+No network, secrets or live portals are used here.
 """
 
+import ast
 import sys
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parent
-WORKFLOW_DIR = ROOT / ".github" / "workflows"
-LANE_FILES = {
-    "fast": WORKFLOW_DIR / "fast.yml",
-    "standard": WORKFLOW_DIR / "standard.yml",
-    "heavy": WORKFLOW_DIR / "heavy.yml",
-}
+WORKFLOW = ROOT / ".github" / "workflows" / "hunt.yml"
+WRAPPER = ROOT / "run_hunt.py"
+EXPECTED_CRON = "0 */2 * * *"
+EXPECTED_GROUP = "bid-hunter-all"
 
 
 def load_yaml(path):
     with open(path, encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+        return yaml.safe_load(fh) or {}
 
 
-def triggers(wf):
-    """PyYAML parses the bare key `on` as the boolean True (YAML 1.1)."""
-    if "on" in wf:
-        return wf["on"] or {}
-    return wf.get(True) or {}
+def triggers(workflow):
+    # PyYAML 1.1 parses bare `on` as True.
+    return workflow.get("on") or workflow.get(True) or {}
 
 
-def crons(wf):
-    schedule = triggers(wf).get("schedule") or []
-    return [s.get("cron") for s in schedule if isinstance(s, dict)]
+def wrapper_timeout():
+    tree = ast.parse(WRAPPER.read_text(encoding="utf-8"))
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "HUNT_TIMEOUT_MINUTES":
+                    if isinstance(node.value, ast.Constant) and isinstance(node.value.value, int):
+                        return node.value.value
+    return None
 
 
 def main():
-    problems, warnings = [], []
+    problems = []
+    if not WORKFLOW.exists():
+        problems.append("hunt.yml is missing")
+    if not WRAPPER.exists():
+        problems.append("run_hunt.py is missing")
+    if problems:
+        for p in problems:
+            print(f"x {p}")
+        return 1
+
+    workflow = load_yaml(WORKFLOW)
+    schedule = triggers(workflow).get("schedule") or []
+    crons = [row.get("cron") for row in schedule if isinstance(row, dict)]
+    if crons != [EXPECTED_CRON]:
+        problems.append(f"cron drift: expected {EXPECTED_CRON!r}, got {crons!r}")
+
+    group = (workflow.get("concurrency") or {}).get("group")
+    if group != EXPECTED_GROUP:
+        problems.append(f"concurrency drift: expected {EXPECTED_GROUP!r}, got {group!r}")
+
+    jobs = workflow.get("jobs") or {}
+    job = jobs.get("hunt") or {}
+    timeout = job.get("timeout-minutes")
+    wrapper = wrapper_timeout()
+    if wrapper is None:
+        problems.append("could not read HUNT_TIMEOUT_MINUTES from run_hunt.py")
+    elif timeout != wrapper:
+        problems.append(f"timeout drift: workflow {timeout!r} vs wrapper {wrapper!r}")
+
+    steps = job.get("steps") or []
+    runs = "\n".join(str(step.get("run", "")) for step in steps)
+    if "python run_hunt.py" not in runs:
+        problems.append("Hunt workflow does not run run_hunt.py")
+    if "playwright install chromium" not in runs:
+        problems.append("Hunt workflow does not install Chromium")
+    alarms = [step for step in steps
+              if str(step.get("if", "")).strip() == "failure()"
+              and "--notify-failure" in str(step.get("run", ""))]
+    if not alarms:
+        problems.append("Hunt workflow has no if: failure() notification alarm")
 
     cfg = load_yaml(ROOT / "config.yaml")
-    scheduling = cfg.get("scheduling") or {}
-    lanes = scheduling.get("lanes") or {}
-    sources = cfg.get("sources") or []
-    source_by_key = {s.get("key"): s for s in sources if s.get("key")}
-
-    for lane, path in LANE_FILES.items():
-        if not path.exists():
-            problems.append(f"{lane}: {path.name} is missing")
-            continue
-
-        wf = load_yaml(path)
-        lane_cfg = lanes.get(lane) or {}
-        if not lane_cfg:
-            problems.append(f"{lane}: no scheduling.lanes.{lane} block in config.yaml")
-            continue
-
-        jobs = wf.get("jobs") or {}
-        if not jobs:
-            problems.append(f"{lane}: {path.name} defines no jobs")
-            continue
-        job = next(iter(jobs.values()))
-
-        # 1. TIMEOUT PARITY. The one that killed the standard lane.
-        wf_timeout = job.get("timeout-minutes")
-        cfg_timeout = lane_cfg.get("timeout_minutes")
-        if wf_timeout is None:
-            problems.append(
-                f"{lane}: job has no timeout-minutes. The default is 360, so a "
-                f"single hang burns 18% of the monthly allowance."
-            )
-        elif cfg_timeout is None:
-            problems.append(
-                f"{lane}: config has no scheduling.lanes.{lane}.timeout_minutes, "
-                f"so scraper.py silently budgets scoring for 10 minutes."
-            )
-        elif int(wf_timeout) != int(cfg_timeout):
-            problems.append(
-                f"{lane}: TIMEOUT DRIFT - the workflow kills the job at "
-                f"{wf_timeout} min but scraper.py budgets scoring against "
-                f"config's {cfg_timeout} min. Make them equal."
-            )
-
-        # 2. The alarm must exist, in every lane, always.
-        steps = job.get("steps") or []
-        alarms = [
-            s for s in steps
-            if str(s.get("if", "")).strip() == "failure()"
-            and "--notify-failure" in str(s.get("run", ""))
-        ]
-        if not alarms:
-            problems.append(
-                f"{lane}: no `if: failure()` step running --notify-failure. "
-                f"A broken lane would look exactly like a quiet week."
-            )
-
-        # 3. Cron parity, so the documented cadence is the real cadence.
-        cfg_cron = lane_cfg.get("cron_utc")
-        wf_crons = crons(wf)
-        if cfg_cron and cfg_cron not in wf_crons:
-            problems.append(
-                f"{lane}: cron drift - config says {cfg_cron!r}, workflow says "
-                f"{wf_crons!r}"
-            )
-
-        # 4. Concurrency, so two runs never write state at once.
-        cfg_group = lane_cfg.get("concurrency_group")
-        wf_group = (wf.get("concurrency") or {}).get("group")
-        if not wf_group:
-            problems.append(f"{lane}: no concurrency group - overlapping runs can clobber state")
-        elif cfg_group and wf_group != cfg_group:
-            problems.append(
-                f"{lane}: concurrency group drift - config {cfg_group!r} vs workflow {wf_group!r}"
-            )
-
-        # 5. A lane cannot poll a source that does not exist.
-        for key in lane_cfg.get("polls") or []:
-            src = source_by_key.get(key)
-            if src is None:
-                problems.append(f"{lane}: polls '{key}', which is not a source in config.yaml")
-            elif not src.get("poll"):
-                warnings.append(
-                    f"{lane}: names '{key}' but that source is poll:false, so it is "
-                    f"skipped at runtime. Remove it from the lane or enable it."
-                )
-
-    # 6. Sources that think they are on but no lane ever runs them.
-    laned = {k for lane_cfg in lanes.values() for k in (lane_cfg.get("polls") or [])}
-    for key, src in source_by_key.items():
-        if src.get("poll") and key not in laned:
-            warnings.append(
-                f"{key}: poll:true but no lane lists it, so it never runs under any schedule"
-            )
-
-    # 7. The budget claim has to stay true -- but only while the repo is
-    # private. A public repo has unlimited Actions minutes, so the gate is
-    # skipped when budget.repo_public is set (flipped 2026-08-08).
-    budget = scheduling.get("budget") or {}
-    est = budget.get("estimated_monthly_minutes")
-    cap = budget.get("free_tier_private_repo_minutes")
-    repo_public = bool(budget.get("repo_public"))
-    if not repo_public and isinstance(est, int) and isinstance(cap, int) and est > cap:
-        problems.append(
-            f"budget: estimated {est} min/month exceeds the {cap} min free allowance"
-        )
+    active = [source.get("key") for source in cfg.get("sources", []) if source.get("poll")]
+    if not active:
+        problems.append("config.yaml has no poll:true sources for the unified hunt")
 
     print("=" * 74)
-    print("WORKFLOW / CONFIG PARITY  (static, no network)")
+    print("UNIFIED HUNT PARITY  (static, no network)")
     print("=" * 74)
-    for w in warnings:
-        print(f"  ! {w}")
     if problems:
         for p in problems:
             print(f"  x {p}")
-        print(f"\nFAILED: {len(problems)} problem(s)\n")
+        print(f"\nFAILED: {len(problems)} problem(s)")
         return 1
-    print(f"  OK -- {len(LANE_FILES)} lanes checked")
-    print("       timeouts match config, so the scoring budget is real")
-    print("       crons and concurrency groups match config")
-    print("       every lane still has its if: failure() alarm")
-    if repo_public:
-        print("       budget gate skipped (repo is public - unlimited minutes)")
-    if warnings:
-        print(f"       {len(warnings)} warning(s) above are not build failures")
-    print()
+    print("  OK -- one every-two-hour state writer")
+    print(f"       all {len(active)} enabled sources selected at runtime")
+    print("       browser installed, timeout real, failure alarm present")
     return 0
 
 
