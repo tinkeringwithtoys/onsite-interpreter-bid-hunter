@@ -10,7 +10,7 @@
       "ungm: UNGM browser-session API HTTP 500: {\"status\":500,\"code\":\"SYSTEM_FAILURE\",\"message\":\"A critical error occurred while processing your request.\"}",
       "eu_funding_tenders_portal: HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}"
     ],
-    "fetched": 115,
+    "fetched": 15,
     "lane": "all",
     "new": 0,
     "per_source": {
@@ -66,16 +66,14 @@
         "total": 13
       },
       "ted_award_notices": {
-        "date_filtered": false,
-        "fetched": 100,
-        "query_used": "classification-cpv IN (79540000 79530000) AND notice-type IN (can-standard)",
+        "date_filtered": true,
+        "fetched": 6,
+        "query_used": "classification-cpv IN (79540000 79530000) AND notice-type IN (can-standard) AND publication-date>=today(-7)",
         "rejected_attempts": [
-          "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc",
-          "dated: HTTP 429: <html>\r\n<head><title>429 Too Many Requests</title></head>\r\n<body>\r\n<center><h1>429 Too Many Requests</h1></cen",
-          "plain+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
+          "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
         ],
         "sorted_desc": false,
-        "total": 3953
+        "total": 6
       },
       "un_celp_exams": {
         "detail_fetched": 2,
@@ -97,20 +95,20 @@
         "errors": [],
         "fetched": 0,
         "filtered_generic_listing": 5,
-        "filtered_navigation": 2,
-        "filtered_no_signal": 9,
+        "filtered_navigation": 3,
+        "filtered_no_signal": 8,
         "official_ungm_indexed_notices": 0,
         "queries_run": 7
       }
     },
     "pre_filtered": 0,
-    "raw": 115,
-    "run_at": "2026-08-08T08:06:30.244372+00:00",
-    "run_time": "2026-08-08 08:06 UTC",
+    "raw": 15,
+    "run_at": "2026-08-08T08:27:12.513313+00:00",
+    "run_time": "2026-08-08 08:27 UTC",
     "score_failed": 0,
     "sources_ok": 13,
     "sources_polled": 15,
     "sources_total": 15,
-    "still_open": 115
+    "still_open": 15
   }
 }
