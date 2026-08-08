@@ -26,6 +26,7 @@ import yaml
 
 import scraper
 import source_health
+import unified_sources
 
 ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = ROOT / "config.yaml"
@@ -94,26 +95,49 @@ def outcomes_from_total_failure(active_sources):
 
 
 def capture_delivery(cfg, args):
-    """Let scraper render its digest, then send only useful state changes.
+    """Render one digest while enforcing source quality and Agnes quota safety.
 
-    scraper.py owns harvesting, scoring, and plain-text rendering. This wrapper
-    temporarily captures its requested mail so a raw recurring source error
-    cannot bypass the durable incident state machine below.
+    The wrapper installs source adapters that fetch real web detail pages and
+    reject navigation noise before it reaches the scorer. It also stops sending
+    new Agnes requests after the provider reports a 429, leaving those items
+    unseen for a later Hunt instead of wasting retries on a known-exhausted
+    free-tier quota.
     """
     import notify
 
     requested = []
     real_send = notify.send_email
+    real_score = notify.agnes_score
+    installed_handlers = unified_sources.install(scraper)
+    quota_exhausted = False
 
     def capture(subject, text_body, html_body=None):
         requested.append({"subject": subject, "text": text_body, "html": html_body})
         return 0
 
+    def quota_aware_score(notice_text, *score_args, **score_kwargs):
+        nonlocal quota_exhausted
+        if quota_exhausted:
+            return {
+                "relevance": None,
+                "scorer_error": "Agnes quota exhausted earlier in this Hunt; deferred without another API request",
+                "red_flags": ["scoring deferred - Agnes quota exhausted"],
+            }
+        result = real_score(notice_text, *score_args, **score_kwargs)
+        detail = str((result or {}).get("scorer_error") or "")
+        if "HTTP 429" in detail or "rate limit" in detail.lower():
+            quota_exhausted = True
+            scraper.log("Agnes quota reached; remaining candidates are deferred without more scorer calls")
+        return result
+
     notify.send_email = capture
+    notify.agnes_score = quota_aware_score
     try:
         result = scraper.run("all", cfg, dry_run=args.dry_run,
                              lookback_hours=args.lookback_hours)
     finally:
+        unified_sources.restore(scraper, installed_handlers)
+        notify.agnes_score = real_score
         notify.send_email = real_send
     return result, requested, real_send
 
@@ -219,7 +243,7 @@ def main():
     args = ap.parse_args()
 
     if args.self_test:
-        return source_health.self_test()
+        return 1 if source_health.self_test() or unified_sources.self_test() else 0
 
     try:
         import envfile

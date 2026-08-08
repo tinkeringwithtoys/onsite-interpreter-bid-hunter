@@ -54,6 +54,9 @@ jobs:
       - name: source health self-test
         run: python source_health.py --self-test
 
+      - name: unified source quality self-test
+        run: python unified_sources.py --self-test
+
       - name: notify self-test
         run: python notify.py --self-test
 
