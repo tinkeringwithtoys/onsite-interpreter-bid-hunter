@@ -1,5 +1,68 @@
 {
-  "items": [],
+  "items": [
+    {
+      "content_flags": [],
+      "country": null,
+      "days_left": null,
+      "deadline": null,
+      "eligibility": "review_manually",
+      "eligibility_label": "Open-web discovery hit. The buyer, the source site and your eligibility are all unverified -- read the notice yourself before investing time.",
+      "id": "7fc9be9c937b39763b1d",
+      "published": null,
+      "raw": {
+        "detail_fetched": true
+      },
+      "score": {
+        "billing_unit": "unclear",
+        "estimated_day_rate_eur": 0,
+        "language_pairs": [],
+        "location": "",
+        "net_after_travel_eur": 0,
+        "red_flags": [
+          "Not a procurement notice — this is a vendor's own marketing website (Kings of Translation, US-based), not a public tender or call for bids."
+        ],
+        "relevance": 0,
+        "travel_and_accommodation_covered": null,
+        "work_mode": "unclear"
+      },
+      "source": "web_discovery",
+      "summary": "Services Certified Translation Localization Interpreting Transcription Translation Services Content Services Solutions By Language By Industry By Document Technology KoT Cloud (TMS) KoT Editor (CAT) Integration (API) KoT Rapid Company About Us Career Customers Case Studies Quality Articles Reviews Pricing Contact EN English (US) English (UK) Español Access KoT Cloud Client portal KoT Rapid Interpreter portal Get Started Services Certified Translation Localization Interpreting Transcription View all services → Solutions By Language By Industry By Document View all industries → Technology KoT Cloud (TMS) KoT Editor (CAT) Integration (API) KoT Rapid View all technology → Company About Us Career Case Studies Reviews Articles Pricing Contact Get Started On-demand interpreting services phone and video Connect with certified interpreters in 120+ languages—within minutes. Kings of Translation offers on-site or remote interpreting with same-day availability, flexible scheduling, and strict confidentiality. Our medical and legal specialists ensure clear, culturally sensitive communication for appointments, depositions, interviews, and meetings—anywhere in the world. Request a Quote Request Quote 4.9 out of 5 Certified interpreters Medical and legal On-site or remote Same-day availability Trusted by leading global organizations “ Their medical interpreters enabled seamless patient communication, ensuring accurate diagnoses and treatment plans across language barriers. ” Dr. Rachel Kim “ Professional on-site interpreters facilitated our international negotiations, capturing cultural nuances that made all the difference in closing deals. ” Marcus Johnson “ Their consecutive interpreting services ensured our legal proceedings met compliance standards while maintaining confidentiality and precision. ” Jennifer Thompson Need an interpreter right now? Our on-demand team connects you with a qualified professional by phone or secure video for urgent medical consults, legal matters, customer support, and business meetings. Choose consecutive or simultaneous delivery, remote or on-site, and get seamless support tailored to your agenda. Explore all options—including conference, medical, legal, and business sessions—on our parent page: interpreting services . We scale from a single call to multi-day events, ensuring accuracy, cultural sensitivity, and confidentiality across time zones. On-Site On-Demand In-person consecutive or simultaneous interpreting for meetings, depositions, and appointments in major metro areas. $80 per hour (2-hr min) Request a Quote Consecutive/simultaneous Event coordination Equipment on request Nationwide coverage Flexible, transparent pricing Choose remote or on-site on-demand interpreting with clear minimums and no surprises. After-hours and rare-language surcharges may apply; we’ll confirm before you book. Remote On-Demand Fast connection by phone or secure video in 120+ languages. Connects in ~5 seconds. Ideal for medical, legal, support, and business calls. $1.29 per minute (5 min minimum) Request a Quote Phone or video CCHI/NBCMI medical Legal-capable interpreters Connects in ~5 seconds Languages we specialize in for interpreting Work with interpreters fluent in 120+ languages and regional dialects, from Spanish, Mandarin, and Arabic to Vietnamese, Russian, French, Korean, Portuguese, and more. Our professionals pair native-level fluency with specialized training in medical, legal, and business contexts. We assign interpreters based on domain expertise and cultural competency—ensuring clear, respectful communication for every participant. Popular languages Show all Spain Spanish France French Russia Russian Arabic region Arabic Japan Japanese Portugal Portuguese Germany German ★ China Chinese Italy Italian Korea Korean When to choose on-demand interpreting On-demand interpreting is ideal when communication can’t wait. If a patient needs urgent triage, a doctor requires a specialist consult, or a telehealth session begins in minutes, our medical interpreters (including CCHI/NBCMI-certified professionals) can join by phone or video quickly—helping clinicians ensure informed consent, accurate symptom descriptions, and HIPAA-compliant privacy. Legal teams rely on fast access for client intake, depositions, mediations, and notary sessions. When coordinating with U.S. immigration officers or during USCIS-related interviews that allow personal interpreters, you can schedule a neutral, qualified interpreter to ensure impartiality and clarity. For cross-border matters, we also support international counsel and multilingual stakeholders with dependable, conflict-free interpreting. In business scenarios, on-demand interpreting streamlines sales calls, supplier negotiations, tech support, user research, and investor updates. Whether you need consecutive interpreting for structured Q&amp;A or simultaneous interpreting for real-time flow during high-stakes meetings, we provide the right modality and subject-matter expertise to keep discussions precise and efficient. For public sector and community services, our interpreters support schools, social services, and emergency coordination—bridging languages with cultural sensitivity. When teams move between countries, we handle varying dialects and terminology, ensuring participants feel heard and respected. Remote sessions run smoothly on Zoom, Teams, or Webex; on-site support is available in major metros with rapid scheduling. Certified expertise and pro",
+      "tier": "P0_DISCOVERY",
+      "title": "Phone Interpreter Service 24/7 - On-Demand Interpreting Service",
+      "url": "https://duckduckgo.com/y.js?ad_domain=kingsoftranslation.com&ad_provider=bingv7aa&ad_type=txad&click_metadata=PrvyhfnPtVkuQz2l%2DLMSE5uOVUn5vr1Ge3WImkTb_T1T3ECervN1KQkgZwzHr481UeiUbE_2P3J4G2ivjY8X5HFFaMSj9sM7hmTqTGZRG2WS%2Dlqhgs%2DKH2Ij1EAl5_%2DVcyUeqOgKuTCaZv_pvqTslkURyZLEMGlURA9beeqC1zk.iGxEq0NqmKOesd%2Ds1k%2DezA&rut=51ca10495f5917b0be77aba7e0ba998a4415b66f7efedf9e82e0049603ad7929&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8Mj3aLPaHQghgcBHntF0_kjVUCUzrA7kPJajhFau9XDMm79gJQAMQX1hcByOKUdSue6eVunoYK_qYRrIW40vJmRcX2cG6H5TIvpcGJAjMX%2DPEiNdsbYuUtQusaTtOgC63PR8moUNPZsO5_IUJxDuvnhbwCjtzezMLkYLSujTJtjSH9%2DNHWEQoYUjR1bZ0m%2DOBX3%2De8nbYTAW4Pa61hA4XCbSpWz8%26u%3DaHR0cHMlM2ElMmYlMmZ3d3cua2luZ3NvZnRyYW5zbGF0aW9uLmNvbSUyZm9uLWRlbWFuZC1pbnRlcnByZXRpbmctc2VydmljZXMlMmYlM2Ztc2Nsa2lkJTNkODFmYWY0M2M5MzllMTFjODM3Mzg5ZTRiOTE3NTE5Y2I%26rlid%3D81faf43c939e11c837389e4b917519cb&vqd=4-12625287976072903644036947598824646041&iurl=%7B1%7DIG%3DDBF4E71A681F47CE91FB5ECB1DC2B781%26CID%3D29C069290718629A2C5C7E8606DC6359%26ID%3DDevEx%2C5037.1"
+    },
+    {
+      "content_flags": [],
+      "country": null,
+      "days_left": null,
+      "deadline": null,
+      "eligibility": "review_manually",
+      "eligibility_label": "Open-web discovery hit. The buyer, the source site and your eligibility are all unverified -- read the notice yourself before investing time.",
+      "id": "e46e9360577568210741",
+      "published": null,
+      "raw": {
+        "detail_fetched": true
+      },
+      "score": {
+        "billing_unit": "unclear",
+        "estimated_day_rate_eur": 0,
+        "language_pairs": [],
+        "location": "",
+        "net_after_travel_eur": 0,
+        "red_flags": [
+          "Not a procurement notice — this is a job vacancy aggregation page from UNvacancies.org listing employment positions, not a call for interpreting services"
+        ],
+        "relevance": 0,
+        "travel_and_accommodation_covered": null,
+        "work_mode": "unclear"
+      },
+      "source": "web_discovery",
+      "summary": "UN Translator &amp; Interpreter Jobs 2026 - Vacancies — 15 Jobs | UNvacancies Skip to main content unvacancies .org unvacancies .org Home Explore jobs Organizations Career tools Home › Explore Jobs › Translation &amp; Interpretation UN Translator &amp; Interpreter Jobs 2026 - Vacancies UN language careers include translators, précis-writers, interpreters, editors, verbatim reporters, copy preparers and proofreaders. Secretariat language services recruit for the six official languages, while specialized agencies and other UN organizations also advertise language vacancies. Latest checked Aug 8, 2026 15 current openings Official-source links on job pages Explore Translation &amp; Interpretation jobs Browse deadlines Live vacancies Latest openings 12 of 15 shown United Nations Secretariat Interpreter NO-C Fixed-term Amman, Jordan Deadline Aug 9, 2026 UNV Interpreter/Translator UN Volunteer Democratic Republic of the Congo Deadline Aug 9, 2026 UNV Russian Interpreter UN Volunteer Turkey Deadline Aug 8, 2026 WIPO Head, Spanish Translation Section P-5 Fixed-term Geneva, Switzerland Deadline Aug 21, 2026 FAO Chinese language workflow coordinator Consultant Rome, Italy Deadline Sep 24, 2026 UNESCO INTERNSHIP: Office of the Director-General Internship Paris, France Deadline Dec 31, 2026 IMO Editorial Assistant Temporary London, United Kingdom Deadline Dec 31, 2026 ITU Roster - Conference Interpreter (I-1/I-2 level) Roster / Talent Pool Geneva, Switzerland Deadline Dec 31, 2026 ITU Technical Remote Participation Moderator Roster Roster / Talent Pool Geneva, Switzerland Deadline Dec 31, 2026 United Nations Secretariat Part-Time Language Teachers (Chinese) - Candidate Pool Consultant New York, United States Deadline May 21, 2027 United Nations Secretariat Part-Time Language Teachers (Spanish) - Candidate Pool Consultant New York, United States Deadline May 21, 2027 United Nations Secretariat Part-Time Language Teachers (English) - Candidate Pool Consultant New York, United States Deadline May 21, 2027 View all 15 openings About this job market Secretariat staff language careers are mainly filled through competitive examinations, but temporary, contractual, internship and agency opportunities can use different routes. Check the official notice for the language combination, recruitment path, location and deadline. Market Snapshot How many Translation &amp; Interpretation jobs are open right now? There are currently 15 open Translation &amp; Interpretation positions across 8 organizations . Open roles 15 New this week 0 Closing this week 0 Which organizations hire the most for Translation &amp; Interpretation ? Top hiring organizations: • United Nations Secretariat ( 6 ) • UNV ( 2 ) • ITU ( 2 ) • WIPO ( 1 ) • FAO ( 1 ) What grade levels are most common for Translation &amp; Interpretation ? Most common grades: NO-C ( 1 ) P-5 ( 1 ) Based on UNvacancies data. Refreshes automatically. Search strategy How to search UN translator and interpreter jobs Search translator, précis-writer, interpreter, editor, verbatim reporter, proofreader and language-assistant titles. Secretariat staff language careers and temporary, contractual or agency vacancies do not all use the same recruitment route. UN Secretariat staff language posts are mainly recruited through competitive language examinations held for specific language combinations. Temporary, contractual, internship and agency language opportunities may be advertised through different vacancy routes. Check the official notice for main and working languages, examination or application window, location and contract type. Current Translation &amp; Interpretation jobs Remote UN jobs guide UN jobs by organization UN jobs by country All UN jobs Official pathways Official pathways for UN translator and interpreter jobs UN Secretariat staff language careers are mainly filled through competitive language examinations, while temporary, contractual, internship and agency opportunities can follow different routes. Check the vacancy or examination notice for the required language combination and application process. Search these role families Translator and précis-writer Interpreter Editor Verbatim reporter Copy preparer and proofreader Temporary and contractual language work Application checklist - Verify the required main language, working languages, specialization and location in the official notice. - Distinguish a staff competitive examination from a temporary, contractual, internship or agency vacancy. - Follow the stated examination or vacancy window; language recruitment is not continuously open for every combination. - Complete the exact UN Careers, Inspira or agency application requested by the notice. Official resources and related searches DGACM language careers → UN competitive language examinations → Translator and editor examinations → UN Careers job search → DGACM internships → UN jobs in New York UN jobs in Geneva UN jobs in Vienna UN jobs in Nairobi Get Translation &amp; Interpretation jobs in your inbox Enter your email and we&#x27;ll send new roles matching Translation &amp; Interpretation as they&#x27;re posted. No account needed. Create alert Prefer a full account? Sign up to save jobs and manage alerts. Frequently Asked Questions How many UN translator and interpreter jobs are open right now? + There are currently 15 active translation and interpretation vacancies across 8 organizations on UNvacancies. The listings refresh from official sources throughout the day.",
+      "tier": "P0_DISCOVERY",
+      "title": "UN Translator &amp; Interpreter Jobs 2026 - Vacancies — 16 Jobs",
+      "url": "https://unvacancies.org/jobs/function/translation-interpretation"
+    }
+  ],
   "stats": {
     "deferred": 0,
     "failed_sources": [
@@ -10,9 +73,9 @@
       "ungm: UNGM browser-session API HTTP 500: {\"status\":500,\"code\":\"SYSTEM_FAILURE\",\"message\":\"A critical error occurred while processing your request.\"}",
       "eu_funding_tenders_portal: HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}"
     ],
-    "fetched": 15,
+    "fetched": 17,
     "lane": "all",
-    "new": 0,
+    "new": 2,
     "per_source": {
       "afdb_procurement": {
         "fetched": 0
@@ -90,25 +153,25 @@
       },
       "web_discovery": {
         "detail_cap_deferred": 0,
-        "detail_fetch_failed": 2,
-        "detail_fetched": 0,
+        "detail_fetch_failed": 3,
+        "detail_fetched": 2,
         "errors": [],
-        "fetched": 0,
+        "fetched": 2,
         "filtered_generic_listing": 5,
-        "filtered_navigation": 3,
-        "filtered_no_signal": 8,
+        "filtered_navigation": 5,
+        "filtered_no_signal": 13,
         "official_ungm_indexed_notices": 0,
         "queries_run": 7
       }
     },
     "pre_filtered": 0,
-    "raw": 15,
-    "run_at": "2026-08-08T08:27:12.513313+00:00",
-    "run_time": "2026-08-08 08:27 UTC",
+    "raw": 17,
+    "run_at": "2026-08-08T10:20:27.498560+00:00",
+    "run_time": "2026-08-08 10:20 UTC",
     "score_failed": 0,
     "sources_ok": 13,
     "sources_polled": 15,
     "sources_total": 15,
-    "still_open": 15
+    "still_open": 17
   }
 }
