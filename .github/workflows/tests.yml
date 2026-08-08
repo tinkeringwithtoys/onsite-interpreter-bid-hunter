@@ -1,17 +1,9 @@
 # =============================================================================
 # CI  ·  offline self-tests
 # =============================================================================
-# This repo already had four self-test suites (scraper, notify, envfile,
-# deadline_watch) and a config integrity checker. Nothing ever ran them
-# automatically. That is how a scraper.py re-upload silently reverted the
-# `poll: false` fix without anyone noticing: green Actions tab, reverted code.
-#
 # Everything here is offline. No secrets, no network, no LLM calls.
-#
-# BUDGET NOTE: the `paths` filter matters. The bot commits seen.json /
-# data.json / watchlist.json up to 843 times a month; if this workflow fired
-# on those it would cost more minutes than all three hunting lanes combined.
-# It only runs when code, config or a workflow actually changes.
+# It only runs when code, config, or workflow definitions change; state commits
+# alone do not trigger CI.
 # =============================================================================
 
 name: tests (offline self-tests)
@@ -53,12 +45,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Catches a truncated or mis-transcribed upload before anything else.
       - name: Syntax check every module
         run: python -m compileall -q .
 
       - name: scraper self-test
         run: python scraper.py --self-test
+
+      - name: source health self-test
+        run: python source_health.py --self-test
 
       - name: notify self-test
         run: python notify.py --self-test
@@ -72,21 +66,17 @@ jobs:
       - name: urlnorm self-test
         run: python urlnorm.py --self-test
 
-      # Static config integrity: no polled source without an endpoint, no tier
-      # without an eligibility rule, EU profile still parked.
       - name: config integrity
         run: python validate_sources.py --check-config
 
-      # Workflow <-> config drift: timeouts, crons, concurrency, alarms.
-      - name: workflow / config parity
+      - name: unified Hunt parity
         run: python check_workflows.py
 
-      # A red CI must not stay silent either. Push events on main email you;
-      # PR runs skip this (they have a visible check status instead).
+      # CI failures are separate from normal procurement-source health.
       - name: Report failure
         if: failure() && github.event_name == 'push'
         env:
-          LANE: tests
+          LANE: all
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
@@ -94,4 +84,4 @@ jobs:
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: python scraper.py --notify-failure "tests tier failed"
+        run: python scraper.py --notify-failure "tests failed"

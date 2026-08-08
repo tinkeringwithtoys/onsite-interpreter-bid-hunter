@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """Static guard for the unified two-hour Hunt workflow.
 
-The repository is public and runs one scheduled workflow instead of separate
-Fast / Standard / Heavy state writers. This script protects the things that
-must never drift:
+This script protects the operating model that must never drift:
 
-- actual cron is every two hours
-- job timeout agrees with run_hunt.py's scoring budget
-- one concurrency group owns state writes
-- an if: failure() email alarm remains
-- the workflow runs the all-source wrapper and installs Chromium
+- exactly one scheduled Hunt, every two hours;
+- one concurrency group and one state writer;
+- a 55-minute runtime budget that agrees with the wrapper;
+- Chromium for browser-capable sources;
+- stateful source-health persistence;
+- an alarm for unexpected workflow failures.
 
-No network, secrets or live portals are used here.
+No network, secrets, or live portals are used here.
 """
 
 import ast
@@ -25,6 +24,7 @@ WORKFLOW = ROOT / ".github" / "workflows" / "hunt.yml"
 WRAPPER = ROOT / "run_hunt.py"
 EXPECTED_CRON = "0 */2 * * *"
 EXPECTED_GROUP = "bid-hunter-all"
+RETIRED_WORKFLOWS = ("fast.yml", "standard.yml", "heavy.yml")
 
 
 def load_yaml(path):
@@ -55,9 +55,13 @@ def main():
     if not WRAPPER.exists():
         problems.append("run_hunt.py is missing")
     if problems:
-        for p in problems:
-            print(f"x {p}")
+        for problem in problems:
+            print(f"x {problem}")
         return 1
+
+    for retired in RETIRED_WORKFLOWS:
+        if (WORKFLOW.parent / retired).exists():
+            problems.append(f"retired workflow still exists: {retired}")
 
     workflow = load_yaml(WORKFLOW)
     schedule = triggers(workflow).get("schedule") or []
@@ -84,28 +88,30 @@ def main():
         problems.append("Hunt workflow does not run run_hunt.py")
     if "playwright install chromium" not in runs:
         problems.append("Hunt workflow does not install Chromium")
+    if "source_health.json" not in runs:
+        problems.append("Hunt workflow does not persist source_health.json")
     alarms = [step for step in steps
               if str(step.get("if", "")).strip() == "failure()"
               and "--notify-failure" in str(step.get("run", ""))]
     if not alarms:
-        problems.append("Hunt workflow has no if: failure() notification alarm")
+        problems.append("Hunt workflow has no unexpected-failure alarm")
 
     cfg = load_yaml(ROOT / "config.yaml")
     active = [source.get("key") for source in cfg.get("sources", []) if source.get("poll")]
     if not active:
-        problems.append("config.yaml has no poll:true sources for the unified hunt")
+        problems.append("config.yaml has no poll:true sources for the unified Hunt")
 
     print("=" * 74)
     print("UNIFIED HUNT PARITY  (static, no network)")
     print("=" * 74)
     if problems:
-        for p in problems:
-            print(f"  x {p}")
+        for problem in problems:
+            print(f"  x {problem}")
         print(f"\nFAILED: {len(problems)} problem(s)")
         return 1
     print("  OK -- one every-two-hour state writer")
     print(f"       all {len(active)} enabled sources selected at runtime")
-    print("       browser installed, timeout real, failure alarm present")
+    print("       browser installed, stateful source health, timeout, and alarm verified")
     return 0
 
 
