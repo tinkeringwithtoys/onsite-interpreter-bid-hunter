@@ -1,0 +1,59 @@
+# Deep Research Configuration
+# Runs twice daily via GitHub Actions — no server needed
+
+# Search Topics — each runs through: AI Search -> Web Fetch -> LLM Synthesis
+topics:
+  - name: "AI Industry Trends"
+    query: "latest AI industry trends and breakthroughs 2026"
+    sub_queries:
+      - "AI model releases 2026"
+      - "AI startup funding rounds 2026"
+      - "AI regulation policy changes 2026"
+      - "AI open source developments 2026"
+    max_results: 10
+    fetch_depth: 5
+    search_depth: deep   # shallow | deep | wide
+
+  - name: "Tech News Digest"
+    query: "top technology news and developments today"
+    sub_queries:
+      - "software engineering news"
+      - "cybersecurity updates"
+    max_results: 10
+    fetch_depth: 5
+    search_depth: shallow
+
+  # Add more topics below:
+  # - name: "Your Topic"
+  #   query: "your main search query"
+  #   sub_queries: ["sub-query 1", "sub-query 2"]
+  #   max_results: 10
+  #   fetch_depth: 5
+  #   search_depth: deep
+
+# Agnes AI API (OpenAI-compatible, free — https://platform.agnes-ai.com)
+model:
+  base_url: "https://apihub.agnes-ai.com/v1"
+  name: "Agnes-2.5-Flash"
+  max_tokens: 4096
+  temperature: 0.7
+
+# Web Fetch Settings
+fetch:
+  timeout: 30
+  max_content_length: 50000
+  retry_attempts: 3
+  max_workers: 5
+  user_agent: "Mozilla/5.0 (compatible; DeepResearchBot/1.0)"
+
+# Output
+output:
+  dir: "reports"
+  format: markdown
+
+# Notifications (optional — set secrets in GitHub)
+notify:
+  discord:
+    enabled: false
+  telegram:
+    enabled: false

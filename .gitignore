@@ -1,22 +1,12 @@
-# Secrets. The single most important line in this repo.
+# Environment
 .env
-.env.*
-!.env.example
-env.txt
-*.pem
-*.key
 
 # Python
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
 .venv/
 venv/
 
-# Debug output from the heavy lane
-debug/
-*.png
-*.html
-
-# Local validator output - may contain response bodies
-local_report.json
-runner_report.json
+# Temp
+*.tmp
