@@ -2,14 +2,15 @@
 """
 scraper.py -- the runner that ties bid-hunter together.
 
-Lanes (see scheduling.lanes in config.yaml):
-  fast      json_api sources        hourly
-  standard  http sources            3x/day
-  heavy     playwright sources      weekdays
+ONE LANE (2026-08-08): --tier all runs EVERY poll:true source in one job,
+every 2 hours, on the public repo's unlimited minutes. The old fast/
+standard/heavy split existed only to ration a 2,000-minute private budget.
+JSON sources still skip the browser (cheap and fast); playwright sources
+share the same run because the workflow installs Chromium anyway.
 
 Usage:
-  python3 scraper.py --tier fast
-  python3 scraper.py --tier standard --dry-run
+  python3 scraper.py --tier all
+  python3 scraper.py --tier all --dry-run
   python3 scraper.py --notify-failure
   python3 scraper.py --self-test          # offline, no network needed
 
@@ -572,9 +573,8 @@ def fetch_sedia(src, cfg, keywords):
 # endpoint). The official developer API requires an OAuth token; these do not.
 #
 # LIVE RESULT 2026-08-08: both endpoints HTTP 500 on cookie-less POSTs from a
-# datacenter runner (ASP.NET wants a session). The heavy lane's Playwright is
-# the real fix and is strategy 3 below. The HTTP attempts stay because they
-# are nearly free and may work from less-filtered networks.
+# datacenter runner (ASP.NET wants a session). A real browser (strategy 3) is
+# the fix; the unified lane installs Chromium, so it is always available there.
 
 _UNGM_MONTHS = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
                 "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
@@ -629,8 +629,8 @@ def parse_ungm_json(data):
 
 def fetch_ungm(src, cfg, keywords):
     """JSON search API first; HTML-partial endpoint second; a real browser
-    third (heavy lane only). Keyword filtering is client-side so Agnes never
-    sees UNGM's plumbing, furniture and vehicle tenders."""
+    third. Keyword filtering is client-side so Agnes never sees UNGM's
+    plumbing, furniture and vehicle tenders."""
     kws = [k.lower() for k in keywords]
 
     def relevant(title, summary):
@@ -688,9 +688,8 @@ def fetch_ungm(src, cfg, keywords):
     except FetchError:
         pass  # fall through to the browser
 
-    # Strategy 3: a real browser. Only the heavy lane installs Playwright; on
-    # any other lane this raises and the source FAILS LOUDLY instead of
-    # reporting a silent '0 raw'.
+    # Strategy 3: a real browser. If Playwright is absent this raises and the
+    # source FAILS LOUDLY instead of reporting a silent '0 raw'.
     try:
         pw_items, _ = fetch_playwright(src, cfg, keywords)
     except FetchError:
@@ -707,6 +706,11 @@ def fetch_ungm(src, cfg, keywords):
 # endpoint needs no API key and supports recency filters (df=d|w|m). Result
 # links are redirect-wrapped (/l/?uddg=...); unwrap before use. If DDG ever
 # rate-limits a runner the source fails LOUDLY, like any other.
+#
+# HONEST SCOPE NOTE: a search engine finds what is INDEXED. It widens the net
+# beyond the known portals, but it cannot guarantee structured fields
+# (deadline, CPV, buyer) or complete country coverage. TED/UNGM remain the
+# precise structured channels; this is the wide net around them.
 
 DDG_RESULT_RX = re.compile(r'class="result__a" href="([^"]+)"[^>]*>(.*?)</a>', re.S)
 
@@ -784,7 +788,7 @@ def fetch_playwright(src, cfg, keywords):
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        raise FetchError("playwright not installed -- heavy lane only")
+        raise FetchError("playwright not installed -- the hunt workflow installs it")
     url = src.get("url")
     if not url:
         raise FetchError("no url")
@@ -856,11 +860,9 @@ def select_sources(cfg, tier):
             src = sources.get(k)
             if src is None:
                 continue
-            # A lane naming a poll:false source must NOT resurrect it. The
-            # heavy lane lists tuneps, which is parked until its login is
-            # confirmed; honouring the list literally drove Chromium at
-            # tuneps.tn every weekday. This check existed once and was
-            # silently lost to a full-file re-upload -- CI now guards it.
+            # A lane naming a poll:false source must NOT resurrect it. This
+            # check existed once and was silently lost to a full-file
+            # re-upload -- CI now guards it.
             if not src.get("poll"):
                 skipped.append(k)
                 continue
@@ -871,9 +873,10 @@ def select_sources(cfg, tier):
         if skipped:
             log(f"lane {tier}: skipping poll:false source(s): {skipped}")
         return chosen
-    method = lane.get("method")
-    return [s for s in sources.values()
-            if s.get("poll") and (method is None or s.get("method") == method)]
+    # No polls list: the lane takes EVERY poll:true source. This is the 'all'
+    # lane -- one job, every source, whatever its method. The workflow
+    # installs Chromium, so playwright sources are always servable here.
+    return [s for s in sources.values() if s.get("poll")]
 
 
 def resolve_via(src, cfg):
@@ -980,11 +983,7 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
 
     # -- enrich -------------------------------------------------------------
     # Each item costs one LLM call (agnes_score: timeout=45s, up to 3 retries
-    # on 429). With no per-item logging and no wall-clock awareness, a lane
-    # that fetches a large batch (e.g. standard's 196-item first run) went
-    # completely silent for the full scoring pass and could get killed by
-    # the job's own `timeout_minutes` before ever sending a digest or an
-    # error email. Cap scoring to a time budget derived from the lane's own
+    # on 429). Cap scoring to a time budget derived from the lane's own
     # timeout, log progress per item, and defer anything left over to the
     # next run instead of losing it silently.
     lane_timeout_min = ((cfg.get("scheduling") or {}).get("lanes") or {}).get(tier, {}).get("timeout_minutes", 10)
@@ -1082,6 +1081,13 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         return (i.get("score") or {}).get("relevance") is None
 
     digest_items = [i for i in scored if _relevant(i)]
+    # The digest is a PRIORITY LIST, not a timeline: relevance first, then
+    # net money after travel -- the best-paid, best-matched lead is line one.
+    # (Deadline order still governs `scored` itself and the watchlist.)
+    digest_items.sort(
+        key=lambda i: ((i.get("score") or {}).get("relevance") or 0,
+                       (i.get("score") or {}).get("net_after_travel_eur") or 0),
+        reverse=True)
     failed_to_score = [i for i in scored if _scoring_failed(i)]
     suppressed = len(scored) - len(digest_items) - len(failed_to_score)
     if suppressed:
@@ -1099,10 +1105,6 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         "new": len(scored),
         "failures": failures,
         "per_source": per_source,
-        # render_digest() reads a different set of names than the ones above,
-        # so the digest header printed "sources ok 0/0 · fetched 0" on runs
-        # that had just fetched hundreds of notices - the one line in the
-        # email whose whole job is to tell you the pipeline is alive.
         "run_time": now.strftime("%Y-%m-%d %H:%M UTC"),
         "lane": tier,
         "sources_total": len(sources),
@@ -1111,7 +1113,6 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         "failed_sources": [f.split(":", 1)[0] for f in failures],
         # Budget visibility. `deferred` used to exist only in the run log --
         # the one number the digest exists to surface was invisible in it.
-        # Both now travel in stats -> data.json AND the email header.
         "pre_filtered": pre_filtered,
         "deferred": deferred,
         # Scoring failures are NOT a clean run. The digest must say so.
@@ -1125,10 +1126,6 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     # -- persist BEFORE emailing, so a mail failure cannot cause re-alerts ---
     #
     # HARD RULE: a run that fetched nothing must never touch state.
-    # save_json(allow_empty=) cannot protect DATA_PATH on its own, because the
-    # payload {"stats": ..., "items": []} is a non-empty dict and therefore
-    # always truthy. The guard has to live here, where we can see that every
-    # source failed. Without this, one network blip erases a good run.
     # Two different questions, deliberately two different variables:
     #   total_failure -> may we overwrite state? Conservative: refuse whenever
     #                    something broke AND we ended up with nothing at all.
@@ -1137,9 +1134,8 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
     #                    and simply finds nothing is a quiet day, not a fault.
     total_failure = bool(failures) and not all_items
     all_failed = bool(failures) and len(failures) >= len(sources)
-    # A lane that selected ZERO sources (heavy, while tuneps is poll:false)
-    # has not failed -- but it must still not overwrite the last real run's
-    # data.json with an empty snapshot.
+    # A lane that selected ZERO sources has not failed -- but it must still
+    # not overwrite the last real run's data.json with an empty snapshot.
     empty_lane = not sources
     if total_failure or empty_lane:
         log("!! nothing fetched - persisting nothing so prior data survives")
@@ -1157,14 +1153,8 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
 
     if scored or deadline_alerts or failures:
         try:
-            # render_digest returns ONE string, not a tuple. Unpacking it into
-            # three names made Python iterate the string character by character.
             text_body = notify.render_digest(
                 digest_items, deadline_alerts, award_leads, stats)
-            # Count what the BODY shows (digest_items), not everything scored.
-            # The subject used len(scored) while the body printed the filtered
-            # count, so one email claimed "30 new" in the subject and "new 0"
-            # in the body of the same message.
             subject = (
                 f"[bid-hunter] {len(digest_items)} new / "
                 f"{len(deadline_alerts)} deadline / lane={tier}"
@@ -1182,9 +1172,8 @@ def run(tier, cfg, dry_run=False, lookback_hours=DEFAULT_LOOKBACK_HOURS):
         log("nothing new; no email sent")
 
     # A partial failure is not a broken run. The digest already carries the
-    # per-source errors in both its subject and its body, so exiting non-zero
-    # here turned a usable run into a red build AND a second, redundant alarm
-    # email. Reserve a non-zero exit for the case where we got nothing at all.
+    # per-source errors in both its subject and its body. Reserve a non-zero
+    # exit for the case where we got nothing at all.
     return 1 if all_failed else 0
 
 
@@ -1194,9 +1183,6 @@ def notify_failure(message=""):
     import notify
     repo = os.environ.get("GITHUB_REPOSITORY", "bid-hunter")
     run_id = os.environ.get("GITHUB_RUN_ID", "")
-    # LANE is a lane name; `message` is free text from the workflow. Folding
-    # one into the other produced "The fast tier failed lane FAILED". The
-    # workflows pass "<lane> tier failed", so the first word is the lane.
     words = (message or "").split()
     lane = os.environ.get("LANE") or (words[0] if words else "unknown")
     link = os.environ.get("RUN_URL") or (
@@ -1298,8 +1284,6 @@ def self_test():
 
     html = '<a href="/n/1">Services of interpretation Arabic French for asylum</a>'
     got = extract_from_html(html, "https://x.eu/list", ["interpret"])
-    # A leading slash replaces the whole path -- this is urljoin semantics,
-    # not a bug. Both forms are tested because tender portals use both.
     ck("harvests absolute-path link", got and got[0][0] == "https://x.eu/n/1")
     rel = extract_from_html('<a href="n/9">Interpretation services framework contract</a>',
                             "https://x.eu/list/", ["interpret"])
@@ -1307,20 +1291,16 @@ def self_test():
     ck("filters non-matching",
        extract_from_html('<a href="/n/2">Office furniture procurement notice</a>',
                          "https://x.eu", ["interpret"]) == [])
-    # The same link twice, once with tracking params, is ONE candidate.
     dup = extract_from_html(
         '<a href="/n/1">Services of interpretation Arabic French asylum</a>'
         '<a href="/n/1?utm_source=rss">Services of interpretation Arabic French asylum</a>',
         "https://x.eu/list", ["interpret"])
     ck("harvester dedupes tracking variants", len(dup) == 1)
-    # And a language CODE must never be a harvesting term again.
     nav = extract_from_html(
         '<a href="/fr/menu">Menu en français - ouvrir le panneau</a>',
         "https://x.eu/", ["interpretation"])
     ck("navigation not harvested without a real term", nav == [])
-    # PLACE-style rows: the anchor says 'Accéder à la consultation' and the
-    # tender title lives in the row BEFORE the link. The keyword gate must
-    # read the context, not just the anchor text.
+    # PLACE-style rows: generic anchor, tender title in the row BEFORE it.
     place_row = ('<td>Prestation d interprétariat téléphonique pôles France</td>'
                  '<td><a href="/app.php/entreprise/consultation/2940332">'
                  'Accéder à la consultation</a></td>')
@@ -1362,12 +1342,17 @@ def self_test():
                 "scheduling": {"lanes": {"fast": {"polls": ["ted"]}}}}
     ck("lane picks listed", [s["key"] for s in select_sources(lane_cfg, "fast")] == ["ted"])
     # A lane must never resurrect a source that is parked with poll:false.
-    # This is the regression guard for the heavy lane driving Chromium at
-    # tuneps.tn while tuneps was explicitly disabled.
     parked_cfg = {"sources": [{"key": "tuneps", "method": "playwright",
                                "poll": False, "tier": "P3"}],
-                  "scheduling": {"lanes": {"heavy": {"polls": ["tuneps"]}}}}
-    ck("lane honours poll:false", select_sources(parked_cfg, "heavy") == [])
+                  "scheduling": {"lanes": {"all": {"polls": ["tuneps"]}}}}
+    ck("lane honours poll:false", select_sources(parked_cfg, "all") == [])
+    # The unified lane: no polls list = every poll:true source, any method.
+    all_cfg = {"sources": [{"key": "a", "method": "json_api", "poll": True},
+                           {"key": "b", "method": "playwright", "poll": True},
+                           {"key": "c", "method": "http", "poll": False}],
+               "scheduling": {"lanes": {"all": {"timeout_minutes": 25}}}}
+    ck("all tier selects every polled source",
+       [s["key"] for s in select_sources(all_cfg, "all")] == ["a", "b"])
 
     via_cfg = {"sources": [{"key": "ted", "method": "json_api", "endpoint": "E"}]}
     merged = resolve_via({"key": "sweep", "via": "ted", "tier": "P1"}, via_cfg)
@@ -1382,7 +1367,7 @@ def self_test():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--tier", choices=["fast", "standard", "heavy"])
+    ap.add_argument("--tier", choices=["all", "fast", "standard", "heavy"])
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--notify-failure", nargs="?", const="", default=None,
                     metavar="MESSAGE",
