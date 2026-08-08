@@ -72,6 +72,9 @@
 #      interpreting framework and now need Arabic interpreters. Different
 #      pipeline, different output (a contact list, not a bid).
 #
+#   7. (2026-08-08) NEW TIER P0_DISCOVERY. Open-web search runs on a schedule
+#      through the same pipeline. See sources.web_discovery.
+#
 # ============================================================================
 
 meta:
@@ -195,6 +198,9 @@ eligibility:
       stage with no remedy.
     commercial_only: "Ordinary B2B services contract. Procurement law N/A."
     domestic: "Home market. Full access."
+    review_manually: >
+      Open-web discovery hit. The buyer, the source site and your eligibility
+      are all unverified -- read the notice yourself before investing time.
 
   by_tier:
     # WARNING: every key here MUST exist as a sources[].tier value, and every
@@ -203,6 +209,7 @@ eligibility:
     # nothing for tuneps / base_gov_pt / home_state_national_portal, so those
     # alerts would have carried NO action label at all. Fixed in v4.1.
     # validate_sources.py --check-eligibility now fails the build on any drift.
+    P0_DISCOVERY:     review_manually    # open-web search hits - unverified buyers
     P1_UN:            bid_directly       # PROMOTED to top lane in v4
     P1_AFRICA:        bid_directly       # PROMOTED - AU member state
     P3_NATIONAL:      domestic           # PROMOTED - but see override below
@@ -340,21 +347,21 @@ dates:
 # ----------------------------------------------------------------------------
 # SCHEDULING · three lanes, three cadences
 # ----------------------------------------------------------------------------
-# Earlier I throttled EVERYTHING to 3x/weekday to protect the minute budget.
-# That was over-cautious: the cost problem is Playwright, not polling. Splitting
-# by cost lets the cheap lane run hourly 24/7 and still finish the month at ~53%
-# of the free allowance.
-#
 #   lane      | cadence              | runs/mo | billed min/mo
 #   ----------|----------------------|---------|--------------
 #   fast      | hourly, 24/7         |    730  |   730
 #   standard  | 3x daily, every day  |     91  |   182
-#   heavy     | 1x daily, weekdays   |     22  |   154  (4 browser targets)
+#   heavy     | 4x daily, every day  |    120  |   840  (browser targets)
 #   ----------|----------------------|---------|--------------
-#   TOTAL     |                      |    843  |  1066  of 2,000 free
+#   TOTAL     |                      |    941  |  1752  of 2,000 free (88%)
 #
 # GitHub rounds every job UP to the nearest minute, so a 20-second run bills 1
 # minute. That rounding is why the fast lane must stay browser-free.
+#
+# 2026-08-08: once the repo is PUBLIC, Actions minutes are unlimited. The one
+# line to then change for an HOURLY browser lane: cron_utc "0 */6 * * *" ->
+# "0 * * * *" here and in .github/workflows/heavy.yml (check_workflows.py
+# enforces that the two match).
 # ----------------------------------------------------------------------------
 scheduling:
   timezone_note: "Tunis is UTC+1 all year, no DST - local times never drift"
@@ -380,6 +387,7 @@ scheduling:
         - african_union_bids
         - home_state_national_portal    # v4.1 - Tunisian home market, plain HTTP
         - etimad_sa                   # was poll:true but named by NO lane - never ran
+        - web_discovery               # open-web search net - the "every possibility" lane
       method: http
       timeout_minutes: 10
       concurrency_group: bid-hunter-standard
@@ -388,7 +396,7 @@ scheduling:
       notify_on_failure: true          # silence must not look like "no results"
 
     heavy:
-      cron_utc: "0 6 * * 1-5"          # once daily, weekdays
+      cron_utc: "0 */6 * * *"          # 4x daily. Hourly once the repo is public.
       # 2026-08-08: this lane is no longer a parked TUNEPS placeholder. The
       # 05:24 UTC standard run proved four sources are bot-walled or
       # session-gated for plain HTTP from a runner (evidence on each source
@@ -404,9 +412,12 @@ scheduling:
   budget:
     free_tier_private_repo_minutes: 2000
     free_tier_public_repo_minutes: unlimited
-    estimated_monthly_minutes: 1066
-    utilisation_pct: 53
-    recommend_private: true            # a public repo would expose your target list
+    estimated_monthly_minutes: 1752
+    utilisation_pct: 88
+    recommend_private: true            # a public repo exposes the target list + strategy
+    public_switch_note: "If the repo goes public, minutes become unlimited and
+      the heavy lane can go hourly. Trade-off: this file's strategy, price
+      floors and target list become world-readable. Decided by owner 2026-08-08."
 
   keepalive:
     required: true
@@ -462,6 +473,27 @@ deadline_watch:
 # the raw HTML. "bot-walled" = the runner got a Cloudflare/WAF/403 challenge.
 # ============================================================================
 sources:
+
+  # --------------------------------------------------------------------------
+  # P0_DISCOVERY · open-web search, the "every possibility" net
+  # Replicates what a manual web search finds, on a schedule, through the same
+  # dedupe -> scoring -> digest pipeline. This is the source that is NOT limited
+  # to the known portal list.
+  # --------------------------------------------------------------------------
+  - key: web_discovery
+    tier: P0_DISCOVERY
+    method: http                    # fetch_search: DuckDuckGo HTML, no API key
+    recency: w                      # df=w = past week (d = day, m = month)
+    queries:
+      - "interpretation services tender"
+      - "appel d'offres interprétariat"
+      - "call for interpreters roster"
+      - "interpretation services framework agreement arabic"
+      - "interprètes arabe appel à manifestation"
+    audit_2026_08_08: "Discovery net. Results are redirect-unwrapped, deduped
+      by canonical URL, detail-fetched, and Agnes-scored like any portal hit.
+      Eligibility label is always review_manually: the buyer is unverified."
+    poll: true
 
   # --------------------------------------------------------------------------
   # P1_ASYLUM · EU asylum / migration / border interpreting

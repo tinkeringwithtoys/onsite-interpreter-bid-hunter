@@ -1,34 +1,32 @@
 # =============================================================================
 # TIER 3 of 3  ·  HEAVY LANE  ·  Playwright / real browser
 # =============================================================================
-# Runs ONCE daily on weekdays. Deliberately rare.
+# Runs 4x daily (00/06/12/18 UTC), every day.
 #
-# Why not hourly like the fast lane: this lane downloads Chromium and drives a
-# real browser. That is ~2-3 billed minutes per run against a 2,000 min/month
-# allowance. Hourly here would cost 1,460-2,190 min all by itself and blow the
-# entire free tier -- which is exactly the mistake in the original blueprint.
+# Why a browser lane exists at all: some portals cannot be read by plain HTTP
+# from a datacenter runner. Proven 2026-08-08 (see audit notes in config.yaml):
+#   ungm    - internal search endpoints 500 on cookie-less POSTs (ASP.NET)
+#   afdb    - Cloudflare 403 'Just a moment...'
+#   frontex - hard 403 Forbidden
+#   tuneps  - parked until its login/certificate path is confirmed
 #
-# Only ONE target currently justifies a browser: TUNEPS (Tunisia), which needs
-# a real session and renders its search client-side. Everything else in this
-# project is reachable by plain HTTP or a JSON API.
+# Why not EVERYTHING in a browser: Chromium download + launch is ~7 billed
+# minutes per run. On a private repo that is the single biggest budget line,
+# so sources that are proven server-rendered stay on plain HTTP. Once the repo
+# is PUBLIC, minutes are unlimited and the cron can go hourly:
+#     cron_utc: "0 * * * *"   (config.yaml)  +  '0 * * * *'  (below)
+# check_workflows.py enforces that the two stay equal.
 #
-# TUNEPS is currently poll:false in config.yaml ("enable after you confirm you
-# can log in"), so this lane is expected to select ZERO sources and finish in
-# seconds. That is correct, not broken.
-#
-# Budget: ~22 runs/month x 3 billed min = ~66 min.
-#
-# It also carries the KEEPALIVE. GitHub disables scheduled workflows after 60
-# days of repository inactivity, and it is not safe to assume bot commits reset
-# that timer. The keepalive touches a file from this workflow so the repo is
-# never idle, and it is cheap because this lane already runs.
+# This lane also carries the KEEPALIVE: GitHub disables scheduled workflows
+# after 60 days of repo inactivity, and it is not safe to assume bot commits
+# reset that timer.
 # =============================================================================
 
-name: heavy (browser, daily)
+name: heavy (browser, 4x daily)
 
 on:
   schedule:
-    - cron: '0 6 * * 1-5'
+    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 permissions:
