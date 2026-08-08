@@ -55,6 +55,9 @@ DEBUG_DIR = ROOT / "debug"
 LAST_ERROR_PATH = DEBUG_DIR / "last_error.txt"
 
 TED_NOTICE_BASE = "https://" + "ted.europa.eu/en/notice/-/detail/"
+UNGM_NOTICE_BASE = "https://" + "www.ungm.org/Public/Notice/"
+UNGM_SEARCH_API = "https://" + "www.ungm.org/api/UNNotice/search"
+UNGM_SEARCH_HTML = "https://" + "www.ungm.org/Public/Notice/Search"
 GH_BASE = "https://" + "github.com/"
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 SEEN_RETENTION_DAYS = 180
@@ -549,6 +552,124 @@ def fetch_sedia(src, cfg, keywords):
     return items, {"total": data.get("totalResults")}
 
 
+# --- UNGM ---------------------------------------------------------------------
+# UNGM's public list page is JS-rendered: a plain GET of /Public/Notice
+# returns only the filter UI, zero notice links. The site itself populates the
+# list via an internal, unauthenticated search endpoint. Two independent
+# open-source clients confirm both shapes below (a JSON API and an HTML-partial
+# endpoint). The official developer API requires an OAuth token; these do not.
+
+_UNGM_MONTHS = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
+                "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
+
+
+def ungm_date(raw):
+    """UNGM dates arrive as '03-Jul-2026 16:00 (GMT 2.00)' or ISO-ish strings.
+    Normalise to ISO so the standard date logic can read them."""
+    if not raw:
+        return None
+    s = str(raw).strip()
+    m = re.match(r"(\d{1,2})-([A-Za-z]{3})-(\d{4})(?:\s+(\d{2}):(\d{2}))?", s)
+    if m and m.group(2).title() in _UNGM_MONTHS:
+        d, y = int(m.group(1)), int(m.group(3))
+        hh, mm = m.group(4) or "00", m.group(5) or "00"
+        return f"{y:04d}-{_UNGM_MONTHS[m.group(2).title()]:02d}-{d:02d}T{hh}:{mm}:00+00:00"
+    parsed = parse_dt(s)
+    return parsed.isoformat() if parsed else None
+
+
+def parse_ungm_json(data):
+    """The internal API has no published schema; field names have been seen in
+    both camelCase and PascalCase. Accept both, never raise."""
+    rows = data if isinstance(data, list) else (
+        (data or {}).get("notices") or (data or {}).get("Notices")
+        or (data or {}).get("data") or (data or {}).get("results")
+        or (data or {}).get("items") or [])
+    out = []
+    for n in rows:
+        if not isinstance(n, dict):
+            continue
+        def g(*keys):
+            for k in keys:
+                v = n.get(k)
+                if v not in (None, ""):
+                    return v
+            return None
+        nid = g("id", "Id", "noticeId", "NoticeId")
+        out.append({
+            "title": str(g("title", "Title") or ""),
+            "url": f"{UNGM_NOTICE_BASE}{nid}" if nid else None,
+            "published": ungm_date(g("datePosted", "DatePosted", "postedDate")),
+            "deadline": ungm_date(g("deadline", "Deadline", "deadlineDate")),
+            "summary": str(g("description", "Description", "summary") or ""),
+            "country": g("country", "Country"),
+            "raw": {"notice_id": nid,
+                    "agency": g("agencyName", "AgencyName", "organization"),
+                    "reference": g("reference", "Reference", "noticeNumber")},
+        })
+    return [i for i in out if i["title"]]
+
+
+def fetch_ungm(src, cfg, keywords):
+    """JSON search API first; the HTML-partial endpoint as fallback. Keyword
+    filtering happens here (client-side) so Agnes never sees UNGM's plumbing,
+    furniture and vehicle tenders."""
+    kws = [k.lower() for k in keywords]
+
+    def relevant(title, summary):
+        low = f"{title} {summary}".lower()
+        return any(k in low for k in kws)
+
+    # Strategy 1: JSON search API.
+    payload = {"pageIndex": 0, "pageSize": 50, "sortField": "DatePosted",
+               "sortOrder": "Descending", "keyword": "", "UNSPSCCodes": [],
+               "AgencyGovId": [], "StatusId": 1,
+               "DeadlineDateFrom": None, "DeadlineDateTo": None}
+    try:
+        status, body = http_post_json(UNGM_SEARCH_API, payload)
+        parsed = parse_ungm_json(json.loads(body))
+        if parsed:
+            matched = [i for i in parsed if relevant(i["title"], i["summary"])]
+            return ([normalise(src["key"], src.get("tier"), i["title"], i["url"],
+                               published=i["published"], deadline=i["deadline"],
+                               summary=i["summary"], country=i["country"],
+                               raw=i["raw"])
+                     for i in matched],
+                    {"strategy": "json_api", "raw_count": len(parsed)})
+    except Exception:
+        pass  # fall through to the HTML-partial endpoint
+
+    # Strategy 2: /Public/Notice/Search returns an HTML partial of table rows.
+    today = dt.datetime.now(dt.timezone.utc).strftime("%d-%b-%Y")
+    payload2 = {"PageIndex": 0, "PageSize": 50, "Title": "", "Description": "",
+                "Reference": "", "PublishedFrom": "", "PublishedTo": "",
+                "DeadlineFrom": today, "DeadlineTo": "", "Agencies": [],
+                "Countries": [], "UNSPSCs": [], "TypeOfCompetitions": [],
+                "NoticeTypes": [], "IsActive": True, "IsSustainable": False,
+                "NoticeDisplayType": None, "SortField": "DatePosted",
+                "SortAscending": False,
+                "NoticeSearchTotalLabelId": "noticeSearchTotal", "IsPicker": False}
+    body = json.dumps(payload2).encode("utf-8")
+    req = urllib.request.Request(UNGM_SEARCH_HTML, data=body, method="POST", headers={
+        "User-Agent": UA,
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "Origin": "https://www.ungm.org",
+        "Referer": "https://www.ungm.org/Public/Notice",
+        "Accept": "text/html, */*;q=0.8",
+    })
+    status, html = _open(req, 30)
+    items = []
+    for link, text in extract_from_html(html, UNGM_NOTICE_BASE, keywords):
+        if "/Public/Notice/" not in link:
+            continue
+        items.append(normalise(src["key"], src.get("tier"), text, link,
+                               summary=text))
+    if not items:
+        raise FetchError("ungm: both search endpoints returned nothing parseable")
+    return items, {"strategy": "html_partial", "raw_count": len(items)}
+
+
 def fetch_http(src, cfg, keywords):
     urls = src.get("urls") or ([src["url"]] if src.get("url") else [])
     items, errors = [], []
@@ -597,6 +718,7 @@ HANDLERS = {
     "ted": fetch_ted,
     "ted_award_notices": fetch_ted,
     "eu_funding_tenders_portal": fetch_sedia,
+    "ungm": fetch_ungm,
 }
 
 
@@ -1068,10 +1190,10 @@ def self_test():
     # The config nests keywords (language -> bucket -> [terms]). The
     # regression this guards: filtering on the dict keys 'en'/'fr'/'ar'.
     flat = flatten_keywords({"en": {"conf": ["interpretation"]},
-                             "fr": ["interpr\u00e9tariat"],
+                             "fr": ["interprétariat"],
                              "note": "documentation, not a term"})
     ck("flattens nested keywords",
-       sorted(flat) == ["interpretation", "interpr\u00e9tariat"])
+       sorted(flat) == ["interpretation", "interprétariat"])
     ck("no keywords -> empty, caller falls back", flatten_keywords(None) == [])
 
     html = '<a href="/n/1">Services of interpretation Arabic French for asylum</a>'
@@ -1093,9 +1215,23 @@ def self_test():
     ck("harvester dedupes tracking variants", len(dup) == 1)
     # And a language CODE must never be a harvesting term again.
     nav = extract_from_html(
-        '<a href="/fr/menu">Menu en fran\u00e7ais - ouvrir le panneau</a>',
+        '<a href="/fr/menu">Menu en français - ouvrir le panneau</a>',
         "https://x.eu/", ["interpretation"])
     ck("navigation not harvested without a real term", nav == [])
+
+    # UNGM's internal API speaks camelCase or PascalCase depending on
+    # deployment; the parser must survive both, and its odd date format.
+    ungm_items = parse_ungm_json({"notices": [
+        {"id": 300999, "title": "Interpretation services Arabic",
+         "deadline": "03-Sep-2026 16:00 (GMT 2.00)", "datePosted": "07-Aug-2026",
+         "agencyName": "UNHCR"},
+        {"Id": 300998, "Title": "Supply of office chairs",
+         "Deadline": "2026-09-01"}]})
+    ck("ungm parses both casings", len(ungm_items) == 2)
+    ck("ungm url built", ungm_items[0]["url"].endswith("/Public/Notice/300999"))
+    ck("ungm date normalised", ungm_items[0]["deadline"].startswith("2026-09-03"))
+    ck("ungm iso date kept", ungm_items[1]["deadline"].startswith("2026-09-01"))
+    ck("ungm junk tolerated", parse_ungm_json({"unexpected": True}) == [])
 
     lane_cfg = {"sources": [{"key": "ted", "method": "json_api", "poll": True, "tier": "P2"},
                             {"key": "x", "method": "http", "poll": True, "tier": "P1"}],
