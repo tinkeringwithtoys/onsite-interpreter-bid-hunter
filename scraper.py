@@ -361,26 +361,41 @@ def flatten_keywords(node):
 
 LINK_RX = re.compile(r'href=["\']([^"\']+)["\']', re.I)
 TITLEISH_RX = re.compile(r">([^<>]{25,220})<", re.S)
+SCRIPT_STYLE_RX = re.compile(r"(?is)<(script|style).*?</\1>")
+TAG_RX = re.compile(r"<[^>]+>")
 
 
 def extract_from_html(html, base_url, keywords):
     """Deliberately dumb link harvester for the http lane. Precision comes from
-    the keyword gate and the LLM scorer, not from brittle per-site selectors."""
+    the keyword gate and the LLM scorer, not from brittle per-site selectors.
+
+    Two anchor shapes exist in the wild:
+      1. The tender title IS the anchor text (UNDP, Etimad, AU).
+      2. The anchor is generic ('Accéder à la consultation') and the tender
+         title lives in the row BEFORE the link (PLACE). For those, keywords
+         are matched against the preceding context and the context becomes
+         the title.
+    """
     found = []
     kws = [k.lower() for k in keywords]
+    context = ""
     for chunk in re.split(r"(?=<a\b)", html, flags=re.I):
+        plain = re.sub(r"\s+", " ", TAG_RX.sub(" ", chunk)).strip()
         href_m = LINK_RX.search(chunk)
-        if not href_m:
-            continue
-        text_m = TITLEISH_RX.search(chunk)
-        text = re.sub(r"<[^>]+>", " ", text_m.group(1)) if text_m else ""
-        text = re.sub(r"\s+", " ", text).strip()
-        if len(text) < 20:
-            continue
-        low = text.lower()
-        if not any(k in low for k in kws):
-            continue
-        found.append((urllib.parse.urljoin(base_url, href_m.group(1)), text))
+        if href_m:
+            text_m = TITLEISH_RX.search(chunk)
+            text = re.sub(r"<[^>]+>", " ", text_m.group(1)) if text_m else ""
+            text = re.sub(r"\s+", " ", text).strip()
+            low = text.lower()
+            if len(text) >= 20 and any(k in low for k in kws):
+                found.append((urllib.parse.urljoin(base_url, href_m.group(1)), text))
+            elif context and any(k in context.lower() for k in kws):
+                # Shape 2: generic anchor, real title in the row context.
+                title = context.strip()[-160:]
+                if len(title) >= 20:
+                    found.append((urllib.parse.urljoin(base_url, href_m.group(1)), title))
+        if plain:
+            context = (context + " " + plain)[-600:]
     seen_urls, out = set(), []
     for u, t in found:
         cu = canonical_url(u)
@@ -389,10 +404,6 @@ def extract_from_html(html, base_url, keywords):
         seen_urls.add(cu)
         out.append((u, t))
     return out[:60]
-
-
-SCRIPT_STYLE_RX = re.compile(r"(?is)<(script|style).*?</\1>")
-TAG_RX = re.compile(r"<[^>]+>")
 
 
 def fetch_notice_text(url, timeout=15):
@@ -558,6 +569,11 @@ def fetch_sedia(src, cfg, keywords):
 # list via an internal, unauthenticated search endpoint. Two independent
 # open-source clients confirm both shapes below (a JSON API and an HTML-partial
 # endpoint). The official developer API requires an OAuth token; these do not.
+#
+# LIVE RESULT 2026-08-08: both endpoints HTTP 500 on cookie-less POSTs from a
+# datacenter runner (ASP.NET wants a session). The heavy lane's Playwright is
+# the real fix and is strategy 3 below. The HTTP attempts stay because they
+# are nearly free and may work from less-filtered networks.
 
 _UNGM_MONTHS = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
                 "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
@@ -611,9 +627,9 @@ def parse_ungm_json(data):
 
 
 def fetch_ungm(src, cfg, keywords):
-    """JSON search API first; the HTML-partial endpoint as fallback. Keyword
-    filtering happens here (client-side) so Agnes never sees UNGM's plumbing,
-    furniture and vehicle tenders."""
+    """JSON search API first; HTML-partial endpoint second; a real browser
+    third (heavy lane only). Keyword filtering is client-side so Agnes never
+    sees UNGM's plumbing, furniture and vehicle tenders."""
     kws = [k.lower() for k in keywords]
 
     def relevant(title, summary):
@@ -649,25 +665,42 @@ def fetch_ungm(src, cfg, keywords):
                 "NoticeDisplayType": None, "SortField": "DatePosted",
                 "SortAscending": False,
                 "NoticeSearchTotalLabelId": "noticeSearchTotal", "IsPicker": False}
-    body = json.dumps(payload2).encode("utf-8")
-    req = urllib.request.Request(UNGM_SEARCH_HTML, data=body, method="POST", headers={
-        "User-Agent": UA,
-        "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-        "Origin": "https://www.ungm.org",
-        "Referer": "https://www.ungm.org/Public/Notice",
-        "Accept": "text/html, */*;q=0.8",
-    })
-    status, html = _open(req, 30)
-    items = []
-    for link, text in extract_from_html(html, UNGM_NOTICE_BASE, keywords):
-        if "/Public/Notice/" not in link:
-            continue
-        items.append(normalise(src["key"], src.get("tier"), text, link,
-                               summary=text))
-    if not items:
-        raise FetchError("ungm: both search endpoints returned nothing parseable")
-    return items, {"strategy": "html_partial", "raw_count": len(items)}
+    try:
+        body = json.dumps(payload2).encode("utf-8")
+        req = urllib.request.Request(UNGM_SEARCH_HTML, data=body, method="POST", headers={
+            "User-Agent": UA,
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            "Origin": "https://www.ungm.org",
+            "Referer": "https://www.ungm.org/Public/Notice",
+            "Accept": "text/html, */*;q=0.8",
+        })
+        status, html = _open(req, 30)
+        items = []
+        for link, text in extract_from_html(html, UNGM_NOTICE_BASE, keywords):
+            if "/Public/Notice/" not in link:
+                continue
+            items.append(normalise(src["key"], src.get("tier"), text, link,
+                                   summary=text))
+        if items:
+            return items, {"strategy": "html_partial", "raw_count": len(items)}
+    except FetchError:
+        pass  # fall through to the browser
+
+    # Strategy 3: a real browser. Only the heavy lane installs Playwright; on
+    # any other lane this raises and the source FAILS LOUDLY instead of
+    # reporting a silent '0 raw'.
+    try:
+        pw_items, _ = fetch_playwright(src, cfg, keywords)
+    except FetchError:
+        pw_items = []
+    if pw_items:
+        return pw_items, {"strategy": "playwright", "raw_count": len(pw_items)}
+    raise FetchError("ungm: json API, HTML endpoint and browser all failed")
+
+
+BOT_WALL_HINTS = ("403", "just a moment", "azure waf", "captcha",
+                  "validation request", "cookies ben", "access denied")
 
 
 def fetch_http(src, cfg, keywords):
@@ -681,6 +714,15 @@ def fetch_http(src, cfg, keywords):
                                        summary=text))
         except FetchError as exc:
             errors.append(f"{u} -> {exc}")
+    # A source whose EVERY url failed did not "succeed with 0 results" -- it
+    # was blocked or is down. Counting Cloudflare/WAF 403s as 'ok' is how the
+    # standard lane once reported 11/12 while four sources were bot-walled.
+    # Fail loudly: the digest's FAILED line is the alarm.
+    if urls and len(errors) == len(urls):
+        msg = "; ".join(errors)[:280]
+        if any(h in msg.lower() for h in BOT_WALL_HINTS):
+            msg = "possible bot/IP block -- " + msg
+        raise FetchError(msg)
     return items, {"errors": errors, "urls_tried": len(urls)}
 
 
@@ -706,6 +748,9 @@ def fetch_playwright(src, cfg, keywords):
                     page.wait_for_selector(sel, timeout=20000)
                 except Exception:
                     pass
+            else:
+                # No selector configured: give JS-rendered lists a moment.
+                page.wait_for_timeout(5000)
             html = page.content()
             for link, text in extract_from_html(html, url, keywords):
                 items.append(normalise(src["key"], src.get("tier"), text, link, summary=text))
@@ -1218,6 +1263,19 @@ def self_test():
         '<a href="/fr/menu">Menu en français - ouvrir le panneau</a>',
         "https://x.eu/", ["interpretation"])
     ck("navigation not harvested without a real term", nav == [])
+    # PLACE-style rows: the anchor says 'Accéder à la consultation' and the
+    # tender title lives in the row BEFORE the link. The keyword gate must
+    # read the context, not just the anchor text.
+    place_row = ('<td>Prestation d interprétariat téléphonique pôles France</td>'
+                 '<td><a href="/app.php/entreprise/consultation/2940332">'
+                 'Accéder à la consultation</a></td>')
+    rows = extract_from_html(place_row, "https://x.fr/", ["interprétariat"])
+    ck("row-context harvest for generic anchors",
+       bool(rows) and "consultation/2940332" in rows[0][0])
+    clean_row = ('<td>Fourniture de bornes interactives tactiles accueil</td>'
+                 '<td><a href="/c/1">Accéder à la consultation</a></td>')
+    ck("generic anchor without keyword stays out",
+       extract_from_html(clean_row, "https://x.fr/", ["interprétariat"]) == [])
 
     # UNGM's internal API speaks camelCase or PascalCase depending on
     # deployment; the parser must survive both, and its odd date format.
