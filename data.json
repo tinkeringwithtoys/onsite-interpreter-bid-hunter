@@ -8,7 +8,7 @@
     "failures": [
       "eu_funding_tenders_portal: HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}"
     ],
-    "fetched": 13,
+    "fetched": 15,
     "lane": "fast",
     "new": 0,
     "per_source": {
@@ -27,23 +27,23 @@
       },
       "ted_award_notices": {
         "date_filtered": true,
-        "fetched": 6,
+        "fetched": 8,
         "query_used": "classification-cpv IN (79540000 79530000) AND notice-type IN (can-standard) AND publication-date>=today(-7)",
         "rejected_attempts": [
           "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
         ],
         "sorted_desc": false,
-        "total": 6
+        "total": 8
       }
     },
     "pre_filtered": 0,
-    "raw": 13,
-    "run_at": "2026-08-07T23:34:20.998038+00:00",
-    "run_time": "2026-08-07 23:34 UTC",
+    "raw": 15,
+    "run_at": "2026-08-08T01:26:13.823104+00:00",
+    "run_time": "2026-08-08 01:26 UTC",
     "score_failed": 0,
     "sources_ok": 2,
     "sources_polled": 3,
     "sources_total": 3,
-    "still_open": 13
+    "still_open": 15
   }
 }
