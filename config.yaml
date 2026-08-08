@@ -483,6 +483,7 @@ sources:
   - key: web_discovery
     tier: P0_DISCOVERY
     method: http                    # fetch_search: DuckDuckGo HTML, no API key
+    url: "https://html.duckduckgo.com/html/"   # declared so the config validator sees a fetchable endpoint
     recency: w                      # df=w = past week (d = day, m = month)
     queries:
       - "interpretation services tender"
