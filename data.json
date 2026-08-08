@@ -1,38 +1,5 @@
 {
-  "items": [
-    {
-      "content_flags": [],
-      "country": null,
-      "days_left": null,
-      "deadline": null,
-      "eligibility": "review_manually",
-      "eligibility_label": "Open-web discovery hit. The buyer, the source site and your eligibility are all unverified -- read the notice yourself before investing time.",
-      "id": "40c7e1ba723182ed0812",
-      "published": null,
-      "raw": {
-        "detail_fetched": true
-      },
-      "score": {
-        "billing_unit": "unclear",
-        "estimated_day_rate_eur": 0,
-        "language_pairs": [],
-        "location": "",
-        "net_after_travel_eur": 0,
-        "red_flags": [
-          "Source is a commercial service provider website, not a public procurement notice",
-          "No specific tender requirements or lot details provided"
-        ],
-        "relevance": 0,
-        "travel_and_accommodation_covered": null,
-        "work_mode": "unclear"
-      },
-      "source": "web_discovery",
-      "summary": "Services Certified Translation Localization Interpreting Transcription Translation Services Content Services Solutions By Language By Industry By Document Technology KoT Cloud (TMS) KoT Editor (CAT) Integration (API) KoT Rapid Company About Us Career Customers Case Studies Quality Articles Reviews Pricing Contact EN English (US) English (UK) Español Access KoT Cloud Client portal KoT Rapid Interpreter portal Get Started Services Certified Translation Localization Interpreting Transcription View all services → Solutions By Language By Industry By Document View all industries → Technology KoT Cloud (TMS) KoT Editor (CAT) Integration (API) KoT Rapid View all technology → Company About Us Career Case Studies Reviews Articles Pricing Contact Get Started On-demand interpreting services phone and video Connect with certified interpreters in 120+ languages—within minutes. Kings of Translation offers on-site or remote interpreting with same-day availability, flexible scheduling, and strict confidentiality. Our medical and legal specialists ensure clear, culturally sensitive communication for appointments, depositions, interviews, and meetings—anywhere in the world. Request a Quote Request Quote 4.9 out of 5 Certified interpreters Medical and legal On-site or remote Same-day availability Trusted by leading global organizations “ Their medical interpreters enabled seamless patient communication, ensuring accurate diagnoses and treatment plans across language barriers. ” Dr. Rachel Kim “ Professional on-site interpreters facilitated our international negotiations, capturing cultural nuances that made all the difference in closing deals. ” Marcus Johnson “ Their consecutive interpreting services ensured our legal proceedings met compliance standards while maintaining confidentiality and precision. ” Jennifer Thompson Need an interpreter right now? Our on-demand team connects you with a qualified professional by phone or secure video for urgent medical consults, legal matters, customer support, and business meetings. Choose consecutive or simultaneous delivery, remote or on-site, and get seamless support tailored to your agenda. Explore all options—including conference, medical, legal, and business sessions—on our parent page: interpreting services . We scale from a single call to multi-day events, ensuring accuracy, cultural sensitivity, and confidentiality across time zones. On-Site On-Demand In-person consecutive or simultaneous interpreting for meetings, depositions, and appointments in major metro areas. $80 per hour (2-hr min) Request a Quote Consecutive/simultaneous Event coordination Equipment on request Nationwide coverage Flexible, transparent pricing Choose remote or on-site on-demand interpreting with clear minimums and no surprises. After-hours and rare-language surcharges may apply; we’ll confirm before you book. Remote On-Demand Fast connection by phone or secure video in 120+ languages. Connects in ~5 seconds. Ideal for medical, legal, support, and business calls. $1.29 per minute (5 min minimum) Request a Quote Phone or video CCHI/NBCMI medical Legal-capable interpreters Connects in ~5 seconds Languages we specialize in for interpreting Work with interpreters fluent in 120+ languages and regional dialects, from Spanish, Mandarin, and Arabic to Vietnamese, Russian, French, Korean, Portuguese, and more. Our professionals pair native-level fluency with specialized training in medical, legal, and business contexts. We assign interpreters based on domain expertise and cultural competency—ensuring clear, respectful communication for every participant. Popular languages Show all Spain Spanish France French Russia Russian Arabic region Arabic Japan Japanese Portugal Portuguese Germany German ★ China Chinese Italy Italian Korea Korean When to choose on-demand interpreting On-demand interpreting is ideal when communication can’t wait. If a patient needs urgent triage, a doctor requires a specialist consult, or a telehealth session begins in minutes, our medical interpreters (including CCHI/NBCMI-certified professionals) can join by phone or video quickly—helping clinicians ensure informed consent, accurate symptom descriptions, and HIPAA-compliant privacy. Legal teams rely on fast access for client intake, depositions, mediations, and notary sessions. When coordinating with U.S. immigration officers or during USCIS-related interviews that allow personal interpreters, you can schedule a neutral, qualified interpreter to ensure impartiality and clarity. For cross-border matters, we also support international counsel and multilingual stakeholders with dependable, conflict-free interpreting. In business scenarios, on-demand interpreting streamlines sales calls, supplier negotiations, tech support, user research, and investor updates. Whether you need consecutive interpreting for structured Q&amp;A or simultaneous interpreting for real-time flow during high-stakes meetings, we provide the right modality and subject-matter expertise to keep discussions precise and efficient. For public sector and community services, our interpreters support schools, social services, and emergency coordination—bridging languages with cultural sensitivity. When teams move between countries, we handle varying dialects and terminology, ensuring participants feel heard and respected. Remote sessions run smoothly on Zoom, Teams, or Webex; on-site support is available in major metros with rapid scheduling. Certified expertise and pro",
-      "tier": "P0_DISCOVERY",
-      "title": "Phone Interpreter Service 24/7 - On-Demand Interpreting Service",
-      "url": "https://duckduckgo.com/y.js?ad_domain=kingsoftranslation.com&ad_provider=bingv7aa&ad_type=txad&click_metadata=20BioqtfwSLyZSOKCO0NPfSFRPSlRCnuTuDgEW2a%2DmL%2DoY4VlrwNkG775FBe7Xu4nhkJgzIA368iqUEYIl472ToDyyNmB%2DOMNrdD7h1JHql_EW61AphG5BBe55%2DkrLcis%2D_k19kJebUcliOaoj_8VXZR4WOrwDrSaFl4laIvfTc.aLLyFQZa1XdkEa65sLH1dg&rut=9a2c032c3ae1518f2d036447b3eb9635eb842235ff10f355fbb5f4393bfbbcd4&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8Z%2Dv4qKDjkrTFESAN_GKRoTVUCUzSSj_5_z872sbX5q%2D4tbds0C5hRRltu2l8tFXADX4cNO5IGi8AvfwzMeH%2DKzWHuvNOUVnEy_w1Cdq%2DUW2VZ6jAAsAMVxnEMtdDfTEGm563%2DeNuLPV5q368kP5zavZ2jbqPWeJLtSI1Z3HrMyedoXPUH9LrPfiYxwslQveJDq6CQUFjFO3fVxQOw7gHHNIavZs%26u%3DaHR0cHMlM2ElMmYlMmZ3d3cua2luZ3NvZnRyYW5zbGF0aW9uLmNvbSUyZm9uLWRlbWFuZC1pbnRlcnByZXRpbmctc2VydmljZXMlMmYlM2Ztc2Nsa2lkJTNkMTc1ZmYzMzA2MTdlMTBjZDkyNjU5OTQ2YmFiZTNjNzY%26rlid%3D175ff330617e10cd92659946babe3c76&vqd=4-320616625997827086227018234670375647568&iurl=%7B1%7DIG%3DFA61108BC34145D6A58E5104497D34AB%26CID%3D3E0FAC7DAB036E5C286EBBD2AA886FE4%26ID%3DDevEx%2C5037.1"
-    }
-  ],
+  "items": [],
   "stats": {
     "deferred": 0,
     "failed_sources": [
@@ -43,9 +10,9 @@
       "ungm: UNGM browser-session API HTTP 500: {\"status\":500,\"code\":\"SYSTEM_FAILURE\",\"message\":\"A critical error occurred while processing your request.\"}",
       "eu_funding_tenders_portal: HTTP 500: {\"apiVersion\":\"2.148.3\",\"type\":\"throwable\",\"message\":\"An internal error occurred\"}"
     ],
-    "fetched": 16,
+    "fetched": 115,
     "lane": "all",
-    "new": 1,
+    "new": 0,
     "per_source": {
       "afdb_procurement": {
         "fetched": 0
@@ -99,20 +66,21 @@
         "total": 13
       },
       "ted_award_notices": {
-        "date_filtered": true,
-        "fetched": 6,
-        "query_used": "classification-cpv IN (79540000 79530000) AND notice-type IN (can-standard) AND publication-date>=today(-7)",
+        "date_filtered": false,
+        "fetched": 100,
+        "query_used": "classification-cpv IN (79540000 79530000) AND notice-type IN (can-standard)",
         "rejected_attempts": [
-          "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
+          "dated+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc",
+          "dated: HTTP 429: <html>\r\n<head><title>429 Too Many Requests</title></head>\r\n<body>\r\n<center><h1>429 Too Many Requests</h1></cen",
+          "plain+sort: HTTP 400: {\"message\":\"JSON parse error: Unrecognized field \\\"sort\\\" (class eu.europa.tedv2.search.controller.PublicSearc"
         ],
         "sorted_desc": false,
-        "total": 6
+        "total": 3953
       },
       "un_celp_exams": {
         "detail_fetched": 2,
         "errors": [],
-        "fetched": 2,
-        "listing_pages": 2
+        "fetched": 2
       },
       "undp_procurement": {
         "errors": [],
@@ -125,23 +93,24 @@
       "web_discovery": {
         "detail_cap_deferred": 0,
         "detail_fetch_failed": 2,
-        "detail_fetched": 1,
+        "detail_fetched": 0,
         "errors": [],
-        "fetched": 1,
+        "fetched": 0,
         "filtered_generic_listing": 5,
         "filtered_navigation": 2,
-        "filtered_no_arabic_tender_signal": 9,
-        "queries_run": 5
+        "filtered_no_signal": 9,
+        "official_ungm_indexed_notices": 0,
+        "queries_run": 7
       }
     },
     "pre_filtered": 0,
-    "raw": 16,
-    "run_at": "2026-08-08T07:33:20.110704+00:00",
-    "run_time": "2026-08-08 07:33 UTC",
+    "raw": 115,
+    "run_at": "2026-08-08T08:06:30.244372+00:00",
+    "run_time": "2026-08-08 08:06 UTC",
     "score_failed": 0,
     "sources_ok": 13,
     "sources_polled": 15,
     "sources_total": 15,
-    "still_open": 16
+    "still_open": 115
   }
 }
