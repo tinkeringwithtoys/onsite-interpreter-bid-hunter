@@ -1,19 +1,11 @@
 # =============================================================================
 # GLOBAL INTERPRETER BID HUNTER · unified two-hour pass
 # =============================================================================
-# One workflow. Every source that is explicitly poll:true. Every two hours.
+# One workflow. Every explicitly enabled source. Every two hours.
 #
-# Why keep one job instead of Fast / Standard / Heavy:
-# - The repository is public, so GitHub-hosted Actions minutes are unlimited.
-# - A source should not wait for a different lane just because it needs a
-#   browser. Chromium is installed once, then APIs, static portals, browser
-#   pages, and open-web discovery all flow through one dedupe/scoring/digest.
-# - One state writer prevents the three-lane race where simultaneous jobs can
-#   rebase over seen.json, watchlist.json or data.json.
-#
-# Scope: every source with poll:true in config.yaml. poll:false sources stay
-# deliberately parked: a schedule cannot replace TUNEPS credentials/certificates
-# or make a duplicate source produce new notices.
+# Chromium is installed once, then APIs, static portals, browser pages, and
+# open-web discovery use the same dedupe, scoring, digest, and state path.
+# One concurrency group owns all state files, preventing competing writers.
 # =============================================================================
 
 name: Hunt — all enabled sources (every 2 hours)
@@ -34,7 +26,7 @@ jobs:
   hunt:
     runs-on: ubuntu-latest
     # The scorer receives up to 53.5 minutes (55 minus the safety margin).
-    # This protects the state commit and failure email from being killed mid-run.
+    # This protects state persistence and lead delivery from being killed mid-run.
     timeout-minutes: 55
 
     steps:
@@ -90,7 +82,7 @@ jobs:
           git config user.name  "bid-hunter[bot]"
           git config user.email "bid-hunter@users.noreply.github.com"
 
-          for f in seen.json watchlist.json data.json; do
+          for f in seen.json watchlist.json data.json source_health.json; do
             [ -f "$f" ] && git add "$f"
           done
 
@@ -109,7 +101,10 @@ jobs:
           done
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
-      - name: Report failure
+      # Per-source availability is stateful inside run_hunt.py. This alarm is
+      # reserved for unexpected code or workflow failures that prevented that
+      # state machine from completing.
+      - name: Report unexpected Hunt failure
         if: failure()
         env:
           LANE: all
@@ -120,4 +115,4 @@ jobs:
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: python scraper.py --notify-failure "unified hunt failed"
+        run: python scraper.py --notify-failure "unified Hunt failed"
