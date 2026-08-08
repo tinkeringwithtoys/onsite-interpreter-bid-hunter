@@ -454,6 +454,10 @@ deadline_watch:
 # ============================================================================
 # method: json_api | http | playwright
 # Adding a source = adding a block here. Never edit scraper code for a new board.
+#
+# 2026-08-08 REACHABILITY AUDIT: every URL below was fetched without JavaScript
+# to see what the plain-HTTP harvester can actually read. Verdicts are recorded
+# inline. "server-rendered" = real notice links exist in the raw HTML.
 # ============================================================================
 sources:
 
@@ -474,6 +478,9 @@ sources:
       48 months, split into 7 GEOGRAPHIC lots. A previous Frontex interpreting
       framework (~EUR 25M) was awarded to SIX vendors in cascade.
     why_you: "Border operations = Arabic-heavy. Cascade award = multiple winners."
+    audit_2026_08_08: "UNPROVEN - page would not load for the auditor at all;
+      runner reaches it but harvests nothing. May be JS-rendered or filtered.
+      Frontex above-threshold tenders ALSO appear in TED, which works. Watch."
     poll: true
 
   - key: euaa_procurement
@@ -487,14 +494,22 @@ sources:
       Conferences and Events, INCLUDING REMOTE INTERPRETATION, organised in and
       outside of Malta".
     why_you: "EU asylum agency, Malta-based, buys both onsite and remote."
+    audit_2026_08_08: "UNPROVEN - page would not load for the auditor; runner
+      harvests nav links only. EUAA above-threshold tenders ALSO appear in TED."
     poll: true
 
   - key: ofpra_ofii_france
     tier: P1_ASYLUM
     method: http
     urls:
-      - "https://www.marches-publics.gouv.fr/"      # PLACE - state purchasing platform
-      - "https://www.boamp.fr/"                     # BOAMP - official bulletin
+      # 2026-08-08: the PLACE homepage carries NO tender links. The AllCons
+      # view is the server-rendered listing - verified live: 2,052 open
+      # consultations with titles, deadlines and detail URLs in plain HTML.
+      - "https://www.marches-publics.gouv.fr/?page=Entreprise.EntrepriseAdvancedSearch&AllCons"
+      # BOAMP homepage is nav only; its listing needs the search UI. Kept as a
+      # low-cost sentinel (harvests nothing, costs nothing) until a proven
+      # listing URL replaces it.
+      - "https://www.boamp.fr/"
     evidence: |
       OFPRA ran an interpreting framework worth up to ~EUR 42M. A later OFPRA
       procedure (ref 202405001) covered "interprétariat TELEPHONIQUE pour les
@@ -510,6 +525,8 @@ sources:
     tier: P1_ASYLUM
     method: http
     urls:
+      # service.bund.de homepage is a search FORM, no listings. evergabe-online
+      # is server-rendered with real tender titles - verified live 2026-08-08.
       - "https://www.service.bund.de/"
       - "https://www.evergabe-online.de/"
     evidence: "BAMF is the largest single asylum-interpreting buyer in the EU by volume."
@@ -541,6 +558,8 @@ sources:
     url: "https://www.ungm.org/Public/Notice"
     notice_types: [RFQ, RFP, ITB, EOI, RFI, pre-qualification]
     why_you: "AR is 1 of 6 official UN languages; AR booth does retour, as you do."
+    audit_2026_08_08: "JS-rendered list page - plain GET sees only the filter
+      UI. FIXED in code: fetch_ungm() uses the internal search API."
     poll: true
 
   - key: undp_procurement
@@ -548,12 +567,18 @@ sources:
     method: http
     url: "https://procurement-notices.undp.org/"
     why_you: "High Arabic demand across the Arab States regional bureau."
+    audit_2026_08_08: "PROVEN server-rendered - ~70 live notices with
+      view_negotiation.cfm detail links in plain HTML. No change needed."
     poll: true
 
   - key: un_celp_exams
     tier: P1_UN
     method: http
-    url: "https://www.un.org/dgacm/en/content/exams-interpreters"
+    urls:
+      - "https://www.un.org/dgacm/en/content/exams-interpreters"
+      # 2026-08-08: exams are ANNOUNCED on this page, not the one above.
+      # Verified live: server-rendered list incl. past Arabic interpreter CELPs.
+      - "https://www.un.org/dgacm/content/announcements"
     cadence: rare                 # announced in cycles, not continuously
     hard_requirements:
       - "perfect command of Arabic as MAIN language"
@@ -574,6 +599,9 @@ sources:
     method: http
     url: "https://au.int/en/bids"
     why_you: "AU runs explicit freelance-roster expansion calls for AR/EN/FR/PT interpreters."
+    audit_2026_08_08: "PROVEN server-rendered - bid table with titles, numbers
+      and deadlines in plain HTML. Currently: equipment/consultancy bids only,
+      no language tenders - 0 raw is the truth, not a blind spot."
     poll: true
 
   - key: afdb_procurement
@@ -581,6 +609,8 @@ sources:
     method: http
     url: "https://www.afdb.org/en/projects-and-operations/procurement"
     note: "Individual-consultant EOIs for translation/interpretation; ADEA submissions to adea-applications@afdb.org"
+    audit_2026_08_08: "Server-rendered list confirmed ('Displaying 1-18 of
+      12153' with Title/Country columns in plain HTML). No change needed."
     poll: true
 
   # --------------------------------------------------------------------------
@@ -657,6 +687,9 @@ sources:
     method: http
     url: "https://op.europa.eu/en/web/public-procurement/"
     evidence: "Observed listing: 'Provision of Interpretation Services for In-person, Hybrid, and ...'"
+    audit_2026_08_08: "Landing page only; the real listing lives behind a
+      Liferay portlet URL with instance IDs (fragile). NOT worth a scraper:
+      every OP above-threshold tender is already in TED, which works."
     poll: true
 
   # --------------------------------------------------------------------------
@@ -696,6 +729,11 @@ sources:
     why_you: "Home market. Full access, no third-country question, no partner needed."
     relationship_to_tuneps: "discover here (free, no login) -> submit on TUNEPS (login + certificate)"
     note: "Below-threshold lots are less contested and never reach TED."
+    audit_2026_08_08: "WAF CHALLENGE observed - the portal answered a datacenter
+      client with a CAPTCHA wall ('error code 421'). The runner got HTML on an
+      earlier run, so this is INTERMITTENT, not a hard block. First real
+      datacenter-IP signal in the system; the weekly validator now tracks it.
+      If it hardens, this source moves to the heavy lane (Playwright)."
     poll: true
 
   # --------------------------------------------------------------------------
@@ -708,6 +746,8 @@ sources:
     tier: P4_GULF
     method: http
     url: "https://tenders.etimad.sa/Tender/AllTendersForVisitor?PageNumber=1"
+    audit_2026_08_08: "PROVEN server-rendered - live Arabic tenders with
+      reference numbers, deadlines and detail links in plain HTML."
     poll: true
   - key: monaqasat_qa
     tier: P4_GULF
