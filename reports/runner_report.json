@@ -1,0 +1,280 @@
+{
+  "generated_utc": "2026-08-10T04:37:57.436156+00:00",
+  "environment": "GITHUB ACTIONS RUNNER",
+  "ted": {
+    "cpv_syntax": [
+      {
+        "query": "classification-cpv IN (79540000 79530000)",
+        "status": 400,
+        "ok": false,
+        "hits": null,
+        "error": null,
+        "body_head": "{\"message\":\"Validation error\",\"error\":[{\"objectName\":\"publicExpertSearchRequestV1\",\"field\":\"fields\",\"message\":\"must not be empty\"}]}"
+      },
+      {
+        "query": "classification-cpv IN (79540000)",
+        "status": 400,
+        "ok": false,
+        "hits": null,
+        "error": null,
+        "body_head": "{\"message\":\"Validation error\",\"error\":[{\"objectName\":\"publicExpertSearchRequestV1\",\"field\":\"fields\",\"message\":\"must not be empty\"}]}"
+      },
+      {
+        "query": "classification-cpv=79540000",
+        "status": 400,
+        "ok": false,
+        "hits": null,
+        "error": null,
+        "body_head": "{\"message\":\"Validation error\",\"error\":[{\"objectName\":\"publicExpertSearchRequestV1\",\"field\":\"fields\",\"message\":\"must not be empty\"}]}"
+      },
+      {
+        "query": "CPV=79540000",
+        "status": 400,
+        "ok": false,
+        "hits": null,
+        "error": null,
+        "body_head": "{\"message\":\"Validation error\",\"error\":[{\"objectName\":\"publicExpertSearchRequestV1\",\"field\":\"fields\",\"message\":\"must not be empty\"}]}"
+      },
+      {
+        "query": "notice-title ~ (interpretation)",
+        "status": 400,
+        "ok": false,
+        "hits": null,
+        "error": null,
+        "body_head": "{\"message\":\"Validation error\",\"error\":[{\"objectName\":\"publicExpertSearchRequestV1\",\"field\":\"fields\",\"message\":\"must not be empty\"}]}"
+      }
+    ],
+    "date_syntax": [],
+    "arabic_syntax": [],
+    "award_syntax": [],
+    "working_query": null
+  },
+  "reachability": [
+    {
+      "name": "Frontex open tenders",
+      "url": "https://www.frontex.europa.eu/about-us/open-tenders/",
+      "status": 403,
+      "verdict": "FORBIDDEN (needs auth or IP-blocked)",
+      "ms": 623,
+      "error": null,
+      "bytes": 520
+    },
+    {
+      "name": "EUAA procurements",
+      "url": "https://www.euaa.europa.eu/procurements",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 1841,
+      "error": null,
+      "bytes": 84226
+    },
+    {
+      "name": "France PLACE (state platform)",
+      "url": "https://www.marches-publics.gouv.fr/",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 1114,
+      "error": null,
+      "bytes": 59483
+    },
+    {
+      "name": "France BOAMP",
+      "url": "https://www.boamp.fr/",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 1131,
+      "error": null,
+      "bytes": 198206
+    },
+    {
+      "name": "Germany service.bund.de",
+      "url": "https://www.service.bund.de/",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 1706,
+      "error": null,
+      "bytes": 24148
+    },
+    {
+      "name": "Germany eVergabe",
+      "url": "https://www.evergabe-online.de/",
+      "status": 400,
+      "verdict": "HTTP 400",
+      "ms": 1281,
+      "error": null,
+      "bytes": 5331
+    },
+    {
+      "name": "EU Publications Office procurement",
+      "url": "https://op.europa.eu/en/web/public-procurement/",
+      "status": 403,
+      "verdict": "FORBIDDEN (needs auth or IP-blocked)",
+      "ms": 124,
+      "error": null,
+      "bytes": 7918
+    },
+    {
+      "name": "UNGM public notices",
+      "url": "https://www.ungm.org/Public/Notice",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 1518,
+      "error": null,
+      "bytes": 141651
+    },
+    {
+      "name": "UNDP procurement notices",
+      "url": "https://procurement-notices.undp.org/",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 1033,
+      "error": null,
+      "bytes": 199922
+    },
+    {
+      "name": "UN interpreter exams (CELP)",
+      "url": "https://www.un.org/dgacm/en/content/exams-interpreters",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 134,
+      "error": null,
+      "bytes": 52356
+    },
+    {
+      "name": "African Union bids",
+      "url": "https://au.int/en/bids",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 241,
+      "error": null,
+      "bytes": 112739
+    },
+    {
+      "name": "AfDB procurement",
+      "url": "https://www.afdb.org/en/projects-and-operations/procurement",
+      "status": 403,
+      "verdict": "BLOCKED (WAF/bot-wall)",
+      "ms": 161,
+      "error": null,
+      "bytes": 5815
+    },
+    {
+      "name": "EU interpreter accreditation",
+      "url": "https://europa.eu/interpretation/freelance_en.html",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 591,
+      "error": null,
+      "bytes": 70168
+    },
+    {
+      "name": "EU ACI test calendar (PDF)",
+      "url": "https://europa.eu/interpretation/doc/aci_test_calendar.pdf",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 713,
+      "error": null,
+      "bytes": 181398
+    },
+    {
+      "name": "EU Funding & Tenders portal",
+      "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/home",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 483,
+      "error": null,
+      "bytes": 59985
+    },
+    {
+      "name": "Portugal BASE",
+      "url": "https://www.base.gov.pt/Base4/en/",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 945,
+      "error": null,
+      "bytes": 89878
+    },
+    {
+      "name": "UK GCA Language Services RM6302",
+      "url": "https://www.gca.gov.uk/agreements/RM6302",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 2458,
+      "error": null,
+      "bytes": 123736
+    },
+    {
+      "name": "Saudi Etimad (visitor list)",
+      "url": "https://tenders.etimad.sa/Tender/AllTendersForVisitor?PageNumber=1",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 1747,
+      "error": null,
+      "bytes": 199862
+    },
+    {
+      "name": "Qatar Monaqasat",
+      "url": "https://monaqasat.mof.gov.qa/",
+      "status": 0,
+      "verdict": "UNREACHABLE",
+      "ms": 35432,
+      "error": "URLError: <urlopen error timed out>",
+      "bytes": 0
+    },
+    {
+      "name": "Kuwait CAPT",
+      "url": "https://capt.gov.kw/en/",
+      "status": 403,
+      "verdict": "BLOCKED (WAF/bot-wall)",
+      "ms": 227,
+      "error": null,
+      "bytes": 5632
+    },
+    {
+      "name": "Bahrain Tender Board",
+      "url": "https://www.tenderboard.gov.bh/Tenders/PublicTenders/",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 3015,
+      "error": null,
+      "bytes": 86057
+    },
+    {
+      "name": "Oman Tender Board",
+      "url": "https://etendering.tenderboard.gov.om/product/publicDash",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 9202,
+      "error": null,
+      "bytes": 195773
+    },
+    {
+      "name": "Dubai eSupply",
+      "url": "https://esupply.dubai.gov.ae/",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 384,
+      "error": null,
+      "bytes": 264
+    },
+    {
+      "name": "TUNEPS",
+      "url": "https://www.tuneps.tn/",
+      "status": 0,
+      "verdict": "UNREACHABLE",
+      "ms": 731,
+      "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>",
+      "bytes": 0
+    },
+    {
+      "name": "HAICOP Tunisia",
+      "url": "https://www.marchespublics.gov.tn/",
+      "status": 200,
+      "verdict": "OK",
+      "ms": 2733,
+      "error": null,
+      "bytes": 90148
+    }
+  ],
+  "config_problems": []
+}
