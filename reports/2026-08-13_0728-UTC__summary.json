@@ -1,0 +1,263 @@
+{
+  "timestamp": "2026-08-13_0728-UTC",
+  "topics": [
+    {
+      "name": "AI Industry Trends",
+      "query": "latest AI industry trends and breakthroughs 2026",
+      "report": "## Synthesis Error\n\nThe LLM synthesis failed: Error code: 503 - {'error': {'code': 'model_not_found', 'message': 'No available channel for model Agnes-2.5-Flash under group default (distributor) (request id: 2026081307285529575390fPJrtZjQ)', 'type': 'AgnesAI_error'}}\n\nRaw search results and fetched content were still saved.",
+      "sources": [
+        {
+          "title": "The trends that will shape AI and tech in 2026 | IBM",
+          "url": "https://www.ibm.com/think/news/ai-tech-trends-predictions-2026"
+        },
+        {
+          "title": "What’s next in AI: 7 trends to watch in 2026",
+          "url": "https://news.microsoft.com/source/features/ai/whats-next-in-ai-7-trends-to-watch-in-2026"
+        },
+        {
+          "title": "AI Trends in 2026: Advancements and Breakthroughs Ahead",
+          "url": "https://www.trigyn.com/insights/ai-trends-2026-new-era-ai-advancements-and-breakthroughs"
+        },
+        {
+          "title": "Latest AI Breakthroughs in 2026 - dtecheducate",
+          "url": "https://www.dtecheducate.com/latest-ai-breakthroughs-in-2026/"
+        },
+        {
+          "title": "Key AI Trends and Insights from Early 2026 - AI and News",
+          "url": "https://www.aiandnews.com/blog/ai-breakthroughs-trends-2026/"
+        },
+        {
+          "title": "AI News Today 2026 | Latest AI Model Releases, Trends & Analysis",
+          "url": "https://www.buildfastwithai.com/blogs/collection/ai-industry-news-trends"
+        },
+        {
+          "title": "The Latest AI News and Breakthroughs That Matter Most | News",
+          "url": "https://www.crescendo.ai/news/latest-ai-news-and-updates"
+        },
+        {
+          "title": "AI Latest Development Trends: 2026's Top Breakthroughs",
+          "url": "https://aisuperior.com/ai-latest-developments/"
+        },
+        {
+          "title": "The 2026 AI Index Report | Stanford HAI",
+          "url": "https://hai.stanford.edu/ai-index/2026-ai-index-report"
+        },
+        {
+          "title": "Five Trends in AI and Data Science for 2026 | Thomas H. Davenport and Randy Bean | MIT Sloan Management Review",
+          "url": "https://sloanreview.mit.edu/article/five-trends-in-ai-and-data-science-for-2026/"
+        },
+        {
+          "title": "US startups raised $412B in H1 2026, 88% in AI | LinkedIn",
+          "url": "https://www.linkedin.com/posts/bzuberi_412b-went-into-us-startups-in-h1-2026-activity-7490810542287187968-JutF"
+        },
+        {
+          "title": "AI-First Startups Are Raising Smaller Funding Rounds — And...",
+          "url": "https://upstartzen.com/ai-first-startups-smaller-funding-rounds-2026/"
+        },
+        {
+          "title": "1,000+ Funded San Francisco Startups 2026 | Verified... - Growth List",
+          "url": "https://growthlist.co/san-francisco-startups/"
+        },
+        {
+          "title": "AI Startup Cognition in New Funding Talks at $40 Billion... - Bloomberg",
+          "url": "https://www.bloomberg.com/news/articles/2026-08-12/ai-startup-cognition-in-new-funding-talks-at-40-billion-value"
+        },
+        {
+          "title": "Europe's July funding held at 8.6bn euros on… | AI in Europe",
+          "url": "https://aiineurope.co/business/europe-july-2026-funding-8-6bn-fewer-larger-rounds-2026-08-10"
+        },
+        {
+          "title": "TechCrunch | Startup and Technology News",
+          "url": "https://techcrunch.com/"
+        },
+        {
+          "title": "5 AI Investment Themes Poised to Explode in 2026 | by Roundly.io",
+          "url": "https://medium.com/@mike_95293/5-ai-investment-themes-poised-to-explode-in-2026-2f7dd998b002"
+        },
+        {
+          "title": "The Week’s 10 Biggest Funding Rounds: AI Drives... - Magnifity",
+          "url": "https://magnifity.com/the-weeks-10-biggest-funding-rounds-ai-drives-another-spree-of-megadeals/"
+        },
+        {
+          "title": "Forbes 2026 AI 50 List | Top Artificial Intelligence Companies",
+          "url": "https://www.forbes.com/lists/ai50/"
+        },
+        {
+          "title": "Startups @ Software and Internet, Other, Healthtech/Medtech",
+          "url": "https://www.invstt.com/public/startups"
+        },
+        {
+          "title": "Why Nvidia Is Trying To Develop The World’s Best Open-Source AI...",
+          "url": "https://www.theinformation.com/articles/nvidia-trying-develop-worlds-best-open-source-ai-models"
+        },
+        {
+          "title": "Bytez - open source AI",
+          "url": "https://bytez.com/"
+        },
+        {
+          "title": "Jan - Open-Source ChatGPT Replacement",
+          "url": "https://www.jan.ai/"
+        },
+        {
+          "title": "OpenAI's GPT-6 'Doug', Qwen 4.0 WILL BE INSANE... - YouTube",
+          "url": "https://www.youtube.com/watch?v=X8K1bW-XfL8"
+        },
+        {
+          "title": "Open source generative AI development platform for building AI...",
+          "url": "https://flowiseai.com/"
+        },
+        {
+          "title": "LTX-2.5: LTX's Latest AI Open-Source Foundation Model | LTX",
+          "url": "https://ltx.io/model/ltx-2-5"
+        },
+        {
+          "title": "Zuckerberg pushes ‘superintelligent’ AI for all as Meta... | The Guardian",
+          "url": "https://www.theguardian.com/technology/2026/aug/10/mark-zuckerberg-superintelligent-ai-essay-meta"
+        },
+        {
+          "title": "GitHub - diegosouzapw/OmniRoute: Never stop coding. Free MIT AI...",
+          "url": "https://github.com/diegosouzapw/OmniRoute"
+        },
+        {
+          "title": "A letter from Mark Zuckerberg on the path to a positive AI future.",
+          "url": "https://about.fb.com/news/2026/08/the-future-is-for-everyone/"
+        },
+        {
+          "title": "Hugging Face – The AI community building the future.",
+          "url": "https://huggingface.co/"
+        },
+        {
+          "title": "Qwen - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Qwen"
+        },
+        {
+          "title": "LLM News Today (August 2026) – AI Model Releases",
+          "url": "https://llm-stats.com/ai-news"
+        },
+        {
+          "title": "LLM Leaderboard & AI Model Benchmarks — August 2026 | BenchLM.ai",
+          "url": "https://benchlm.ai/"
+        },
+        {
+          "title": "Free AI Models on OpenRouter | OpenRouter",
+          "url": "https://openrouter.ai/collections/free-models"
+        },
+        {
+          "title": "Seven AI Model Releases in One Week: How to Triage the Wave",
+          "url": "https://blog.askdeck.ai/seven-ai-model-releases-in-one-week-how-to-triage-the-wave/"
+        },
+        {
+          "title": "AI Models Catalog | Compare Pricing & APIs | CometAPI",
+          "url": "https://www.cometapi.com/models/"
+        },
+        {
+          "title": "DeepSeek AI 2026: V4 Prices from $0.14/M + Official Links",
+          "url": "https://deepseek.ai/"
+        },
+        {
+          "title": "Meta’s new Glimmer AI model offers a hint at... | TechCrunch",
+          "url": "https://techcrunch.com/2026/08/10/metas-new-glimmer-ai-model-offers-a-hint-at-zuckerbergs-personal-intelligence-vision/"
+        },
+        {
+          "title": "But will Gemini's surge survive slowing model releases? - Ars Technica",
+          "url": "https://arstechnica.com/ai/2026/08/google-says-gemini-has-reached-1b-users-faster-than-any-other-google-product/"
+        },
+        {
+          "title": "Mistral 7B | The best 7B model to date, Apache 2.0",
+          "url": "https://mistral.ai/news/announcing-mistral-7b/"
+        },
+        {
+          "title": "OpenAI - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/OpenAI"
+        },
+        {
+          "title": "AI Regulation 2026: EU AI Act, US Policy & Compliance Guide ...",
+          "url": "https://www.explainx.ai/blog/ai-regulation-eu-ai-act-us-policy-complete-guide-2026"
+        },
+        {
+          "title": "AI Regulation in 2026: What Just Changed and What It Means ...",
+          "url": "https://eveaicore.com/blog/ai-regulation-2026-what-changed"
+        },
+        {
+          "title": "Federal AI Regulation Landscape: Where Things Stand in 2026",
+          "url": "https://astraea.law/insights/federal-ai-regulation-landscape"
+        },
+        {
+          "title": "2026 AI Laws Update: Key Regulations and Practical Guidance",
+          "url": "https://www.gunder.com/en/news-insights/insights/2026-ai-laws-update-key-regulations-and-practical-guidance"
+        },
+        {
+          "title": "EU AI Act: What Actually Applies on 2 August 2026 ...",
+          "url": "https://www.technology.org/2026/07/17/eu-ai-act-what-actually-applies-on-2-august-2026/"
+        },
+        {
+          "title": "White House AI Regulation Plan 2026: Key Policies, Impact ...",
+          "url": "https://aicomparison.ai/us-ai-regulation-2026-framework/"
+        },
+        {
+          "title": "AI Governance and Regulation 2026: A Complete Guide to Global ...",
+          "url": "https://www.hungyichen.com/en/insights/ai-governance-regulatory-landscape-2026"
+        },
+        {
+          "title": "ECB is intensifying its war on humanity using climate regulations...",
+          "url": "https://expose-news.com/2026/08/12/ecb-is-intensifying-its-war-on-humanity/"
+        },
+        {
+          "title": "The OECD Artificial Intelligence Policy Observatory - OECD.AI",
+          "url": "https://oecd.ai/"
+        }
+      ],
+      "search_count": 50,
+      "fetch_count": 4
+    },
+    {
+      "name": "Tech News Digest",
+      "query": "top technology news and developments today",
+      "report": "## Synthesis Error\n\nThe LLM synthesis failed: Error code: 503 - {'error': {'code': 'model_not_found', 'message': 'No available channel for model Agnes-2.5-Flash under group default (distributor) (request id: 202608130729047266511663ttnkCcL)', 'type': 'AgnesAI_error'}}\n\nRaw search results and fetched content were still saved.",
+      "sources": [
+        {
+          "title": "BBC Technology | Technology, Health, Environment, AI",
+          "url": "https://www.bbc.com/technology"
+        },
+        {
+          "title": "reuters.com/technology",
+          "url": "https://www.reuters.com/technology/"
+        },
+        {
+          "title": "Tech News - The Latest Technology News | Fox News",
+          "url": "https://www.foxnews.com/tech"
+        },
+        {
+          "title": "TechCrunch | Startup and Technology News",
+          "url": "https://techcrunch.com/"
+        },
+        {
+          "title": "WIRED - The Latest in Technology, Science, Culture and Business",
+          "url": "https://www.wired.com/"
+        },
+        {
+          "title": "News and Advice on the World's Latest Innovations | ZDNET",
+          "url": "https://www.zdnet.com/"
+        },
+        {
+          "title": "Associated Press News: Breaking News, Latest Headlines... | AP News",
+          "url": "https://apnews.com/"
+        },
+        {
+          "title": "News from Google | Google Product and Technology News and Stories",
+          "url": "https://blog.google/"
+        },
+        {
+          "title": "Mashable is a global, multi-platform media and entertainment company.",
+          "url": "https://mashable.com/"
+        },
+        {
+          "title": "Hindustan Times: Breaking News, Latest News, India News, World...",
+          "url": "https://www.hindustantimes.com/"
+        }
+      ],
+      "search_count": 10,
+      "fetch_count": 4
+    }
+  ]
+}
