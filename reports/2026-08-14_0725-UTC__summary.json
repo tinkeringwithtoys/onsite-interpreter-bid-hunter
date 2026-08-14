@@ -1,0 +1,263 @@
+{
+  "timestamp": "2026-08-14_0725-UTC",
+  "topics": [
+    {
+      "name": "AI Industry Trends",
+      "query": "latest AI industry trends and breakthroughs 2026",
+      "report": "## Synthesis Error\n\nThe LLM synthesis failed: Error code: 503 - {'error': {'code': 'model_not_found', 'message': 'No available channel for model Agnes-2.5-Flash under group default (distributor) (request id: 20260814072609764173823yx8APjXf)', 'type': 'AgnesAI_error'}}\n\nRaw search results and fetched content were still saved.",
+      "sources": [
+        {
+          "title": "The trends that will shape AI and tech in 2026 | IBM",
+          "url": "https://www.ibm.com/think/news/ai-tech-trends-predictions-2026"
+        },
+        {
+          "title": "AI Trends in 2026: Advancements and Breakthroughs Ahead",
+          "url": "https://www.trigyn.com/insights/ai-trends-2026-new-era-ai-advancements-and-breakthroughs"
+        },
+        {
+          "title": "What’s next in AI: 7 trends to watch in 2026",
+          "url": "https://news.microsoft.com/source/features/ai/whats-next-in-ai-7-trends-to-watch-in-2026"
+        },
+        {
+          "title": "Latest AI Breakthroughs in 2026 - dtecheducate",
+          "url": "https://www.dtecheducate.com/latest-ai-breakthroughs-in-2026/"
+        },
+        {
+          "title": "Key AI Trends and Insights from Early 2026 - AI and News",
+          "url": "https://www.aiandnews.com/blog/ai-breakthroughs-trends-2026/"
+        },
+        {
+          "title": "The 2026 AI Index Report | Stanford HAI",
+          "url": "https://hai.stanford.edu/ai-index/2026-ai-index-report"
+        },
+        {
+          "title": "AI News Today 2026 | Latest AI Model Releases, Trends & Analysis",
+          "url": "https://www.buildfastwithai.com/blogs/collection/ai-industry-news-trends"
+        },
+        {
+          "title": "AI Latest Development Trends: 2026's Top Breakthroughs",
+          "url": "https://aisuperior.com/ai-latest-developments/"
+        },
+        {
+          "title": "The Latest AI News and Breakthroughs That Matter Most | News",
+          "url": "https://www.crescendo.ai/news/latest-ai-news-and-updates"
+        },
+        {
+          "title": "Five Trends in AI and Data Science for 2026 | Thomas H. Davenport and Randy Bean | MIT Sloan Management Review",
+          "url": "https://sloanreview.mit.edu/article/five-trends-in-ai-and-data-science-for-2026/"
+        },
+        {
+          "title": "2026 AI Laws Update: Key Regulations and Practical Guidance | Gunderson Dettmer Stough Villeneuve Franklin & Hachigian, LLP",
+          "url": "https://www.gunder.com/en/news-insights/insights/2026-ai-laws-update-key-regulations-and-practical-guidance"
+        },
+        {
+          "title": "US AI regulations 2026: the state laws you must comply with",
+          "url": "https://verifywise.ai/blog/state-of-ai-governance-regulations-united-states-2026"
+        },
+        {
+          "title": "AI Regulation 2026: 10 Critical Compliance Risks Your Business Can't Ignore",
+          "url": "https://www.kiteworks.com/cybersecurity-risk-management/ai-regulation-2026-business-compliance-guide/"
+        },
+        {
+          "title": "The White House’s National Policy Framework for Artificial Intelligence: what it means and what comes next | Consumer Finance Monitor",
+          "url": "https://www.consumerfinancemonitor.com/2026/04/08/the-white-houses-national-policy-framework-for-artificial-intelligence-what-it-means-and-what-comes-next/"
+        },
+        {
+          "title": "2026 AI Regulation Guide for Legal and Compliance Leaders | Cimplifi",
+          "url": "https://www.cimplifi.com/resources/the-ai-regulation-landscape-for-2026-what-legal-and-compliance-leaders-need-to-know/"
+        },
+        {
+          "title": "White House Releases National Policy Framework for Artificial Intelligence",
+          "url": "https://www.wilmerhale.com/en/insights/blogs/wilmerhale-privacy-and-cybersecurity-law/20260323-white-house-releases-national-policy-framework-for-artificial-intelligence"
+        },
+        {
+          "title": "AI Regulations around the World - 2026",
+          "url": "https://www.mindfoundry.ai/blog/ai-regulations-around-the-world"
+        },
+        {
+          "title": "US AI Regulation Update: July 2026 Laws & Policy | Vorp Labs",
+          "url": "https://vorplabs.com/ai-regulatory-updates/united-states"
+        },
+        {
+          "title": "AI Regulation in 2026: Navigating an Uncertain Landscape",
+          "url": "https://www.holisticai.com/blog/ai-regulation-in-2026-navigating-an-uncertain-landscape"
+        },
+        {
+          "title": "AI regulatory compliance in 2026: EU AI Act, US orders, and state laws, and how to operationalize them | Collibra",
+          "url": "https://www.collibra.com/blog/ai-regulatory-compliance-in-2026-eu-ai-act-us-orders-and-state-laws-and-how-to-operationalize"
+        },
+        {
+          "title": "7 Open-Source AI Projects Developers Need [June 2026]",
+          "url": "https://www.kunalganglani.com/blog/open-source-ai-projects-developers-2026"
+        },
+        {
+          "title": "12 Open-Source AI Projects a Serious Builder Should Be Running in 2026 | by Caspar Bannink - AI Engineer | CodeToDeploy | Jul, 2026 | Medium",
+          "url": "https://medium.com/codetodeploy/12-open-source-ai-projects-a-serious-builder-should-be-running-in-2026-8aabcb6eebb2"
+        },
+        {
+          "title": "10 Best Open-Source AI Agents for 2026 - DEV Community",
+          "url": "https://dev.to/sonotommy/10-best-open-source-ai-agents-for-2026-2l6p"
+        },
+        {
+          "title": "Open-Source AI June 2026: New Models, Agents & Papers | devFlokers",
+          "url": "https://www.devflokers.com/blog/open-source-ai-roundup-june-2026"
+        },
+        {
+          "title": "10 Open-Source Projects You’ll Actually Use in 2026 - DEV Community",
+          "url": "https://dev.to/sonotommy/10-open-source-projects-youll-actually-use-in-2026-2ig9"
+        },
+        {
+          "title": "Best Open Source AI Projects You Should Explore in 2026",
+          "url": "https://www.ossphere.dev/blog/best-open-source-ai-projects-you-should-explore-in-2026"
+        },
+        {
+          "title": "Google Open Source Blog: 2026",
+          "url": "https://opensource.googleblog.com/2026/"
+        },
+        {
+          "title": "Google Open Source Blog: August 2026",
+          "url": "https://opensource.googleblog.com/2026/08/"
+        },
+        {
+          "title": "Open Source AI Projects Released in the Last 24 Hours | devFlokers",
+          "url": "https://www.devflokers.com/blog/open-source-ai-projects-released-last-24-hours-april-2026"
+        },
+        {
+          "title": "Ultimate Guide – The Best Open Source AI Deployment Tools of 2026",
+          "url": "https://www.siliconflow.com/articles/en/the-best-open-source-AI-deployment-tools"
+        },
+        {
+          "title": "LLM News Today (August 2026) – AI Model Releases",
+          "url": "https://llm-stats.com/ai-news"
+        },
+        {
+          "title": "LLM Leaderboard & AI Model Benchmarks — August 2026 | BenchLM.ai",
+          "url": "https://benchlm.ai/"
+        },
+        {
+          "title": "Free AI Models on OpenRouter | OpenRouter",
+          "url": "https://openrouter.ai/collections/free-models"
+        },
+        {
+          "title": "Seven AI Model Releases in One Week: How to Triage the Wave",
+          "url": "https://blog.askdeck.ai/seven-ai-model-releases-in-one-week-how-to-triage-the-wave/"
+        },
+        {
+          "title": "Zuckerberg pushes ‘superintelligent’ AI for all as Meta releases...",
+          "url": "https://www.theguardian.com/technology/2026/aug/10/mark-zuckerberg-superintelligent-ai-essay-meta"
+        },
+        {
+          "title": "DeepSeek AI 2026: V4 Prices from $0.14/M + Official Links",
+          "url": "https://deepseek.ai/"
+        },
+        {
+          "title": "Meta’s new Glimmer AI model offers a hint at... | TechCrunch",
+          "url": "https://techcrunch.com/2026/08/10/metas-new-glimmer-ai-model-offers-a-hint-at-zuckerbergs-personal-intelligence-vision/"
+        },
+        {
+          "title": "But will Gemini's surge survive slowing model releases? - Ars Technica",
+          "url": "https://arstechnica.com/ai/2026/08/google-says-gemini-has-reached-1b-users-faster-than-any-other-google-product/"
+        },
+        {
+          "title": "Love Research - 47 Couples and Calibrated Prediction Models",
+          "url": "https://fazm.ai/blog/love-research-47-couples-predictions"
+        },
+        {
+          "title": "Releases · ollama/ollama · GitHub",
+          "url": "https://github.com/ollama/ollama/releases"
+        },
+        {
+          "title": "AI Funding Tracker | AI Startup Investment Roundups 2026",
+          "url": "https://aifundingtracker.com/"
+        },
+        {
+          "title": "AI Startup Funding Rounds July 2026: Investors & Deals",
+          "url": "https://aifunding.me/insights/ai-startup-funding-explained-complete-2026-guide"
+        },
+        {
+          "title": "AI Startups 2026 — Hottest Companies, Funding Rounds ...",
+          "url": "https://www.singularitymoments.com/ai-startups-2026/"
+        },
+        {
+          "title": "AI Startup Funding News Today – Latest Deals & Rounds 2026",
+          "url": "https://aifundingtracker.com/ai-startup-funding-news-today/"
+        },
+        {
+          "title": "Top 50 AI Startups & Funding Rounds (2026) | Roundly.io",
+          "url": "https://roundly.io/top-50"
+        },
+        {
+          "title": "124 AI & Machine Learning Startups Funded in 2026 - Founders ...",
+          "url": "https://www.fundedstartupsdaily.com/raises/ai-ml/"
+        },
+        {
+          "title": "Live AI Funding Rounds Tracker 2026 | Awaira",
+          "url": "https://awaira.com/funding-rounds"
+        },
+        {
+          "title": "Biggest Funding Rounds 2026 – The VC Wire",
+          "url": "https://thevcwire.com/biggest-funding-rounds-2026/"
+        },
+        {
+          "title": "Massive Funding Rounds in AI, Drones, and... | BEAMSTART",
+          "url": "https://beamstart.com/news/the-weeks-10-biggest-funding-17691999276626"
+        },
+        {
+          "title": "US Startup Funding Rounds June 2026: 20 Biggest... - BestStartup.US",
+          "url": "https://beststartup.us/us-startup-funding-rounds-june-2026/"
+        }
+      ],
+      "search_count": 50,
+      "fetch_count": 4
+    },
+    {
+      "name": "Tech News Digest",
+      "query": "top technology news and developments today",
+      "report": "## Synthesis Error\n\nThe LLM synthesis failed: Error code: 503 - {'error': {'code': 'model_not_found', 'message': 'No available channel for model Agnes-2.5-Flash under group default (distributor) (request id: 20260814072619909576172QqgC26vm)', 'type': 'AgnesAI_error'}}\n\nRaw search results and fetched content were still saved.",
+      "sources": [
+        {
+          "title": "BBC Technology | Technology, Health, Environment, AI",
+          "url": "https://www.bbc.com/technology"
+        },
+        {
+          "title": "Tech News - The Latest Technology News | Fox News",
+          "url": "https://www.foxnews.com/tech"
+        },
+        {
+          "title": "reuters.com/technology",
+          "url": "https://www.reuters.com/technology/"
+        },
+        {
+          "title": "TechCrunch | Startup and Technology News",
+          "url": "https://techcrunch.com/"
+        },
+        {
+          "title": "WIRED - The Latest in Technology, Science, Culture and Business",
+          "url": "https://www.wired.com/"
+        },
+        {
+          "title": "News and Advice on the World's Latest Innovations | ZDNET",
+          "url": "https://www.zdnet.com/"
+        },
+        {
+          "title": "Technology | Latest News & Updates | BBC News",
+          "url": "https://www.bbc.co.uk/news/technology"
+        },
+        {
+          "title": "Comprehensive up-to-date news coverage, aggregated from sources...",
+          "url": "https://news.google.com/home?hl=en-US&gl=US&ceid=US:en"
+        },
+        {
+          "title": "News from Google | Google Product and Technology News and Stories",
+          "url": "https://blog.google/"
+        },
+        {
+          "title": "Yahoo Finance - Stock Market Live, Quotes, Business & Finance News",
+          "url": "https://finance.yahoo.com/"
+        }
+      ],
+      "search_count": 10,
+      "fetch_count": 4
+    }
+  ]
+}
