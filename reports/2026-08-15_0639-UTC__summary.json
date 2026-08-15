@@ -1,0 +1,263 @@
+{
+  "timestamp": "2026-08-15_0639-UTC",
+  "topics": [
+    {
+      "name": "AI Industry Trends",
+      "query": "latest AI industry trends and breakthroughs 2026",
+      "report": "## Synthesis Error\n\nThe LLM synthesis failed: Error code: 503 - {'error': {'code': 'model_not_found', 'message': 'No available channel for model Agnes-2.5-Flash under group default (distributor) (request id: 202608150639395913275829sUHxPaI)', 'type': 'AgnesAI_error'}}\n\nRaw search results and fetched content were still saved.",
+      "sources": [
+        {
+          "title": "30 AI Breakthroughs in 2026 That Redefined the Year — From GPT-5.2 to ...",
+          "url": "https://realifeai.com/ai-breakthroughs-in-2026/"
+        },
+        {
+          "title": "AI Trends (August 2026) — AI Trend Analysis, LLM Statistics & Industry ...",
+          "url": "https://llm-stats.com/ai-trends"
+        },
+        {
+          "title": "AI Industry News & Trends 2026: Latest Breakthroughs, Models, and ...",
+          "url": "https://af.net/realtime/ai-industry-news-trends-2026-latest-breakthroughs-models-and-developments/"
+        },
+        {
+          "title": "AI Predictions 2026: Stanford & Gartner Research Analysis",
+          "url": "https://axis-intelligence.com/ai-predictions-2026-research-backed-analysis/"
+        },
+        {
+          "title": "AI updates 2026: Biggest breakthroughs, tools, trends and industry ...",
+          "url": "https://www.masaischool.com/blog/ai-updates-2026-biggest-breakthroughs-tools-trends-and-industry-shifts-so-far/"
+        },
+        {
+          "title": "AI Breakthroughs in 2026: The Year of Agentic AI | KERSAI",
+          "url": "https://kersai.com/ai-breakthroughs-in-2026/"
+        },
+        {
+          "title": "AI News Today 2026 | Latest AI Model Releases, Trends & Analysis",
+          "url": "https://www.buildfastwithai.com/blogs/collection/ai-industry-news-trends"
+        },
+        {
+          "title": "AI Predictions for July 2026: 20 Breakthrough Trends to Watch",
+          "url": "https://intellectualclouds.com/blog/ai-predictions-july-2026"
+        },
+        {
+          "title": "AI Trends in 2026: Advancements and Breakthroughs Ahead",
+          "url": "https://www.trigyn.com/insights/ai-trends-2026-new-era-ai-advancements-and-breakthroughs"
+        },
+        {
+          "title": "The trends that will shape AI and tech in 2026 - IBM",
+          "url": "https://www.ibm.com/think/news/ai-tech-trends-predictions-2026"
+        },
+        {
+          "title": "AI Startup Trends 2026: 6 Funding Shifts for Founders",
+          "url": "https://qubit.capital/blog/ai-startup-fundraising-trends"
+        },
+        {
+          "title": "AI Funding Tracker | AI Startup Investment Roundups 2026",
+          "url": "https://aifundingtracker.com/"
+        },
+        {
+          "title": "AI Funding Tracker 2026 — 1,336 Rounds, $800B+ in USD Raised (Updated Daily) | AI Funding",
+          "url": "https://aifunding.me/deals"
+        },
+        {
+          "title": "AI Startup Funding News Today – Latest Deals & Rounds 2026",
+          "url": "https://aifundingtracker.com/ai-startup-funding-news-today/"
+        },
+        {
+          "title": "List of Funded AI Startups (2026) - Fundraise Insider",
+          "url": "https://fundraiseinsider.com/blog/ai-startups/"
+        },
+        {
+          "title": "Best Startups with Recent Funding in 2026 | startups.gallery",
+          "url": "https://startups.gallery/news"
+        },
+        {
+          "title": "Latest AI Startup Funding News and VC Investment Deals - 2026 | News",
+          "url": "https://www.crescendo.ai/news/latest-vc-investment-deals-in-ai-startups"
+        },
+        {
+          "title": "North American Startup Funding Shattered Records In First Half Of 2026, Driven By AI",
+          "url": "https://news.crunchbase.com/venture/na-startup-funding-ma-shattered-records-ai-q2-2026/"
+        },
+        {
+          "title": "Q1 2026 Shatters Venture Funding Records As AI Boom Pushes Startup Investment To $300B",
+          "url": "https://news.crunchbase.com/venture/record-breaking-funding-ai-global-q1-2026/"
+        },
+        {
+          "title": "AI Startup Mega Rounds and Where The Fund Is Flowing",
+          "url": "https://qubit.capital/blog/ai-mega-rounds-funding-trends"
+        },
+        {
+          "title": "The OECD Artificial Intelligence Policy Observatory - OECD.AI",
+          "url": "https://oecd.ai/"
+        },
+        {
+          "title": "Artificial intelligence act - Consilium",
+          "url": "https://www.consilium.europa.eu/en/policies/artificial-intelligence-act/"
+        },
+        {
+          "title": "Google, OpenAI, and Anthropic All Made Major Moves This Week...",
+          "url": "https://www.linkedin.com/pulse/google-openai-anthropic-all-made-major-moves-week-here-gupta-th5cc"
+        },
+        {
+          "title": "Claude Invisible Watermarks — What They Detect... | explainx.ai",
+          "url": "https://explainx.ai/blog/anthropic-claude-invisible-watermarks-c2pa-august-2026"
+        },
+        {
+          "title": "AI News | Latest News | Insights Powering AI-Driven Business Growth",
+          "url": "https://www.artificialintelligence-news.com/"
+        },
+        {
+          "title": "Tool or Intruder? What Amazon v. Perplexity Means for Agentic AI and...",
+          "url": "https://www.ropesgray.com/en/insights/alerts/2026/08/tool-or-intruder-what-amazon-v-perplexity-means-for-agentic-ai-and-the-cfaa"
+        },
+        {
+          "title": "Why Japanese firms are being so slow to use AI",
+          "url": "https://www.bbc.com/news/articles/cwymw4434v7o"
+        },
+        {
+          "title": "Axios - Breaking news, U.S. news and politics, and local news",
+          "url": "https://www.axios.com/"
+        },
+        {
+          "title": "sciencedirect.com/science/article/pii/S2666659620300056",
+          "url": "https://www.sciencedirect.com/science/article/pii/S2666659620300056"
+        },
+        {
+          "title": "Home \\ Anthropic",
+          "url": "https://www.anthropic.com/"
+        },
+        {
+          "title": "AI Updates Today (August 2026) – Latest AI Model Releases",
+          "url": "https://llm-stats.com/llm-updates"
+        },
+        {
+          "title": "AI Release Tracker — Complete LLM Timeline 2022-2026",
+          "url": "https://aireleasetracker.com/"
+        },
+        {
+          "title": "Latest AI Model Releases — August 2026",
+          "url": "https://aireleasetracker.com/latest"
+        },
+        {
+          "title": "New AI Model Releases — August 2026 Timeline | LLM Gateway",
+          "url": "https://llmgateway.io/timeline"
+        },
+        {
+          "title": "Upcoming AI Models 2026: Release Tracker — What's Coming From OpenAI, Anthropic, Google, Meta, xAI | AIToolsRecap",
+          "url": "https://aitoolsrecap.com/Blog/upcoming-ai-models-2026-release-tracker"
+        },
+        {
+          "title": "LLM News Today (August 2026) – AI Model Releases",
+          "url": "https://llm-stats.com/ai-news"
+        },
+        {
+          "title": "Seven Days, Seven Model Releases: The New AI Normal",
+          "url": "https://www.digitalapplied.com/blog/seven-days-seven-releases-july-2026-model-wave"
+        },
+        {
+          "title": "New AI Models 2026 - Latest Releases | LM Market Cap",
+          "url": "https://lmmarketcap.com/new-ai-models"
+        },
+        {
+          "title": "AI Model Releases: August 2026 Tracker and Dated Ledger",
+          "url": "https://www.digitalapplied.com/blog/ai-model-releases-august-2026-tracker"
+        },
+        {
+          "title": "AI Model Release Tracker: New LLM Launches, Updated Weekly | AI Flash Report",
+          "url": "https://aiflashreport.com/model-releases.html"
+        },
+        {
+          "title": "Open-Source AI June 2026: New Models, Agents & Papers | devFlokers",
+          "url": "https://www.devflokers.com/blog/open-source-ai-roundup-june-2026"
+        },
+        {
+          "title": "7 Open-Source AI Projects Developers Need in 2026",
+          "url": "https://www.kunalganglani.com/blog/open-source-ai-projects-developers-2026"
+        },
+        {
+          "title": "Top Open-Source Projects to Watch in 2026 - Analytics Insight",
+          "url": "https://www.analyticsinsight.net/artificial-intelligence/best-open-source-projects-that-will-lead-in-2026"
+        },
+        {
+          "title": "State of Open Source AI in 2026: The Models, Tools, and ...",
+          "url": "https://aieducademy.org/blog/state-of-open-source-ai-2026"
+        },
+        {
+          "title": "Best Open-Source LLM Models in 2026: Coding, Local, Agentic ...",
+          "url": "https://huggingface.co/blog/daya-shankar/open-source-llms"
+        },
+        {
+          "title": "Best Open Source AI Models July 2026: Full Collection",
+          "url": "https://www.buildfastwithai.com/blogs/best-open-source-ai-models-2026"
+        },
+        {
+          "title": "GitHub - caramaschiHG/awesome-ai-agents-2026: The most ...",
+          "url": "https://github.com/caramaschiHG/awesome-ai-agents-2026"
+        },
+        {
+          "title": "12 Open-Source AI Projects a Serious Builder Should Be Running in 2026 | by Caspar Bannink - AI Engineer | CodeToDeploy | Jul, 2026 | Medium",
+          "url": "https://medium.com/codetodeploy/12-open-source-ai-projects-a-serious-builder-should-be-running-in-2026-8aabcb6eebb2"
+        },
+        {
+          "title": "10 Best Open-Source AI Agents for 2026 - DEV Community",
+          "url": "https://dev.to/sonotommy/10-best-open-source-ai-agents-for-2026-2l6p"
+        },
+        {
+          "title": "10 Open-Source Projects You’ll Actually Use in 2026 - DEV Community",
+          "url": "https://dev.to/sonotommy/10-open-source-projects-youll-actually-use-in-2026-2ig9"
+        }
+      ],
+      "search_count": 50,
+      "fetch_count": 4
+    },
+    {
+      "name": "Tech News Digest",
+      "query": "top technology news and developments today",
+      "report": "## Synthesis Error\n\nThe LLM synthesis failed: Error code: 503 - {'error': {'code': 'model_not_found', 'message': 'No available channel for model Agnes-2.5-Flash under group default (distributor) (request id: 20260815063949727538529lMrQpr3E)', 'type': 'AgnesAI_error'}}\n\nRaw search results and fetched content were still saved.",
+      "sources": [
+        {
+          "title": "Reuters Tech News | Today's Latest Technology News | Reuters",
+          "url": "https://www.reuters.com/technology/"
+        },
+        {
+          "title": "WIRED - The Latest in Technology, Science, Culture and Business | WIRED",
+          "url": "https://www.wired.com/"
+        },
+        {
+          "title": "Technology - The New York Times",
+          "url": "https://www.nytimes.com/section/technology"
+        },
+        {
+          "title": "Technology News",
+          "url": "https://www.cnbc.com/technology/"
+        },
+        {
+          "title": "Google News - Technology - Latest",
+          "url": "https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en"
+        },
+        {
+          "title": "BBC Technology | Technology, Health, Environment, AI",
+          "url": "https://www.bbc.com/technology"
+        },
+        {
+          "title": "TechCrunch | Startup and Technology News",
+          "url": "https://techcrunch.com/"
+        },
+        {
+          "title": "The Latest News in Technology | PCMag",
+          "url": "https://www.pcmag.com/news"
+        },
+        {
+          "title": "TechNewsWorld - Technology News and Information",
+          "url": "https://www.technewsworld.com/"
+        },
+        {
+          "title": "MIT Technology Review",
+          "url": "https://www.technologyreview.com/"
+        }
+      ],
+      "search_count": 10,
+      "fetch_count": 4
+    }
+  ]
+}
