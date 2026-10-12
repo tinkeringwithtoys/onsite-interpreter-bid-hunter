@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-05T10:04:06.805204+00:00",
+  "generated_utc": "2026-10-12T10:19:29.660205+00:00",
   "environment": "GITHUB ACTIONS RUNNER",
   "ted": {
     "cpv_syntax": [
@@ -55,7 +55,7 @@
       "url": "https://www.frontex.europa.eu/about-us/open-tenders/",
       "status": 403,
       "verdict": "FORBIDDEN (needs auth or IP-blocked)",
-      "ms": 621,
+      "ms": 710,
       "error": null,
       "bytes": 520
     },
@@ -64,25 +64,25 @@
       "url": "https://www.euaa.europa.eu/procurements",
       "status": 200,
       "verdict": "OK",
-      "ms": 2134,
+      "ms": 1573,
       "error": null,
-      "bytes": 84862
+      "bytes": 83718
     },
     {
       "name": "France PLACE (state platform)",
       "url": "https://www.marches-publics.gouv.fr/",
       "status": 200,
       "verdict": "OK",
-      "ms": 1262,
+      "ms": 1314,
       "error": null,
-      "bytes": 59487
+      "bytes": 59489
     },
     {
       "name": "France BOAMP",
       "url": "https://www.boamp.fr/",
       "status": 200,
       "verdict": "OK",
-      "ms": 1515,
+      "ms": 1507,
       "error": null,
       "bytes": 198189
     },
@@ -91,16 +91,16 @@
       "url": "https://www.service.bund.de/",
       "status": 200,
       "verdict": "OK",
-      "ms": 1174,
+      "ms": 1250,
       "error": null,
-      "bytes": 24271
+      "bytes": 20846
     },
     {
       "name": "Germany eVergabe",
       "url": "https://www.evergabe-online.de/",
       "status": 400,
       "verdict": "HTTP 400",
-      "ms": 1392,
+      "ms": 1142,
       "error": null,
       "bytes": 5331
     },
@@ -109,16 +109,16 @@
       "url": "https://op.europa.eu/en/web/public-procurement/",
       "status": 403,
       "verdict": "FORBIDDEN (needs auth or IP-blocked)",
-      "ms": 142,
+      "ms": 137,
       "error": null,
-      "bytes": 8019
+      "bytes": 7896
     },
     {
       "name": "UNGM public notices",
       "url": "https://www.ungm.org/Public/Notice",
       "status": 200,
       "verdict": "OK",
-      "ms": 499,
+      "ms": 558,
       "error": null,
       "bytes": 142816
     },
@@ -127,16 +127,16 @@
       "url": "https://procurement-notices.undp.org/",
       "status": 200,
       "verdict": "OK",
-      "ms": 1086,
+      "ms": 1051,
       "error": null,
-      "bytes": 199901
+      "bytes": 199952
     },
     {
       "name": "UN interpreter exams (CELP)",
       "url": "https://www.un.org/dgacm/en/content/exams-interpreters",
       "status": 200,
       "verdict": "OK",
-      "ms": 533,
+      "ms": 446,
       "error": null,
       "bytes": 52329
     },
@@ -145,16 +145,16 @@
       "url": "https://au.int/en/bids",
       "status": 200,
       "verdict": "OK",
-      "ms": 377,
+      "ms": 406,
       "error": null,
-      "bytes": 108299
+      "bytes": 115820
     },
     {
       "name": "AfDB procurement",
       "url": "https://www.afdb.org/en/projects-and-operations/procurement",
       "status": 403,
       "verdict": "BLOCKED (WAF/bot-wall)",
-      "ms": 117,
+      "ms": 260,
       "error": null,
       "bytes": 5815
     },
@@ -163,7 +163,7 @@
       "url": "https://europa.eu/interpretation/freelance_en.html",
       "status": 200,
       "verdict": "OK",
-      "ms": 871,
+      "ms": 696,
       "error": null,
       "bytes": 69960
     },
@@ -172,34 +172,34 @@
       "url": "https://europa.eu/interpretation/doc/aci_test_calendar.pdf",
       "status": 200,
       "verdict": "OK",
-      "ms": 1064,
+      "ms": 952,
       "error": null,
-      "bytes": 181398
+      "bytes": 181421
     },
     {
       "name": "EU Funding & Tenders portal",
       "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/home",
       "status": 200,
       "verdict": "OK",
-      "ms": 846,
+      "ms": 672,
       "error": null,
-      "bytes": 59960
+      "bytes": 59961
     },
     {
       "name": "Portugal BASE",
       "url": "https://www.base.gov.pt/Base4/en/",
       "status": 200,
       "verdict": "OK",
-      "ms": 1181,
+      "ms": 1143,
       "error": null,
-      "bytes": 95196
+      "bytes": 95200
     },
     {
       "name": "UK GCA Language Services RM6302",
       "url": "https://www.gca.gov.uk/agreements/RM6302",
       "status": 200,
       "verdict": "OK",
-      "ms": 2419,
+      "ms": 2468,
       "error": null,
       "bytes": 123483
     },
@@ -208,7 +208,7 @@
       "url": "https://tenders.etimad.sa/Tender/AllTendersForVisitor?PageNumber=1",
       "status": 200,
       "verdict": "OK",
-      "ms": 2879,
+      "ms": 2203,
       "error": null,
       "bytes": 199862
     },
@@ -217,7 +217,7 @@
       "url": "https://monaqasat.mof.gov.qa/",
       "status": 0,
       "verdict": "UNREACHABLE",
-      "ms": 2273,
+      "ms": 2255,
       "error": "URLError: <urlopen error TLS/SSL connection has been closed (EOF) (_ssl.c:1010)>",
       "bytes": 0
     },
@@ -226,16 +226,16 @@
       "url": "https://capt.gov.kw/en/",
       "status": 403,
       "verdict": "BLOCKED (WAF/bot-wall)",
-      "ms": 232,
+      "ms": 317,
       "error": null,
-      "bytes": 5632
+      "bytes": 5653
     },
     {
       "name": "Bahrain Tender Board",
       "url": "https://www.tenderboard.gov.bh/Tenders/PublicTenders/",
       "status": 200,
       "verdict": "OK",
-      "ms": 4216,
+      "ms": 4003,
       "error": null,
       "bytes": 86057
     },
@@ -244,7 +244,7 @@
       "url": "https://etendering.tenderboard.gov.om/product/publicDash",
       "status": 200,
       "verdict": "OK",
-      "ms": 6075,
+      "ms": 6085,
       "error": null,
       "bytes": 195773
     },
@@ -253,7 +253,7 @@
       "url": "https://esupply.dubai.gov.ae/",
       "status": 200,
       "verdict": "OK",
-      "ms": 459,
+      "ms": 463,
       "error": null,
       "bytes": 264
     },
@@ -262,7 +262,7 @@
       "url": "https://www.tuneps.tn/",
       "status": 0,
       "verdict": "UNREACHABLE",
-      "ms": 673,
+      "ms": 583,
       "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>",
       "bytes": 0
     },
@@ -271,9 +271,9 @@
       "url": "https://www.marchespublics.gov.tn/",
       "status": 200,
       "verdict": "OK",
-      "ms": 2941,
+      "ms": 2547,
       "error": null,
-      "bytes": 89990
+      "bytes": 91027
     }
   ],
   "config_problems": []
