@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-02T10:37:33.978412+00:00",
+  "generated_utc": "2026-11-09T10:57:42.585862+00:00",
   "environment": "GITHUB ACTIONS RUNNER",
   "ted": {
     "cpv_syntax": [
@@ -53,18 +53,18 @@
     {
       "name": "Frontex open tenders",
       "url": "https://www.frontex.europa.eu/about-us/open-tenders/",
-      "status": 403,
-      "verdict": "FORBIDDEN (needs auth or IP-blocked)",
-      "ms": 820,
+      "status": 404,
+      "verdict": "HTTP 404",
+      "ms": 833,
       "error": null,
-      "bytes": 520
+      "bytes": 19971
     },
     {
       "name": "EUAA procurements",
       "url": "https://www.euaa.europa.eu/procurements",
       "status": 200,
       "verdict": "OK",
-      "ms": 1795,
+      "ms": 1449,
       "error": null,
       "bytes": 83539
     },
@@ -73,16 +73,16 @@
       "url": "https://www.marches-publics.gouv.fr/",
       "status": 200,
       "verdict": "OK",
-      "ms": 1561,
+      "ms": 1038,
       "error": null,
-      "bytes": 59525
+      "bytes": 59516
     },
     {
       "name": "France BOAMP",
       "url": "https://www.boamp.fr/",
       "status": 200,
       "verdict": "OK",
-      "ms": 1719,
+      "ms": 1583,
       "error": null,
       "bytes": 198222
     },
@@ -91,16 +91,16 @@
       "url": "https://www.service.bund.de/",
       "status": 200,
       "verdict": "OK",
-      "ms": 2078,
+      "ms": 1104,
       "error": null,
-      "bytes": 24372
+      "bytes": 24289
     },
     {
       "name": "Germany eVergabe",
       "url": "https://www.evergabe-online.de/",
       "status": 400,
       "verdict": "HTTP 400",
-      "ms": 1564,
+      "ms": 966,
       "error": null,
       "bytes": 5331
     },
@@ -109,16 +109,16 @@
       "url": "https://op.europa.eu/en/web/public-procurement/",
       "status": 403,
       "verdict": "FORBIDDEN (needs auth or IP-blocked)",
-      "ms": 139,
+      "ms": 168,
       "error": null,
-      "bytes": 7916
+      "bytes": 7937
     },
     {
       "name": "UNGM public notices",
       "url": "https://www.ungm.org/Public/Notice",
       "status": 200,
       "verdict": "OK",
-      "ms": 655,
+      "ms": 451,
       "error": null,
       "bytes": 143903
     },
@@ -127,34 +127,34 @@
       "url": "https://procurement-notices.undp.org/",
       "status": 200,
       "verdict": "OK",
-      "ms": 1510,
+      "ms": 854,
       "error": null,
-      "bytes": 199888
+      "bytes": 199807
     },
     {
       "name": "UN interpreter exams (CELP)",
       "url": "https://www.un.org/dgacm/en/content/exams-interpreters",
       "status": 200,
       "verdict": "OK",
-      "ms": 1471,
+      "ms": 683,
       "error": null,
-      "bytes": 52345
+      "bytes": 52329
     },
     {
       "name": "African Union bids",
       "url": "https://au.int/en/bids",
       "status": 200,
       "verdict": "OK",
-      "ms": 361,
+      "ms": 263,
       "error": null,
-      "bytes": 100731
+      "bytes": 101746
     },
     {
       "name": "AfDB procurement",
       "url": "https://www.afdb.org/en/projects-and-operations/procurement",
       "status": 403,
       "verdict": "BLOCKED (WAF/bot-wall)",
-      "ms": 273,
+      "ms": 68,
       "error": null,
       "bytes": 5804
     },
@@ -163,7 +163,7 @@
       "url": "https://europa.eu/interpretation/freelance_en.html",
       "status": 200,
       "verdict": "OK",
-      "ms": 864,
+      "ms": 587,
       "error": null,
       "bytes": 69960
     },
@@ -172,7 +172,7 @@
       "url": "https://europa.eu/interpretation/doc/aci_test_calendar.pdf",
       "status": 200,
       "verdict": "OK",
-      "ms": 1346,
+      "ms": 766,
       "error": null,
       "bytes": 180702
     },
@@ -181,25 +181,25 @@
       "url": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/home",
       "status": 200,
       "verdict": "OK",
-      "ms": 843,
+      "ms": 653,
       "error": null,
       "bytes": 59960
     },
     {
       "name": "Portugal BASE",
       "url": "https://www.base.gov.pt/Base4/en/",
-      "status": 0,
-      "verdict": "UNREACHABLE",
-      "ms": 791,
-      "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>",
-      "bytes": 0
+      "status": 200,
+      "verdict": "OK",
+      "ms": 918,
+      "error": null,
+      "bytes": 95200
     },
     {
       "name": "UK GCA Language Services RM6302",
       "url": "https://www.gca.gov.uk/agreements/RM6302",
       "status": 200,
       "verdict": "OK",
-      "ms": 942,
+      "ms": 2259,
       "error": null,
       "bytes": 123483
     },
@@ -208,7 +208,7 @@
       "url": "https://tenders.etimad.sa/Tender/AllTendersForVisitor?PageNumber=1",
       "status": 200,
       "verdict": "OK",
-      "ms": 1756,
+      "ms": 3270,
       "error": null,
       "bytes": 199862
     },
@@ -217,8 +217,8 @@
       "url": "https://monaqasat.mof.gov.qa/",
       "status": 0,
       "verdict": "UNREACHABLE",
-      "ms": 1970,
-      "error": "URLError: <urlopen error TLS/SSL connection has been closed (EOF) (_ssl.c:1010)>",
+      "ms": 2554,
+      "error": "URLError: <urlopen error TLS/SSL connection has been closed (EOF) (_ssl.c:1011)>",
       "bytes": 0
     },
     {
@@ -226,7 +226,7 @@
       "url": "https://capt.gov.kw/en/",
       "status": 403,
       "verdict": "BLOCKED (WAF/bot-wall)",
-      "ms": 310,
+      "ms": 85,
       "error": null,
       "bytes": 5621
     },
@@ -235,16 +235,16 @@
       "url": "https://www.tenderboard.gov.bh/Tenders/PublicTenders/",
       "status": 200,
       "verdict": "OK",
-      "ms": 4028,
+      "ms": 4256,
       "error": null,
-      "bytes": 86057
+      "bytes": 86186
     },
     {
       "name": "Oman Tender Board",
       "url": "https://etendering.tenderboard.gov.om/product/publicDash",
       "status": 200,
       "verdict": "OK",
-      "ms": 6813,
+      "ms": 6481,
       "error": null,
       "bytes": 195773
     },
@@ -253,7 +253,7 @@
       "url": "https://esupply.dubai.gov.ae/",
       "status": 200,
       "verdict": "OK",
-      "ms": 524,
+      "ms": 327,
       "error": null,
       "bytes": 264
     },
@@ -262,8 +262,8 @@
       "url": "https://www.tuneps.tn/",
       "status": 0,
       "verdict": "UNREACHABLE",
-      "ms": 1482,
-      "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)>",
+      "ms": 496,
+      "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1011)>",
       "bytes": 0
     },
     {
@@ -271,9 +271,9 @@
       "url": "https://www.marchespublics.gov.tn/",
       "status": 200,
       "verdict": "OK",
-      "ms": 4516,
+      "ms": 2067,
       "error": null,
-      "bytes": 90508
+      "bytes": 91643
     }
   ],
   "config_problems": []
